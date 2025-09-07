@@ -1,0 +1,307 @@
+/* ---------- Palette from your Typst colors ---------- */
+:root {
+  --litm-black: #000000;
+  --litm-dark-brown: #302522;
+  --litm-soft-brown: #4f311d;
+  --litm-light-brown: #724a32;
+  --litm-clear-brown: #856b5b;
+  --litm-gray-brown: #cfbfb4;
+  --litm-brick-red: #752b2b;
+  --litm-light-brick-red: #915656;
+  --litm-parchment-yellow: #e3d2c1;
+  --litm-pastel-green: #bccdb0;
+  --litm-pastel-yellow: #efd693;
+  --litm-grayish-red: #d9b2aa;
+}
+
+/* ---------- Font “slots” matching your Typst spec ---------- */
+:root {
+  --font-ch-name:
+    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-roles:
+    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-desc:
+    "ManuskriptAntDReg", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-sections:
+    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-limits:
+    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-threat-name:
+    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-threat-desc:
+    "CCDreamland Lower", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-threat-body: "Labrada", ui-serif, Georgia, "Times New Roman", serif;
+  --font-small-heading:
+    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+}
+
+/* Inline “image as element” helpers */
+.ico {
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.ico-cross {
+  width: 17px;
+  height: 17px;
+  background-image: url("/assets/images/cross.svg");
+}
+.ico-shield {
+  width: 22px;
+  height: 22px;
+  background-image: url("/assets/images/shield.svg");
+}
+.ico-conseq {
+  width: 13px;
+  height: 13px;
+  background-image: url("/assets/images/consequence.svg");
+}
+.ico-might-adventure {
+  width: 13px;
+  height: 13px;
+  background-image: url("/assets/images/might-adventure.svg");
+}
+.ico-might-greatness {
+  width: 13px;
+  height: 13px;
+  background-image: url("/assets/images/might-greatness.svg");
+}
+
+/* ---------- Page/card container ---------- */
+.challenge-sheet {
+  background: var(--litm-parchment-yellow);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Space wrapper (inner parchment) */
+.challenge-sheet__inner {
+  padding: 28px 28px 16px 28px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.45),
+      rgba(255, 255, 255, 0.25)
+    ),
+    var(--litm-parchment-yellow);
+}
+
+/* ---------- Header (name + rating) ---------- */
+.challenge-name {
+  font-family: var(--font-ch-name);
+  color: var(--litm-soft-brown);
+  font-size: 1.25rem; /* 17pt-ish */
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.challenge-rating {
+  display: inline-flex;
+  gap: 6px;
+}
+
+/* ---------- Roles ---------- */
+.challenge-roles {
+  font-family: var(--font-ch-roles);
+  color: var(--litm-light-brown);
+  font-size: 0.66rem; /* ~10pt */
+  font-style: italic;
+}
+
+/* ---------- Description ---------- */
+.challenge-desc {
+  font-family: var(--font-ch-desc);
+  font-size: 0.66rem; /* ~10pt */
+  color: var(--litm-dark-brown);
+}
+
+/* ---------- Section header (center + left variants) ---------- */
+.section-title {
+  font-family: var(--font-ch-sections);
+  font-size: 0.44rem; /* ~6pt */
+  color: var(--litm-clear-brown);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.section-line {
+  height: 1px;
+  background: var(--litm-clear-brown);
+  opacity: 0.7;
+}
+.section--center {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 6px;
+}
+.section--left {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 6px;
+}
+.section--left .section-line {
+  width: 60%;
+}
+
+/* ---------- Limits row ---------- */
+.limit-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 12px;
+}
+.limit-name {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-ch-limits);
+  font-size: 0.58rem; /* ~8pt */
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding-right: 18px; /* space before shield */
+}
+/* “highlight” behind the text baseline */
+.limit-name::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.08em; /* slightly below baseline */
+  height: 0.55em;
+  background: var(--litm-grayish-red);
+  z-index: -1;
+  border-right: 10px solid var(--litm-grayish-red);
+  border-radius: 2px;
+}
+
+/* Shield badge with number overlay */
+.limit-shield {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: url("/assets/images/shield.svg") no-repeat center / contain;
+}
+.limit-shield__num {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-46%);
+  font-family: var(--font-small-heading);
+  font-size: 0.72rem;
+  color: var(--litm-parchment-yellow);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- Special features ---------- */
+.feature-name {
+  font-weight: 700;
+  font-size: 0.72rem; /* ~10pt */
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--litm-dark-brown);
+}
+.feature-body {
+  font-size: 0.66rem; /* ~10pt */
+  color: var(--litm-dark-brown);
+}
+
+/* ---------- Tags/Statuses + Might ---------- */
+.tags-line {
+  font-size: 0.73rem; /* 11.5pt-ish */
+}
+.might-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.73rem;
+  color: var(--litm-dark-brown);
+  font-family: var(--font-ch-threat-body);
+}
+
+/* ---------- Threats ---------- */
+.threat-card {
+  position: relative;
+}
+.threat-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 14px; /* ~11pt in Typst; adjusted for CSS */
+  padding: 0 10px;
+  border-radius: 6px;
+  background: var(--litm-gray-brown);
+  color: var(--litm-dark-brown);
+  font-family: var(--font-ch-threat-name);
+  font-size: 0.5rem; /* ~7pt */
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.threat-desc {
+  font-family: var(--font-ch-threat-desc);
+  font-size: 0.62rem; /* ~9pt */
+  color: var(--litm-dark-brown);
+}
+.conseq-row {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.conseq-text {
+  font-family: var(--font-ch-threat-body);
+  font-size: 0.75rem; /* ~11pt */
+  color: var(--litm-dark-brown);
+}
+
+/* subtle divider between threats */
+.threat-card:not(:last-child)::after {
+  content: "";
+  display: block;
+  width: 40%;
+  height: 1px;
+  background: var(--litm-gray-brown);
+  opacity: 0.8;
+  margin-top: 6px;
+}
+
+/* ---------- Vertical divider art ---------- */
+.sheet-grid {
+  display: grid;
+  grid-template-columns: 1.7fr 6px 4fr; /* left | divider | right */
+  gap: 0;
+}
+.sheet-divider {
+  position: relative;
+  background: transparent;
+}
+.sheet-divider::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    top center / 8px 24px repeat-y url("/assets/images/white-line.svg"),
+    var(--litm-gray-brown);
+  width: 7px;
+  transform: translateX(-0.5px);
+}
+
+/* ---------- Footer (metadata, badges) ---------- */
+.meta-footer {
+  font-size: 0.68rem;
+  color: var(--litm-clear-brown);
+}
+.meta-footer .badge {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0.25rem;
+  background: #fff7ed; /* amber-50-ish */
+  color: #92400e; /* amber-800-ish */
+  margin-left: 0.35rem;
+}
