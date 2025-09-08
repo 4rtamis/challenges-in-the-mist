@@ -1,15 +1,37 @@
+// src/editor/ImportExportBar.tsx
 import { useRef, useState } from "react";
-import { useChallengeStore } from "../store/challengeStore";
+import { useChallengeStore, type Challenge } from "../store/challengeStore";
 import { exportToTOML, importFromTOMLWithWarnings } from "../utils/tomlIO";
 import { slugify } from "../utils/strings";
 import { Download, Upload, Copy, AlertTriangle } from "lucide-react";
 
+// shadcn/ui
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+
+// sonner
+import { toast } from "sonner";
+
 export default function ImportExportBar() {
   const { challenge, replaceChallenge } = useChallengeStore();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [msg, setMsg] = useState<string | null>(null);
-  const [err, setErr] = useState<string | null>(null);
+
+  // Persisted warnings after import
   const [warnings, setWarnings] = useState<string[]>([]);
+
+  // Import confirm dialog state
+  const [open, setOpen] = useState(false);
+  const [importName, setImportName] = useState<string>("");
+  const [importWarnings, setImportWarnings] = useState<string[]>([]);
+  const [importParsed, setImportParsed] = useState<Challenge | null>(null);
 
   function downloadText(filename: string, text: string) {
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
@@ -26,14 +48,16 @@ export default function ImportExportBar() {
   function handleExport() {
     try {
       const toml = exportToTOML(challenge);
-      const name = slugify(challenge.name);
+      const name = slugify(challenge.name || "challenge");
       downloadText(`${name}.toml`, toml);
-      setMsg("Exported TOML.");
-      setErr(null);
+      toast.success("Exported", {
+        description: "Your challenge was saved as .toml",
+      });
       setWarnings([]);
     } catch (e: any) {
-      setErr(e?.message || "Failed to export TOML.");
-      setMsg(null);
+      toast.error("Export failed", {
+        description: e?.message || "Failed to export TOML.",
+      });
     }
   }
 
@@ -41,13 +65,17 @@ export default function ImportExportBar() {
     try {
       const toml = exportToTOML(challenge);
       await navigator.clipboard.writeText(toml);
-      setMsg("Copied TOML to clipboard.");
-      setErr(null);
+      toast.success("Copied", { description: "TOML copied to clipboard." });
       setWarnings([]);
     } catch (e: any) {
-      setErr(e?.message || "Clipboard copy failed.");
-      setMsg(null);
+      toast.error("Copy failed", {
+        description: e?.message || "Clipboard copy failed.",
+      });
     }
+  }
+
+  function onPickFile() {
+    fileRef.current?.click();
   }
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -60,91 +88,115 @@ export default function ImportExportBar() {
         const { challenge: imported, warnings } =
           importFromTOMLWithWarnings(text);
 
-        const ok = window.confirm(
-          `Replace the current challenge with "${imported.name || "Imported Challenge"}"?`
-        );
-        if (!ok) return;
-
-        replaceChallenge(imported);
-        setMsg("Imported TOML.");
-        setErr(null);
-        setWarnings(warnings);
+        setImportParsed(imported as Challenge);
+        setImportName(imported.name || "Imported Challenge");
+        setImportWarnings(warnings || []);
+        setOpen(true);
       } catch (errAny: any) {
-        setErr(`Failed to parse/validate TOML:\n${errAny?.message || errAny}`);
-        setMsg(null);
-        setWarnings([]);
+        toast.error("Import failed", {
+          description: `Failed to parse/validate TOML: ${errAny?.message || errAny}`,
+        });
       } finally {
         if (fileRef.current) fileRef.current.value = "";
       }
     };
     reader.onerror = () => {
-      setErr("Failed to read file.");
-      setMsg(null);
-      setWarnings([]);
+      toast.error("Import failed", { description: "Failed to read file." });
     };
     reader.readAsText(f);
   }
 
+  function confirmImport() {
+    if (!importParsed) return;
+    replaceChallenge(importParsed);
+    setWarnings(importWarnings);
+    setOpen(false);
+    toast.success("Imported", { description: importName });
+  }
+
   return (
     <div className="flex flex-col gap-2 items-stretch">
+      {/* Hidden file input */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept=".toml,text/plain"
+        className="hidden"
+        onChange={onFileChange}
+      />
+
       <div className="flex flex-wrap items-center justify-end gap-2">
-        <input
-          ref={fileRef}
-          type="file"
-          accept=".toml,text/plain"
-          className="hidden"
-          onChange={onFileChange}
-        />
+        <Button variant="outline" onClick={onPickFile} title="Import .toml">
+          <Upload className="mr-2 h-4 w-4" /> Import TOML
+        </Button>
 
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded border bg-white hover:bg-slate-50"
-          title="Import .toml"
-        >
-          <Upload size={16} /> Import TOML
-        </button>
-
-        <button
-          type="button"
+        <Button
+          variant="outline"
           onClick={handleCopy}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded border bg-white hover:bg-slate-50"
           title="Copy .toml to clipboard"
         >
-          <Copy size={16} /> Copy TOML
-        </button>
+          <Copy className="mr-2 h-4 w-4" /> Copy TOML
+        </Button>
 
-        <button
-          type="button"
-          onClick={handleExport}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-indigo-600 text-white hover:bg-indigo-700"
-          title="Download .toml"
-        >
-          <Download size={16} /> Export TOML
-        </button>
+        <Button onClick={handleExport} title="Download .toml">
+          <Download className="mr-2 h-4 w-4" /> Export TOML
+        </Button>
       </div>
 
-      {(msg || err) && (
-        <div
-          className={`${err ? "text-red-700" : "text-green-700"} text-sm whitespace-pre-wrap`}
-        >
-          {err || msg}
-        </div>
-      )}
-
+      {/* Persisted warnings after import */}
       {warnings.length > 0 && (
-        <div className="text-amber-700 text-sm flex items-start gap-2">
-          <AlertTriangle size={16} className="mt-0.5" />
-          <div>
-            <div className="font-medium">Imported with warnings:</div>
-            <ul className="list-disc ml-5">
+        <Alert className="mt-1" variant="default">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Imported with warnings</AlertTitle>
+          <AlertDescription>
+            <ul className="list-disc ml-5 space-y-1">
               {warnings.map((w, i) => (
                 <li key={i}>{w}</li>
               ))}
             </ul>
-          </div>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
+
+      {/* Confirm dialog */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Import challenge?</DialogTitle>
+            <DialogDescription>
+              This will replace your current editor content with:
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <div className="text-sm">
+              <span className="font-medium">Name:</span>{" "}
+              {importName || "Untitled"}
+            </div>
+
+            {importWarnings.length > 0 && (
+              <Alert variant="default">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Detected warnings</AlertTitle>
+                <AlertDescription>
+                  <ul className="list-disc ml-5 space-y-1">
+                    {importWarnings.map((w, i) => (
+                      <li key={i}>{w}</li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmImport}>Replace current</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

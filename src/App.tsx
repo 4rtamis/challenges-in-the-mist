@@ -1,59 +1,40 @@
-import BasicInfoForm from "./editor/BasicInfoForm";
-import TagsStatusesForm from "./editor/TagsStatusesForm";
-import MightForm from "./editor/MightForm";
-import LimitsForm from "./editor/LimitsForm";
-import ThreatsForm from "./editor/ThreatsForm";
-import SpecialFeaturesForm from "./editor/SpecialFeaturesForm";
-import MetaForm from "./editor/MetaForm";
-import LivePreview from "./preview/LivePreview";
+// src/App.tsx
+import {
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
+import AppSidebar from "@/components/app-sidebar";
+import ImportExportBar from "@/editor/ImportExportBar";
+import LivePreview from "@/preview/LivePreview";
 
 export default function App() {
   return (
-    <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-      {/* Editor */}
-      <div className="space-y-8">
-        <h1 className="text-2xl font-bold">Challenge Editor</h1>
+    <SidebarProvider defaultOpen={false}>
+      <AppSidebar />
 
-        <section id="section-basic" className="space-y-2">
-          <h2 className="text-lg font-semibold">Basic Info</h2>
-          <BasicInfoForm />
-        </section>
+      <SidebarInset>
+        {/* Top bar */}
+        <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 h-14 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger className="mr-1" />
+              <span className="font-semibold tracking-wide">
+                Challenges in the Mist
+              </span>
+            </div>
+            <ImportExportBar />
+          </div>
+        </header>
 
-        <section id="section-tags" className="space-y-2">
-          <h2 className="text-lg font-semibold">Tags & Statuses</h2>
-          <TagsStatusesForm />
-        </section>
+        {/* Main preview area */}
+        <main className="mx-auto max-w-6xl px-4 sm:px-6 py-6">
+          <LivePreview />
+        </main>
 
-        <section id="section-might" className="space-y-2">
-          <h2 className="text-lg font-semibold">Might</h2>
-          <MightForm />
-        </section>
-
-        <section id="section-limits" className="space-y-2">
-          <h2 className="text-lg font-semibold">Limits</h2>
-          <LimitsForm />
-        </section>
-
-        <section id="section-threats" className="space-y-2">
-          <h2 className="text-lg font-semibold">Threats & Consequences</h2>
-          <ThreatsForm />
-        </section>
-
-        <section id="section-features" className="space-y-2">
-          <h2 className="text-lg font-semibold">Special Features</h2>
-          <SpecialFeaturesForm />
-        </section>
-
-        <section id="section-meta" className="space-y-2">
-          <h2 className="text-lg font-semibold">Meta</h2>
-          <MetaForm />
-        </section>
-      </div>
-
-      {/* Live Preview */}
-      <div>
-        <LivePreview />
-      </div>
-    </div>
+        <Toaster richColors closeButton position="top-right" expand />
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
