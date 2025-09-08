@@ -1,35 +1,29 @@
 // src/editor/TagsStatusesForm.tsx
-import { useState } from "react";
-import { useChallengeStore } from "../store/challengeStore";
-import { parseToken, ensureFormatted, tokensEqual } from "../utils/tags";
-import { renderLitmInline } from "../utils/markdown";
+import { useEffect, useState } from "react";
+import { useChallengeStore } from "@/store/challengeStore";
+import { parseToken, ensureFormatted, tokensEqual } from "@/utils/tags";
+import { renderLitmInline } from "@/utils/markdown";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 import {
-  Pencil,
-  Trash2,
   ArrowUp,
   ArrowDown,
+  Pencil,
+  Trash2,
   Plus,
   AlertTriangle,
-  MoreHorizontal,
 } from "lucide-react";
-
-// shadcn/ui
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
 
 type Mode = "power" | "status" | "weakness";
 
-export default function TagsStatusesForm() {
+export default function TagsStatusesForm({
+  focusIndex,
+}: {
+  focusIndex?: number;
+}) {
   const { challenge, addToken, removeTokenAt, replaceTokenAt, moveToken } =
     useChallengeStore();
 
@@ -46,6 +40,21 @@ export default function TagsStatusesForm() {
   const [editName, setEditName] = useState("");
   const [editStatusVal, setEditStatusVal] = useState("");
 
+  // Focus a row when opened from preview
+  useEffect(() => {
+    if (
+      typeof focusIndex === "number" &&
+      challenge.tags_and_statuses[focusIndex]
+    ) {
+      startEdit(focusIndex);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusIndex]);
+
+  function normalizeDigitsOnly(s: string) {
+    return s.replace(/\D+/g, "");
+  }
+
   function resetCreate() {
     setMode("power");
     setNameInput("");
@@ -54,10 +63,7 @@ export default function TagsStatusesForm() {
     setLimitDetect(null);
   }
 
-  function normalizeDigitsOnly(s: string) {
-    return s.replace(/\D+/g, "");
-  }
-
+  // Smart-paste: parse curly content and prefill fields
   function onSmartFillFromPaste(raw: string) {
     const p = parseToken(raw);
     if (!p) return;
@@ -98,7 +104,7 @@ export default function TagsStatusesForm() {
     const cleanedVal = mode === "status" ? normalizeDigitsOnly(statusVal) : "";
     const token = ensureFormatted(nameInput, mode, cleanedVal);
 
-    // Prevent adding limits here even if user typed "{name:3}"
+    // Prevent adding limits here even if user typed/pasted them
     const parsed = parseToken(token);
     if (parsed?.kind === "limit") {
       setLimitDetect(
@@ -179,134 +185,126 @@ export default function TagsStatusesForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Tags &amp; Statuses</CardTitle>
-      </CardHeader>
-
-      <CardContent className="space-y-5">
-        {/* Create */}
-        <div className="rounded-md border p-4 space-y-3">
-          <div className="flex flex-wrap items-end gap-3">
-            {/* Mode selector */}
-            <div className="inline-flex rounded-md border overflow-hidden">
-              {(["power", "status", "weakness"] as Mode[]).map((m) => (
-                <Button
-                  key={m}
-                  type="button"
-                  variant={mode === m ? "default" : "ghost"}
-                  className="capitalize rounded-none"
-                  onClick={() => setMode(m)}
-                >
-                  {m === "power" ? "Tag" : m}
-                </Button>
-              ))}
-            </div>
-
-            {/* Name */}
-            <div className="flex-1 min-w-[220px] grid gap-2">
-              <Label htmlFor="ts-name">
-                {mode === "weakness"
-                  ? "Weakness"
-                  : mode === "status"
-                    ? "Status name"
-                    : "Tag"}
-              </Label>
-              <Input
-                id="ts-name"
-                placeholder={
-                  mode === "weakness"
-                    ? "e.g., beguiled"
-                    : mode === "status"
-                      ? "e.g., not-listening"
-                      : "e.g., sharp broken tools"
-                }
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-                onPaste={(e) => {
-                  const pasted = e.clipboardData.getData("text");
-                  if (pasted?.includes("{")) {
-                    setTimeout(() => onSmartFillFromPaste(pasted), 0);
-                  }
-                }}
-              />
-            </div>
-
-            {/* Status value (digits or empty) */}
-            {mode === "status" && (
-              <div className="grid gap-2">
-                <Label htmlFor="ts-value">Value</Label>
-                <Input
-                  id="ts-value"
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  className="w-20"
-                  placeholder=""
-                  value={statusVal}
-                  onChange={(e) =>
-                    setStatusVal(normalizeDigitsOnly(e.target.value))
-                  }
-                />
-              </div>
-            )}
-
-            <Button
-              type="button"
-              onClick={handleAdd}
-              className="inline-flex items-center gap-1"
-            >
-              <Plus size={16} />
-              Add
-            </Button>
+    <div className="space-y-6">
+      {/* Create */}
+      <div className="rounded-md border p-4 space-y-3">
+        {/* Mode selector */}
+        <div className="grid gap-2">
+          <Label className="text-sm">Type</Label>
+          <div className="inline-flex rounded-md border overflow-hidden">
+            {(["power", "status", "weakness"] as Mode[]).map((m) => (
+              <Button
+                key={m}
+                type="button"
+                variant={mode === m ? "default" : "ghost"}
+                className={`rounded-none ${mode === m ? "" : "bg-white"}`}
+                onClick={() => setMode(m)}
+              >
+                {m === "power" ? "Tag" : m[0].toUpperCase() + m.slice(1)}
+              </Button>
+            ))}
           </div>
-
-          {error && <p className="text-sm text-destructive">{error}</p>}
-
-          {limitDetect && (
-            <Alert variant="default" className="py-2">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Looks like a Limit</AlertTitle>
-              <AlertDescription>{limitDetect}</AlertDescription>
-            </Alert>
-          )}
-
-          <p className="text-xs text-muted-foreground">
-            Tips: paste tokens like <code>{"{!beguiled}"}</code>,{" "}
-            <code>{"{not-listening-3}"}</code>, <code>{"{status-}"}</code> or{" "}
-            <code>{"{sharp tools}"}</code>. Status value can be empty; typical
-            scene entries are 1–4.
-          </p>
         </div>
 
-        {/* Current tokens */}
-        <ul className="space-y-2">
-          {challenge.tags_and_statuses.map((token, idx) => (
+        {/* Name + optional status value */}
+        <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+          <div className="grid gap-1">
+            <Label htmlFor="token-name">Name</Label>
+            <Input
+              id="token-name"
+              placeholder={
+                mode === "weakness"
+                  ? "e.g., beguiled"
+                  : mode === "status"
+                    ? "e.g., not-listening"
+                    : "e.g., sharp broken tools"
+              }
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              onPaste={(e) => {
+                const pasted = e.clipboardData.getData("text");
+                if (pasted?.includes("{")) {
+                  setTimeout(() => onSmartFillFromPaste(pasted), 0);
+                }
+              }}
+            />
+          </div>
+
+          {mode === "status" && (
+            <div className="grid gap-1">
+              <Label htmlFor="token-status-val">Value (optional)</Label>
+              <Input
+                id="token-status-val"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                placeholder=""
+                className="w-[110px]"
+                value={statusVal}
+                onChange={(e) =>
+                  setStatusVal(normalizeDigitsOnly(e.target.value))
+                }
+              />
+            </div>
+          )}
+        </div>
+
+        {error && <p className="text-sm text-destructive">{error}</p>}
+        {limitDetect && (
+          <p className="text-sm text-amber-700 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" /> {limitDetect}
+          </p>
+        )}
+
+        <p className="text-xs text-muted-foreground">
+          Tips: paste tokens like <code>{"{!beguiled}"}</code>,{" "}
+          <code>{"{not-listening-3}"}</code>, <code>{"{status-}"}</code> or{" "}
+          <code>{"{sharp tools}"}</code>. Status value can be empty; typical
+          scene entries are 1–4.
+        </p>
+
+        <div>
+          <Button
+            type="button"
+            onClick={handleAdd}
+            className="inline-flex items-center gap-1"
+          >
+            <Plus className="h-4 w-4" /> Add
+          </Button>
+        </div>
+      </div>
+
+      {/* List */}
+      <ul className="space-y-2">
+        {challenge.tags_and_statuses.map((token, idx) => {
+          const parsed = parseToken(token);
+          const kind = parsed?.kind ?? "power";
+
+          return (
             <li
               key={`${token}-${idx}`}
               className="flex items-center justify-between gap-3 rounded-md border px-3 py-2"
             >
-              {/* Pretty token rendering (same as preview) */}
-              <div
-                className="prose-sm max-w-none"
-                // spans with .litm-tag / .litm-status / .litm-limit / .litm-weakness
-                dangerouslySetInnerHTML={{ __html: renderLitmInline(token) }}
-              />
+              <div className="min-w-0">
+                {/* Render with your inline renderer for consistency */}
+                <span
+                  className="prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: renderLitmInline(token) }}
+                />
+              </div>
 
-              {/* Actions */}
               <div className="flex items-center gap-1">
                 <Button
-                  type="button"
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8"
                   onClick={() => moveToken(idx, Math.max(0, idx - 1))}
                   title="Move up"
+                  aria-label="Move up"
                 >
-                  <ArrowUp size={16} />
+                  <ArrowUp className="h-4 w-4" />
                 </Button>
                 <Button
-                  type="button"
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8"
@@ -317,99 +315,89 @@ export default function TagsStatusesForm() {
                     )
                   }
                   title="Move down"
+                  aria-label="Move down"
                 >
-                  <ArrowDown size={16} />
+                  <ArrowDown className="h-4 w-4" />
                 </Button>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreHorizontal size={16} />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => startEdit(idx)}>
-                      <Pencil className="mr-2 h-4 w-4" /> Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="text-destructive"
-                      onClick={() => removeTokenAt(idx)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" /> Remove
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => startEdit(idx)}
+                  title="Edit"
+                  aria-label="Edit"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive"
+                  onClick={() => removeTokenAt(idx)}
+                  title="Remove"
+                  aria-label="Remove"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             </li>
-          ))}
-        </ul>
+          );
+        })}
+      </ul>
 
-        {/* Inline editor */}
-        {editingIndex != null && (
-          <>
-            <Separator />
-            <div className="rounded-md border p-4 bg-muted/30 space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold">
-                  Edit Token #{editingIndex + 1}
-                </h4>
-                <Button variant="link" className="h-8 p-0" onClick={cancelEdit}>
-                  Cancel
+      {/* Inline editor */}
+      {editingIndex != null && (
+        <div className="rounded-md border p-3 space-y-3 bg-muted/30">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h4 className="font-semibold">Edit Token #{editingIndex + 1}</h4>
+            <Button variant="link" className="h-8 p-0" onClick={cancelEdit}>
+              Cancel
+            </Button>
+          </div>
+
+          <div className="grid gap-3">
+            {/* Mode selector */}
+            <div className="inline-flex rounded-md border overflow-hidden w-fit">
+              {(["power", "status", "weakness"] as Mode[]).map((m) => (
+                <Button
+                  key={m}
+                  type="button"
+                  variant={editMode === m ? "default" : "ghost"}
+                  className={`rounded-none ${editMode === m ? "" : "bg-white"}`}
+                  onClick={() => setEditMode(m)}
+                >
+                  {m === "power" ? "Tag" : m[0].toUpperCase() + m.slice(1)}
                 </Button>
-              </div>
-
-              <div className="flex flex-wrap items-end gap-3">
-                {/* Mode selector */}
-                <div className="inline-flex rounded-md border overflow-hidden">
-                  {(["power", "status", "weakness"] as Mode[]).map((m) => (
-                    <Button
-                      key={m}
-                      type="button"
-                      variant={editMode === m ? "default" : "ghost"}
-                      className="capitalize rounded-none"
-                      onClick={() => setEditMode(m)}
-                    >
-                      {m === "power" ? "Tag" : m}
-                    </Button>
-                  ))}
-                </div>
-
-                {/* Name */}
-                <div className="flex-1 min-w-[220px]">
-                  <Label htmlFor="edit-name" className="sr-only">
-                    Name
-                  </Label>
-                  <Input
-                    id="edit-name"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                  />
-                </div>
-
-                {/* Status value */}
-                {editMode === "status" && (
-                  <div className="grid gap-2">
-                    <Label htmlFor="edit-value">Value</Label>
-                    <Input
-                      id="edit-value"
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      className="w-20"
-                      value={editStatusVal}
-                      onChange={(e) =>
-                        setEditStatusVal(normalizeDigitsOnly(e.target.value))
-                      }
-                    />
-                  </div>
-                )}
-
-                <Button onClick={confirmEdit}>Save</Button>
-              </div>
+              ))}
             </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
+
+            {/* Name + optional status value */}
+            <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+              <Input
+                className="min-w-[220px]"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+              />
+              {editMode === "status" && (
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  className="w-[110px]"
+                  value={editStatusVal}
+                  onChange={(e) =>
+                    setEditStatusVal(normalizeDigitsOnly(e.target.value))
+                  }
+                />
+              )}
+            </div>
+
+            <div>
+              <Button onClick={confirmEdit}>Save</Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
