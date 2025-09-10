@@ -17,7 +17,7 @@ export default function LivePreview() {
           {/* MAIN GRID */}
           <div className="sheet-grid mt-2">
             {/* LEFT COLUMN */}
-            <div className="space-y-4">
+            <div className="space-y-4 pr-4">
               <LimitsBlock />
               <SpecialFeaturesBlock />
               <TagsMightBlock />

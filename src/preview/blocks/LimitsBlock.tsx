@@ -9,12 +9,12 @@ export default function LimitsBlock() {
   const { openSheet } = useSheetStore();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <SectionHeader
         title="Limits"
         onClick={() => openSheet({ kind: "limits", mode: "create" })}
       />
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center gap-0.5">
         {challenge.limits.length ? (
           challenge.limits.map((l, i) => (
             <ClickableSection
@@ -28,7 +28,7 @@ export default function LimitsBlock() {
                 <div className="limit-name">{(l.name || "").toUpperCase()}</div>
                 <div className="limit-shield">
                   {!l.is_immune && (
-                    <div className="limit-shield__num">
+                    <div className="limit-shield__num" data-value={l.level}>
                       {Math.max(1, Math.min(6, Math.floor(l.level || 1)))}
                     </div>
                   )}

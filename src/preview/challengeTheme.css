@@ -3,7 +3,7 @@
   --litm-black: #000000;
   --litm-dark-brown: #302522;
   --litm-soft-brown: #4f311d;
-  --litm-light-brown: #724a32;
+  --litm-light-brown: #724b32;
   --litm-clear-brown: #856b5b;
   --litm-gray-brown: #cfbfb4;
   --litm-brick-red: #752b2b;
@@ -17,22 +17,27 @@
 /* ---------- Font “slots” matching your Typst spec ---------- */
 :root {
   --font-ch-name:
-    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+    "Texturina", "IM Fell Great Primer", ui-serif, Georgia, "Times New Roman",
+    serif;
   --font-ch-roles:
-    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+    "Texturina", "IM Fell Great Primer", ui-serif, Georgia, "Times New Roman",
+    serif;
   --font-ch-desc:
-    "ManuskriptAntDReg", ui-serif, Georgia, "Times New Roman", serif;
+    "Texturina", "Labrada", ui-serif, Georgia, "Times New Roman", serif;
   --font-ch-sections:
-    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+    "IM Fell Great Primer", ui-serif, Georgia, "Times New Roman", serif;
   --font-ch-limits:
-    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+    "CCTreasureTrove", "IM Fell Great Primer", ui-serif, Georgia,
+    "Times New Roman", serif;
   --font-ch-threat-name:
-    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+    "CCTreasureTrove", "IM Fell Great Primer", ui-serif, Georgia,
+    "Times New Roman", serif;
   --font-ch-threat-desc:
     "CCDreamland Lower", ui-serif, Georgia, "Times New Roman", serif;
   --font-ch-threat-body: "Labrada", ui-serif, Georgia, "Times New Roman", serif;
   --font-small-heading:
-    "CCTreasureTrove", ui-serif, Georgia, "Times New Roman", serif;
+    "CCTreasureTrove", "IM Fell Great Primer", ui-serif, Georgia,
+    "Times New Roman", serif;
 }
 
 /* Inline “image as element” helpers */
@@ -93,35 +98,40 @@
 .challenge-name {
   font-family: var(--font-ch-name);
   color: var(--litm-soft-brown);
-  font-size: 1.25rem; /* 17pt-ish */
+  font-weight: bold;
+  font-size: 1.25rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .challenge-rating {
   display: inline-flex;
-  gap: 6px;
+  gap: 1px;
 }
 
 /* ---------- Roles ---------- */
 .challenge-roles {
   font-family: var(--font-ch-roles);
   color: var(--litm-light-brown);
-  font-size: 0.66rem; /* ~10pt */
+  font-size: 0.85rem;
   font-style: italic;
+  font-weight: 700;
 }
 
 /* ---------- Description ---------- */
 .challenge-desc {
   font-family: var(--font-ch-desc);
-  font-size: 0.66rem; /* ~10pt */
+  font-size: 0.8rem;
+  line-height: 1.4;
+  font-weight: 500;
   color: var(--litm-dark-brown);
 }
 
 /* ---------- Section header (center + left variants) ---------- */
 .section-title {
   font-family: var(--font-ch-sections);
-  font-size: 0.44rem; /* ~6pt */
+  font-size: 0.5rem;
+  font-weight: 700;
   color: var(--litm-clear-brown);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -153,36 +163,37 @@
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: end;
-  gap: 12px;
+  gap: 0.1rem;
 }
 .limit-name {
   position: relative;
   display: inline-block;
   font-family: var(--font-ch-limits);
-  font-size: 0.58rem; /* ~8pt */
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  padding-right: 18px; /* space before shield */
 }
 /* “highlight” behind the text baseline */
 .limit-name::before {
   content: "";
   position: absolute;
+  width: 100%;
   left: 0;
   right: 0;
-  bottom: 0.08em; /* slightly below baseline */
-  height: 0.55em;
+  bottom: 0.3em; /* slightly below baseline */
+  top: 0.2em;
   background: var(--litm-grayish-red);
   z-index: -1;
-  border-right: 10px solid var(--litm-grayish-red);
+  box-sizing: content-box;
+  border-right: 1rem solid var(--litm-grayish-red);
   border-radius: 2px;
 }
 
 /* Shield badge with number overlay */
 .limit-shield {
   position: relative;
-  width: 22px;
-  height: 22px;
+  width: 1.3rem;
+  height: 1.3rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -191,11 +202,20 @@
 .limit-shield__num {
   position: absolute;
   top: 50%;
-  transform: translateY(-46%);
-  font-family: var(--font-small-heading);
-  font-size: 0.72rem;
+  transform: translateY(-55%);
+  font-family: var(--font-ch-limits);
+  font-size: 0.9rem;
+  font-weight: 700;
   color: var(--litm-parchment-yellow);
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.limit-shield__num[data-value="4"] {
+  transform: translateY(-60%);
+}
+
+.limit-shield__num[data-value="6"] {
+  transform: translateY(-40%);
 }
 
 /* ---------- Special features ---------- */

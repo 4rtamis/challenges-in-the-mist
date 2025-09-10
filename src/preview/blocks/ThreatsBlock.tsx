@@ -13,7 +13,7 @@ export default function ThreatsBlock() {
     <div>
       <SectionHeader
         align="left"
-        title="Threats and Consequences"
+        title="Threats & Consequences"
         onClick={() => openSheet({ kind: "threats", mode: "create" })}
       />
       <div className="mt-[-5pt]" />

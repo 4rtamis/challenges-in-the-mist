@@ -5,7 +5,7 @@ export function ClickableSection({
   onClick,
   ariaLabel,
   children,
-  hint = "Edit",
+  //hint = "Edit",
   overlayClassName = "",
 }: {
   onClick: () => void;
@@ -21,7 +21,7 @@ export function ClickableSection({
         type="button"
         onClick={onClick}
         aria-label={ariaLabel}
-        className="absolute inset-0 z-10 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+        className="absolute cursor-pointer inset-0 z-10 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
       />
 
       {/* content */}
@@ -34,9 +34,9 @@ export function ClickableSection({
       />
 
       {/* hint pill */}
-      <div className="pointer-events-none absolute right-2 top-2 z-20 text-[11px] rounded border bg-white/90 px-2 py-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
+      {/*<div className="pointer-events-none absolute right-2 top-2 z-20 text-[11px] rounded border bg-white/90 px-2 py-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
         {hint}
-      </div>
+      </div>*/}
     </div>
   );
 }

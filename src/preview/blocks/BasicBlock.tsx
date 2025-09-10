@@ -18,10 +18,10 @@ export default function BasicBlock() {
         onClick={() => openSheet({ kind: "basic", mode: "edit" })}
         ariaLabel="Edit basic info"
       >
-        <div className="grid grid-cols-2 gap-[7pt] items-center justify-items-center">
+        <div className="flex flex-row gap-[7pt] items-center justify-center">
           <div className="min-w-0">
-            <h2 className="challenge-name truncate">
-              {(challenge.name || "Untitled Challenge").toUpperCase()}
+            <h2 className="challenge-name truncate uppercase">
+              {challenge.name || "Untitled Challenge"}
             </h2>
           </div>
           <div className="challenge-rating">
@@ -31,8 +31,6 @@ export default function BasicBlock() {
           </div>
         </div>
       </ClickableSection>
-
-      <div style={{ marginTop: "-10pt" }} />
 
       {/* Roles + Description */}
       <ClickableSection
