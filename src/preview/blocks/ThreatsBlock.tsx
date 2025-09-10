@@ -16,7 +16,7 @@ export default function ThreatsBlock() {
         title="Threats & Consequences"
         onClick={() => openSheet({ kind: "threats", mode: "create" })}
       />
-      <div className="mt-[-5pt]" />
+      <div className="" />
       <div className="space-y-3">
         {challenge.threats.length ? (
           challenge.threats.map((t, ti) => (

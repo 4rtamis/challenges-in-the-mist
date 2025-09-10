@@ -19,8 +19,8 @@ export default function LivePreview() {
             {/* LEFT COLUMN */}
             <div className="space-y-4 pr-4">
               <LimitsBlock />
-              <SpecialFeaturesBlock />
               <TagsMightBlock />
+              <SpecialFeaturesBlock />
             </div>
 
             {/* VERTICAL DIVIDER */}

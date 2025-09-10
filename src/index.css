@@ -11,24 +11,19 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.1rem 0.4rem;
-  border-radius: 0.25rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  font-size: 0.85em;
-  line-height: 1.2;
   white-space: nowrap;
+  font-style: italic;
+  color: black;
 }
 
 /* Tag */
 .litm-tag {
-  background: #f1f5f9; /* slate-100 */
-  color: #0f172a; /* slate-900 */
+  background: var(--litm-pastel-yellow);
 }
 
 /* Status */
 .litm-status {
-  background: #fef3c7; /* amber-100 */
-  color: #7c2d12; /* amber-900 */
+  background: var(--litm-pastel-green);
 }
 
 /* Weakness tag */

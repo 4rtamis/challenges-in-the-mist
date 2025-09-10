@@ -10,7 +10,7 @@ export default function TagsMightBlock() {
   const { openSheet } = useSheetStore();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <SectionHeader
         title="Tags & Statuses"
         onClick={() => openSheet({ kind: "tags", mode: "create" })}

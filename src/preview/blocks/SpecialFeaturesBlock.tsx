@@ -10,7 +10,7 @@ export default function SpecialFeaturesBlock() {
   const { openSheet } = useSheetStore();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <SectionHeader
         title="Special Features"
         onClick={() => openSheet({ kind: "special", mode: "create" })}
