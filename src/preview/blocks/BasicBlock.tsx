@@ -45,7 +45,7 @@ export default function BasicBlock() {
           )}
         </div>
 
-        <div className="flex justify-center mt-2">
+        <div className="flex justify-center my-2">
           <div className="challenge-desc text-center" style={{ width: "77%" }}>
             {challenge.description ? (
               <div

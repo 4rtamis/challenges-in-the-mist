@@ -15,7 +15,7 @@ export default function LivePreview() {
           <BasicBlock />
 
           {/* MAIN GRID */}
-          <div className="sheet-grid mt-2">
+          <div className="sheet-grid mt-4">
             {/* LEFT COLUMN */}
             <div className="space-y-4 pr-4">
               <LimitsBlock />

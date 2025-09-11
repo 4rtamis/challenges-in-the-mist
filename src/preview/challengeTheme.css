@@ -414,7 +414,7 @@
   position: absolute;
   inset: 0;
   background: top center / 8px 400px repeat-y
-    url("/assets/images/white-line.svg") /*var(--litm-gray-brown)*/;
+    url("/assets/images/white-line.svg");
   width: 8px;
   opacity: 0.5;
   transform: translateX(-0.5px);
