@@ -16,8 +16,7 @@ export default function ThreatsBlock() {
         title="Threats & Consequences"
         onClick={() => openSheet({ kind: "threats", mode: "create" })}
       />
-      <div className="" />
-      <div className="space-y-3">
+      <div className="threat-section space-y-2 mt-2">
         {challenge.threats.length ? (
           challenge.threats.map((t, ti) => (
             <ClickableSection
@@ -28,12 +27,10 @@ export default function ThreatsBlock() {
               ariaLabel={`Edit threat ${t.name}`}
             >
               <div className="threat-card">
-                <div className="flex items-center gap-3">
-                  <div className="threat-pill">
-                    {(t.name || "").toUpperCase()}
-                  </div>
+                <div className="threat-header">
+                  <span className="threat-pill">{t.name || ""}</span>
                   {t.description && (
-                    <div
+                    <span
                       className="threat-desc"
                       dangerouslySetInnerHTML={{
                         __html: renderLitmMarkdown(t.description),
@@ -42,10 +39,10 @@ export default function ThreatsBlock() {
                   )}
                 </div>
 
-                <div className="mt-1 space-y-1">
+                <div className="mt-1">
                   {t.consequences.map((c, ci) => (
                     <div key={ci} className="conseq-row">
-                      <div className="pt-[2px]">
+                      <div className="">
                         <span className="ico ico-conseq" aria-hidden />
                       </div>
                       <div

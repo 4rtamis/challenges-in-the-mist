@@ -32,8 +32,7 @@
   --font-ch-threat-name:
     "CCTreasureTrove", "IM Fell Great Primer", ui-serif, Georgia,
     "Times New Roman", serif;
-  --font-ch-threat-desc:
-    "CCDreamland Lower", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-threat-desc: "Kalam", ui-serif, Georgia, "Times New Roman", serif;
   --font-ch-threat-body: "Labrada", ui-serif, Georgia, "Times New Roman", serif;
   --font-ch-special-feature:
     "Labrada", ui-serif, Georgia, "Times New Roman", serif;
@@ -307,46 +306,97 @@
 .threat-card {
   position: relative;
 }
+
+.threat-header {
+  line-height: 1;
+}
+
 .threat-pill {
   display: inline-flex;
+  position: relative;
   align-items: center;
   justify-content: center;
-  height: 14px; /* ~11pt in Typst; adjusted for CSS */
-  padding: 0 10px;
-  border-radius: 6px;
+  text-align: center;
+  padding: 0.5rem 0.1rem;
+  height: 1.6em;
   background: var(--litm-gray-brown);
-  color: var(--litm-dark-brown);
+  color: #000;
   font-family: var(--font-ch-threat-name);
-  font-size: 0.5rem; /* ~7pt */
+  font-size: 0.5rem;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  margin-right: 0.8rem;
+  transform: translateY(-10%);
 }
+
+/* Decorative end-caps */
+.threat-pill::before,
+.threat-pill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  aspect-ratio: 100 / 250;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+.threat-pill::before {
+  left: 0em; /* lets it stick out */
+  transform: translateX(-90%);
+  background-image: url("/assets/images/threat-name-edge-left.svg");
+}
+
+.threat-pill::after {
+  right: 0em;
+  transform: translateX(90%);
+  background-image: url("/assets/images/threat-name-edge-right.svg");
+}
+
 .threat-desc {
   font-family: var(--font-ch-threat-desc);
-  font-size: 0.62rem; /* ~9pt */
-  color: var(--litm-dark-brown);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: black;
+  line-height: 1;
 }
+
+.threat-desc p {
+  display: inline;
+  line-height: 0;
+}
+
+.ico-conseq {
+  width: 1rem;
+  height: 1rem;
+}
+
 .conseq-row {
   display: grid;
-  grid-template-columns: 16px 1fr;
-  gap: 8px;
+  grid-template-columns: auto 1fr;
   align-items: start;
+  gap: 0.2rem;
+  line-height: 1.3;
 }
 .conseq-text {
   font-family: var(--font-ch-threat-body);
-  font-size: 0.75rem; /* ~11pt */
-  color: var(--litm-dark-brown);
+  font-size: 0.8rem;
+  color: black;
 }
 
 /* subtle divider between threats */
-.threat-card:not(:last-child)::after {
+.threat-section > *:not(:last-child) .threat-card::after {
   content: "";
   display: block;
-  width: 40%;
+  width: 50%;
   height: 1px;
   background: var(--litm-gray-brown);
   opacity: 0.8;
-  margin-top: 6px;
+  margin-top: 0.3rem;
+  margin-left: 1.5rem;
 }
 
 /* ---------- Vertical divider art ---------- */
