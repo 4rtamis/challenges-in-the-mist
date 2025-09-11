@@ -37,6 +37,9 @@
   --font-ch-threat-body: "Labrada", ui-serif, Georgia, "Times New Roman", serif;
   --font-ch-special-feature:
     "Labrada", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-tags-statuses:
+    "Labrada", ui-serif, Georgia, "Times New Roman", serif;
+  --font-ch-might: "Labrada", ui-serif, Georgia, "Times New Roman", serif;
   --font-ch-progress-limit:
     "Labrada", ui-serif, Georgia, "Times New Roman", serif;
   --font-small-heading:
@@ -254,7 +257,7 @@
 /* ---------- Special features ---------- */
 .feature-name {
   font-weight: 700;
-  font-size: 0.72rem; /* ~10pt */
+  font-size: 0.76rem;
   font-family: var(--font-ch-special-feature);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -262,7 +265,7 @@
   text-align: center;
 }
 .feature-body {
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-family: var(--font-ch-special-feature);
   color: black;
   text-align: center;
@@ -271,15 +274,33 @@
 
 /* ---------- Tags/Statuses + Might ---------- */
 .tags-line {
-  font-size: 0.73rem; /* 11.5pt-ish */
+  font-family: var(--font-ch-tags-statuses);
+  font-weight: normal;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: black;
 }
 .might-row {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.73rem;
-  color: var(--litm-dark-brown);
-  font-family: var(--font-ch-threat-body);
+  font-size: 0.85rem;
+  color: black;
+  line-height: 1.3;
+  font-family: var(--font-ch-might);
+}
+
+.might-row .ico {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.might-row .ico-might-adventure {
+  vertical-align: middle;
+}
+
+.might-row .ico-might-greatness {
+  vertical-align: -8%;
 }
 
 /* ---------- Threats ---------- */

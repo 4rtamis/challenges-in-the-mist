@@ -14,16 +14,24 @@
   white-space: nowrap;
   font-style: italic;
   color: black;
+  background: linear-gradient(
+    120deg,
+    var(--litm-token-background-color) 0%,
+    var(--litm-token-background-color) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 50%;
+  background-position: 0 60%;
 }
 
 /* Tag */
 .litm-tag {
-  background: var(--litm-pastel-yellow);
+  --litm-token-background-color: var(--litm-pastel-yellow);
 }
 
 /* Status */
 .litm-status {
-  background: var(--litm-pastel-green);
+  --litm-token-background-color: var(--litm-pastel-green);
 }
 
 /* Weakness tag */

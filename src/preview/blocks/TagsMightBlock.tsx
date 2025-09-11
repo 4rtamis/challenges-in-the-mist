@@ -10,7 +10,7 @@ export default function TagsMightBlock() {
   const { openSheet } = useSheetStore();
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-0.5">
       <SectionHeader
         title="Tags & Statuses"
         onClick={() => openSheet({ kind: "tags", mode: "create" })}
@@ -18,9 +18,9 @@ export default function TagsMightBlock() {
 
       <div className="flex flex-col items-center gap-2">
         {/* Tags / Statuses */}
-        <div className="tags-line w-[80%] text-center">
+        <div className="tags-line text-center">
           {challenge.tags_and_statuses.length ? (
-            <div className="flex flex-wrap gap-2 justify-center">
+            <div className="flex flex-col flex-wrap justify-center">
               {challenge.tags_and_statuses.map((t, i) => (
                 <ClickableSection
                   key={`${t}-${i}`}
@@ -28,7 +28,7 @@ export default function TagsMightBlock() {
                     openSheet({ kind: "tags", index: i, mode: "edit" })
                   }
                   ariaLabel="Edit tag/status"
-                  overlayClassName="rounded-sm"
+                  overlayClassName=""
                 >
                   <span
                     dangerouslySetInnerHTML={{
@@ -50,7 +50,7 @@ export default function TagsMightBlock() {
         </div>
 
         {/* Might */}
-        <div className="w-[80%] space-y-1 text-center">
+        <div className="space-y-0.5 text-center">
           {challenge.mights.length ? (
             challenge.mights.map((m, idx) => (
               <ClickableSection
@@ -61,15 +61,21 @@ export default function TagsMightBlock() {
                 ariaLabel={`Edit might ${m.name}`}
               >
                 <div className="might-row justify-center">
-                  <span className="inline-flex items-center">
+                  <span>
                     {m.level === "adventure" ? (
-                      <span className="ico ico-might-adventure" aria-hidden />
+                      <span
+                        className="ico ico-might-adventure mr-1"
+                        aria-hidden
+                      />
                     ) : (
-                      <span className="ico ico-might-greatness" aria-hidden />
+                      <span
+                        className="ico ico-might-greatness mr-1"
+                        aria-hidden
+                      />
                     )}
+                    {m.name}{" "}
+                    {m.vulnerability && <span>({m.vulnerability})</span>}
                   </span>
-                  <span>{m.name}</span>
-                  {m.vulnerability && <span>&nbsp;({m.vulnerability})</span>}
                 </div>
               </ClickableSection>
             ))

@@ -10,12 +10,12 @@ export default function SpecialFeaturesBlock() {
   const { openSheet } = useSheetStore();
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-0.5">
       <SectionHeader
         title="Special Features"
         onClick={() => openSheet({ kind: "special", mode: "create" })}
       />
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center gap-1">
         {challenge.special_features.length ? (
           challenge.special_features.map((sf, i) => (
             <ClickableSection
@@ -25,7 +25,7 @@ export default function SpecialFeaturesBlock() {
               }
               ariaLabel={`Edit feature ${sf.name}`}
             >
-              <div className="w-[80%] mx-auto">
+              <div className="mx-auto">
                 <div className="feature-name">{sf.name}</div>
                 {sf.description && (
                   <div

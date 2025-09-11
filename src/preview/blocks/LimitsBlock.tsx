@@ -10,7 +10,7 @@ export default function LimitsBlock() {
   const { openSheet } = useSheetStore();
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-0.5">
       <SectionHeader
         title="Limits"
         onClick={() => openSheet({ kind: "limits", mode: "create" })}
