@@ -36,7 +36,7 @@ export default function BasicForm() {
         </div>
 
         <div className="grid gap-1 w-[120px]">
-          <Label htmlFor="challenge-rating">Rating (1–5)</Label>
+          <Label htmlFor="challenge-rating">Rating (1-5)</Label>
           <Input
             id="challenge-rating"
             type="number"

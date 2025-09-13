@@ -80,8 +80,11 @@
 }
 
 /* ---------- Page/card container ---------- */
+
 .challenge-sheet {
-  background: var(--litm-parchment-yellow);
+  background-image: url(http://cdn.backgroundhost.com/backgrounds/subtlepatterns/white_plaster.png);
+  background-color: #eae2da;
+  background-blend-mode: luminosity;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 20px;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
@@ -91,13 +94,6 @@
 /* Space wrapper (inner parchment) */
 .challenge-sheet__inner {
   padding: 28px 28px 16px 28px;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.45),
-      rgba(255, 255, 255, 0.25)
-    ),
-    var(--litm-parchment-yellow);
 }
 
 /* ---------- Header (name + rating) ---------- */
