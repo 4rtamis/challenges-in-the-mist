@@ -70,7 +70,8 @@ export default function BasicForm() {
           })}
         </div>
         <p className="text-xs text-muted-foreground">
-          Pick one or more roles that best describe this challenge.
+          Pick one or more roles that best describe this challenge (see{" "}
+          <i>Legend in the Mist - Vol. II - The Narrator</i>, p. 110)
         </p>
       </div>
 
@@ -80,7 +81,7 @@ export default function BasicForm() {
         <Textarea
           id="challenge-desc"
           rows={4}
-          placeholder="Short summary (Markdown + curly tokens supported in other sections)."
+          placeholder="Write a short summary of the challenge here..."
           value={challenge.description}
           onChange={(e) => setChallenge({ description: e.target.value })}
         />

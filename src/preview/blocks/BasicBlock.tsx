@@ -35,7 +35,7 @@ export default function BasicBlock() {
       {/* Roles + Description */}
       <ClickableSection
         onClick={() => openSheet({ kind: "basic", mode: "edit" })}
-        ariaLabel="Edit roles and description"
+        ariaLabel="Edit roles"
       >
         <div className="text-center challenge-roles">
           {challenge.roles.length ? (
@@ -44,7 +44,11 @@ export default function BasicBlock() {
             <span className="underline decoration-dotted">add roles</span>
           )}
         </div>
-
+      </ClickableSection>
+      <ClickableSection
+        onClick={() => openSheet({ kind: "basic", mode: "edit" })}
+        ariaLabel="Edit description"
+      >
         <div className="flex justify-center my-2">
           <div className="challenge-desc text-center" style={{ width: "77%" }}>
             {challenge.description ? (

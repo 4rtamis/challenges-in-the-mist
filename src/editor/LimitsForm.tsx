@@ -6,9 +6,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ArrowUp, ArrowDown, Pencil, Trash2, Plus, Info } from "lucide-react";
+import { GripVertical, Pencil, Trash2, Plus, Info } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  type DragEndEvent,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-const PRESET_LIMITS = ["Destroy", "Banish", "Overwhelm", "Convince", "Free"];
+const PRESET_LIMITS = ["Harm", "Scare", "Convince", "Subdue", "Banish"];
 
 export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
   const { challenge, addLimit, updateLimitAt, removeLimitAt, moveLimit } =
@@ -110,6 +126,21 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
     cancelEdit();
   }
 
+  const itemIds = challenge.limits.map((l) => l.name); // names are unique in your form
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  function handleDragEnd(e: DragEndEvent) {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const from = itemIds.indexOf(String(active.id));
+    const to = itemIds.indexOf(String(over.id));
+    if (from !== -1 && to !== -1 && from !== to) moveLimit(from, to);
+  }
+
   return (
     <div className="space-y-6">
       {/* Create */}
@@ -120,7 +151,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
             <Label htmlFor="limit-name">Name</Label>
             <Input
               id="limit-name"
-              placeholder="e.g., Destroy"
+              placeholder="e.g., Harm"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -134,13 +165,13 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
               type="number"
               min={1}
               max={6}
-              className="w-[92px]"
+              className=""
               value={level}
               onChange={(e) =>
                 setLevel(Math.max(1, Math.min(6, Number(e.target.value) || 1)))
               }
               disabled={isImmune}
-              title={isImmune ? "Ignored when immune" : "1–6"}
+              title={isImmune ? "Ignored when immune" : "1-6"}
             />
           </div>
 
@@ -196,7 +227,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
               onClick={() => addPreset(p)}
               title="Quick fill name"
             >
-              {p}
+              <span className="litm-limit lowercase">{p}</span>
             </Button>
           ))}
         </div>
@@ -204,8 +235,8 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
         {error && <p className="text-sm text-destructive">{error}</p>}
 
         <p className="text-xs text-muted-foreground">
-          Immunities are limits with no maximum (displayed as “—”). Progress
-          limits build toward an outcome—describe that outcome in “On max”.
+          Immunities are limits with no maximum (displayed as “~”). <br />
+          Progress limits build toward an outcome that happens when maxed.
         </p>
 
         <div>
@@ -220,81 +251,25 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
       </div>
 
       {/* List */}
-      <ul className="space-y-2">
-        {challenge.limits.map((l, idx) => (
-          <li
-            key={`${l.name}-${idx}`}
-            className="flex items-center justify-between gap-3 rounded-md border px-3 py-2"
-          >
-            <div className="flex items-center gap-3 flex-wrap min-w-0">
-              <span className="text-sm font-medium truncate">{l.name}</span>
-
-              {l.is_immune ? (
-                <span className="text-xs px-2 py-0.5 rounded bg-rose-100 text-rose-800">
-                  Immune
-                </span>
-              ) : (
-                <span className="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-800">
-                  Level {l.level}
-                </span>
-              )}
-
-              {l.is_progress && (
-                <span className="text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-800">
-                  Progress
-                </span>
-              )}
-
-              {l.is_progress && l.on_max && (
-                <span className="text-xs text-muted-foreground truncate">
-                  On max: <em>{l.on_max}</em>
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => moveLimit(idx, Math.max(0, idx - 1))}
-                title="Move up"
-              >
-                <ArrowUp size={16} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() =>
-                  moveLimit(idx, Math.min(challenge.limits.length - 1, idx + 1))
-                }
-                title="Move down"
-              >
-                <ArrowDown size={16} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => startEdit(idx)}
-                title="Edit"
-              >
-                <Pencil size={16} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-destructive"
-                onClick={() => removeLimitAt(idx)}
-                title="Remove"
-              >
-                <Trash2 size={16} />
-              </Button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+          <ul className="space-y-2">
+            {challenge.limits.map((l, idx) => (
+              <SortableLimitItem
+                key={itemIds[idx]}
+                id={itemIds[idx]}
+                limit={l}
+                onEdit={() => startEdit(idx)}
+                onRemove={() => removeLimitAt(idx)}
+              />
+            ))}
+          </ul>
+        </SortableContext>
+      </DndContext>
 
       {/* Inline editor */}
       {editingIndex != null && (
@@ -307,11 +282,10 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
           </div>
 
           <div className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto] md:items-center">
-            <Input
-              className="min-w-[220px]"
-              value={eName}
-              onChange={(e) => setEName(e.target.value)}
-            />
+            <div className="grid gap-1">
+              <Label htmlFor="limit-name-edit">Name</Label>
+              <Input value={eName} onChange={(e) => setEName(e.target.value)} />
+            </div>
 
             <div className="grid gap-1">
               <Label htmlFor="limit-level-edit">Level</Label>
@@ -320,7 +294,6 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                 type="number"
                 min={1}
                 max={6}
-                className="w-[92px]"
                 value={eLevel}
                 onChange={(e) =>
                   setELevel(
@@ -328,7 +301,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                   )
                 }
                 disabled={eImmune}
-                title={eImmune ? "Ignored when immune" : "1–6"}
+                title={eImmune ? "Ignored when immune" : "1-6"}
               />
             </div>
 
@@ -368,5 +341,104 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
         </div>
       )}
     </div>
+  );
+}
+
+function SortableLimitItem({
+  id,
+  limit: l,
+  onEdit,
+  onRemove,
+}: {
+  id: string;
+  limit: Limit;
+  onEdit: () => void;
+  onRemove: () => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center justify-between gap-3 rounded-md border px-3 py-2 bg-white ${
+        isDragging ? "shadow-lg ring-1 ring-slate-200" : ""
+      }`}
+    >
+      {/* Left: drag handle + content */}
+      <div className="flex items-start gap-2 min-w-0">
+        <button
+          className="h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50 cursor-grab active:cursor-grabbing"
+          aria-label="Drag to reorder"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical className="h-4 w-4 text-slate-500" />
+        </button>
+
+        <div className="flex flex-col gap-1 min-w-0">
+          <div className="flex items-end gap-1 flex-wrap">
+            <span
+              className="text-md litm-limit lowercase truncate"
+              title={l.name}
+              data-limit-value={
+                l.is_immune
+                  ? "~"
+                  : Math.max(1, Math.min(6, Math.floor(l.level || 1)))
+              }
+            >
+              {l.name}
+            </span>
+
+            {l.is_progress && (
+              <img
+                src="/assets/images/progress-limit-arrow.svg"
+                alt=""
+                aria-hidden="true"
+                className="limit-progress__arrow"
+              />
+            )}
+          </div>
+
+          {l.is_progress && l.on_max && (
+            <p className="text-xs text-slate-700">{l.on_max}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Right: edit/delete */}
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={onEdit}
+          title="Edit"
+        >
+          <Pencil size={16} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-destructive"
+          onClick={onRemove}
+          title="Remove"
+        >
+          <Trash2 size={16} />
+        </Button>
+      </div>
+    </li>
   );
 }
