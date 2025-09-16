@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type MightLevel = "adventure" | "greatness";
+export type MightLevel = "origin" | "adventure" | "greatness";
 
 export type Might = {
   name: string;

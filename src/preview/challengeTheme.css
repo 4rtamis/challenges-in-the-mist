@@ -69,6 +69,9 @@
   height: 13px;
   background-image: url("/assets/images/consequence.svg");
 }
+.ico-might-origin {
+  background-image: url("/assets/images/might-origin.svg");
+}
 .ico-might-adventure {
   width: 13px;
   height: 13px;

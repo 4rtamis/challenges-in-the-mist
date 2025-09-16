@@ -62,7 +62,9 @@ export default function TagsMightBlock() {
               >
                 <div className="might-row justify-center">
                   <span>
-                    {m.level === "adventure" ? (
+                    {m.level === "origin" ? (
+                      <span className="ico ico-might-origin mr-1" aria-hidden />
+                    ) : m.level === "adventure" ? (
                       <span
                         className="ico ico-might-adventure mr-1"
                         aria-hidden
