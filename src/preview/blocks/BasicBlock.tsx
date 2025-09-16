@@ -41,7 +41,9 @@ export default function BasicBlock() {
           {challenge.roles.length ? (
             challenge.roles.join(", ")
           ) : (
-            <span className="underline decoration-dotted">add roles</span>
+            <span className="underline decoration-dotted cursor-pointer">
+              add roles
+            </span>
           )}
         </div>
       </ClickableSection>
@@ -58,7 +60,7 @@ export default function BasicBlock() {
                 }}
               />
             ) : (
-              <span className="underline decoration-dotted">
+              <span className="underline decoration-dotted cursor-pointer">
                 add a short description
               </span>
             )}

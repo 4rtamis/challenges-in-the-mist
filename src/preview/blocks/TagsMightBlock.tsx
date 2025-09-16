@@ -41,7 +41,7 @@ export default function TagsMightBlock() {
           ) : (
             <button
               type="button"
-              className="text-xs underline decoration-dotted opacity-80 hover:opacity-100"
+              className="text-xs underline decoration-dotted opacity-80 hover:opacity-100 cursor-pointer"
               onClick={() => openSheet({ kind: "tags", mode: "create" })}
             >
               add tags or statuses
@@ -82,7 +82,7 @@ export default function TagsMightBlock() {
           ) : (
             <button
               type="button"
-              className="text-xs underline decoration-dotted opacity-80 hover:opacity-100"
+              className="text-xs underline decoration-dotted opacity-80 hover:opacity-100 cursor-pointer"
               onClick={() => openSheet({ kind: "mights", mode: "create" })}
             >
               add might

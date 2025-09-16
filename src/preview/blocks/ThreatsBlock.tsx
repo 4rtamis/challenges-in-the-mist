@@ -60,7 +60,7 @@ export default function ThreatsBlock() {
         ) : (
           <button
             type="button"
-            className="text-xs underline decoration-dotted opacity-80 hover:opacity-100"
+            className="text-xs underline decoration-dotted opacity-80 hover:opacity-100 cursor-pointer"
             onClick={() => openSheet({ kind: "threats", mode: "create" })}
           >
             add threats & consequences
