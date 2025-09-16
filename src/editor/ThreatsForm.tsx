@@ -1,23 +1,59 @@
 // src/editor/ThreatsForm.tsx
-import { useEffect, useState } from "react";
-import { useChallengeStore, type Threat } from "../store/challengeStore";
-import { Pencil, Trash2, ArrowUp, ArrowDown, Plus } from "lucide-react";
-import { renderLitmMarkdown } from "../utils/markdown";
+import { useEffect, useMemo, useState } from "react";
+import { useChallengeStore } from "@/store/challengeStore";
+import { renderLitmMarkdown } from "@/utils/markdown";
 
-// shadcn/ui
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-type Props = {
-  variant?: "card" | "bare";
-  focusIndex?: number;
-};
+import {
+  GripVertical,
+  Pencil,
+  Trash2,
+  Plus,
+  Check,
+  X,
+  ArrowLeft,
+} from "lucide-react";
 
-export default function ThreatsForm({ variant = "card", focusIndex }: Props) {
+import {
+  DndContext,
+  closestCenter,
+  type DragEndEvent,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+/* ----------------------------------------------------------------------------
+   Two-panel Threats Editor
+   - Panel A: Threats list (reorder + inline edit, NO consequences)
+   - Panel B: Consequences for a selected threat OR General Consequences
+   Slide transition between panels (only one visible at a time).
+---------------------------------------------------------------------------- */
+
+type Panel =
+  | { kind: "threats" }
+  | { kind: "cons"; tIdx: number }
+  | { kind: "general" };
+
+export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
   const {
     challenge,
     addThreat,
@@ -34,415 +70,714 @@ export default function ThreatsForm({ variant = "card", focusIndex }: Props) {
     moveGeneralConsequence,
   } = useChallengeStore();
 
-  // --- Create Threat state ---
+  // Which view is shown
+  const [panel, setPanel] = useState<Panel>({ kind: "threats" });
+
+  // Inline threat editor
+  const [editingThreat, setEditingThreat] = useState<number | null>(null);
   const [tName, setTName] = useState("");
   const [tDesc, setTDesc] = useState("");
   const [tErr, setTErr] = useState<string | null>(null);
 
-  // --- Edit Threat state ---
-  const [editingTIndex, setEditingTIndex] = useState<number | null>(null);
-  const [eName, setEName] = useState("");
-  const [eDesc, setEDesc] = useState("");
+  // Inline consequence editors (panel B)
+  const [editingCons, setEditingCons] = useState<number | null>(null);
+  const [consDraft, setConsDraft] = useState("");
 
-  // --- Create Consequence under a Threat ---
-  const [cNew, setCNew] = useState<Record<number, string>>({}); // keyed by threat index
+  const [editingGeneralCons, setEditingGeneralCons] = useState<number | null>(
+    null
+  );
+  const [generalDraft, setGeneralDraft] = useState("");
 
-  // --- General consequences create ---
-  const [gcNew, setGcNew] = useState("");
-  const [gcErr, setGcErr] = useState<string | null>(null);
-
-  // Auto-open editing row when Sheet opens with focusIndex
+  // Deep-link from preview to a given threat
   useEffect(() => {
     if (typeof focusIndex === "number" && challenge.threats[focusIndex]) {
       startEditThreat(focusIndex);
+      setPanel({ kind: "threats" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusIndex]);
 
-  function resetCreateThreat() {
-    setTName("");
-    setTDesc("");
-    setTErr(null);
+  /* ----------------------------- Drag & Drop ----------------------------- */
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const dragDisabled =
+    editingThreat !== null ||
+    editingCons !== null ||
+    editingGeneralCons !== null;
+
+  const threatIds = useMemo(
+    () => challenge.threats.map((t, i) => `t:${i}:${t.name || "threat"}`),
+    [challenge.threats]
+  );
+
+  const currentThreatIndex = panel.kind === "cons" ? panel.tIdx : null;
+  const consIds = useMemo(() => {
+    if (currentThreatIndex == null) return [];
+    const t = challenge.threats[currentThreatIndex];
+    return t ? t.consequences.map((_, i) => `c:${i}`) : [];
+  }, [challenge.threats, currentThreatIndex]);
+
+  const generalIds = useMemo(
+    () => challenge.general_consequences.map((_, i) => `gc:${i}`),
+    [challenge.general_consequences]
+  );
+
+  function onDragEnd(e: DragEndEvent) {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+
+    // Threats reordering (panel A)
+    if (
+      panel.kind === "threats" &&
+      String(active.id).startsWith("t:") &&
+      String(over.id).startsWith("t:")
+    ) {
+      const from = Number(String(active.id).split(":")[1] || -1);
+      const to = Number(String(over.id).split(":")[1] || -1);
+      if (from >= 0 && to >= 0 && from !== to) moveThreat(from, to);
+      return;
+    }
+
+    // Consequences reordering (panel B, single threat mode)
+    if (
+      panel.kind === "cons" &&
+      String(active.id).startsWith("c:") &&
+      String(over.id).startsWith("c:")
+    ) {
+      const from = Number(String(active.id).split(":")[1] || -1);
+      const to = Number(String(over.id).split(":")[1] || -1);
+      if (currentThreatIndex != null && from >= 0 && to >= 0 && from !== to) {
+        moveConsequence(currentThreatIndex, from, to);
+      }
+      return;
+    }
+
+    // General consequences reordering (panel B, general mode)
+    if (
+      panel.kind === "general" &&
+      String(active.id).startsWith("gc:") &&
+      String(over.id).startsWith("gc:")
+    ) {
+      const from = Number(String(active.id).split(":")[1] || -1);
+      const to = Number(String(over.id).split(":")[1] || -1);
+      if (from >= 0 && to >= 0 && from !== to) moveGeneralConsequence(from, to);
+      return;
+    }
   }
 
-  function handleAddThreat() {
-    setTErr(null);
-    const name = tName.trim();
-    if (!name) return setTErr("Threat name is required.");
-    const t: Threat = { name, description: tDesc.trim(), consequences: [] };
-    addThreat(t);
-    resetCreateThreat();
+  /* ------------------------------ Threats A ------------------------------ */
+
+  function uniqueThreatName() {
+    const base = "New Threat";
+    const used = new Set(
+      challenge.threats.map((t) => (t.name || "").toLowerCase())
+    );
+    if (!used.has(base.toLowerCase())) return base;
+    let n = 2;
+    while (used.has(`${base} ${n}`.toLowerCase())) n++;
+    return `${base} ${n}`;
+  }
+
+  function addThreatPlaceholder() {
+    const name = uniqueThreatName();
+    addThreat({ name, description: "", consequences: [] });
+    const idx = challenge.threats.length; // end
+    startEditThreat(idx);
   }
 
   function startEditThreat(idx: number) {
     const t = challenge.threats[idx];
     if (!t) return;
-    setEditingTIndex(idx);
-    setEName(t.name);
-    setEDesc(t.description || "");
-  }
-
-  function cancelEditThreat() {
-    setEditingTIndex(null);
-    setEName("");
-    setEDesc("");
+    setEditingThreat(idx);
+    setTName(t.name || "");
+    setTDesc(t.description || "");
     setTErr(null);
   }
 
-  function confirmEditThreat() {
-    if (editingTIndex == null) return;
-    const name = eName.trim();
+  function cancelEditThreat() {
+    setEditingThreat(null);
+    setTName("");
+    setTDesc("");
+    setTErr(null);
+  }
+
+  function saveThreat() {
+    if (editingThreat == null) return;
+    const name = tName.trim();
     if (!name) return setTErr("Threat name is required.");
-    updateThreatAt(editingTIndex, { name, description: eDesc.trim() });
+    updateThreatAt(editingThreat, { name, description: tDesc.trim() });
     cancelEditThreat();
   }
 
-  function handleAddConsequence(tIdx: number) {
-    const text = (cNew[tIdx] ?? "").trim();
-    if (!text) return;
-    addConsequence(tIdx, text);
-    setCNew((s) => ({ ...s, [tIdx]: "" }));
+  /* ----------------------------- Consequences B ----------------------------- */
+
+  function goConsFor(tIdx: number) {
+    setEditingCons(null);
+    setPanel({ kind: "cons", tIdx });
   }
 
-  function handleAddGeneralConsequence() {
-    setGcErr(null);
-    const text = gcNew.trim();
-    if (!text) return setGcErr("Write a consequence first.");
-    addGeneralConsequence(text);
-    setGcNew("");
+  function goGeneralCons() {
+    setEditingGeneralCons(null);
+    setPanel({ kind: "general" });
   }
 
-  const Body = (
-    <div className="space-y-6">
-      {/* Create Threat */}
-      <div className="rounded-md border p-4 space-y-3">
-        <div className="grid gap-2">
-          <Label htmlFor="threat-name">Threat name</Label>
-          <Input
-            id="threat-name"
-            placeholder="e.g., Swallow"
-            value={tName}
-            onChange={(e) => setTName(e.target.value)}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="threat-desc">Short description</Label>
-          <Textarea
-            id="threat-desc"
-            rows={2}
-            placeholder="What the challenge starts to do (Markdown + tokens supported)"
-            value={tDesc}
-            onChange={(e) => setTDesc(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            onClick={handleAddThreat}
-            className="inline-flex items-center gap-1"
-          >
-            <Plus size={16} /> Add threat
-          </Button>
-          {tErr && <p className="text-sm text-destructive">{tErr}</p>}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Threat: what the Challenge is starting to do. If ignored (or on
-          Consequences), apply one or more related Consequences.
-        </p>
-      </div>
+  function backToThreats() {
+    setPanel({ kind: "threats" });
+  }
 
-      {/* Threats list */}
-      <ul className="space-y-4">
-        {challenge.threats.map((t, tIdx) => (
-          <li
-            key={`${t.name}-${tIdx}`}
-            className="rounded-md border p-4 space-y-3"
-          >
-            {/* Threat header row */}
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <div className="font-semibold">{t.name}</div>
-                {t.description && (
+  function addConsequencePlaceholder() {
+    if (currentThreatIndex == null) return;
+    addConsequence(currentThreatIndex, "New consequence");
+    const idx = challenge.threats[currentThreatIndex].consequences.length; // end
+    setEditingCons(idx);
+    setConsDraft("New consequence");
+  }
+
+  function startEditConsequence(cIdx: number, text: string) {
+    setEditingCons(cIdx);
+    setConsDraft(text);
+  }
+
+  function saveConsequence() {
+    if (currentThreatIndex == null || editingCons == null) return;
+    updateConsequence(currentThreatIndex, editingCons, consDraft.trim());
+    setEditingCons(null);
+    setConsDraft("");
+  }
+
+  function addGeneralPlaceholder() {
+    addGeneralConsequence("New consequence");
+    const idx = challenge.general_consequences.length; // end
+    setEditingGeneralCons(idx);
+    setGeneralDraft("New consequence");
+  }
+
+  function startEditGeneral(idx: number, text: string) {
+    setEditingGeneralCons(idx);
+    setGeneralDraft(text);
+  }
+
+  function saveGeneral() {
+    if (editingGeneralCons == null) return;
+    updateGeneralConsequence(editingGeneralCons, generalDraft.trim());
+    setEditingGeneralCons(null);
+    setGeneralDraft("");
+  }
+
+  /* --------------------------------- UI --------------------------------- */
+
+  const slideClass =
+    panel.kind === "threats" ? "translate-x-0" : "-translate-x-1/2";
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={onDragEnd}
+    >
+      <div className="relative overflow-hidden">
+        <div
+          className={`grid grid-cols-2 w-[200%] transition-transform duration-300 ease-out ${slideClass}`}
+        >
+          {/* PANEL A: Threats list (left half) */}
+          <div className="w-full pr-2 min-w-0">
+            <SortableContext
+              items={threatIds}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul className="space-y-3">
+                {challenge.threats.map((t, tIdx) => {
+                  const id = threatIds[tIdx];
+                  const isEditing = editingThreat === tIdx;
+
+                  return (
+                    <ThreatRow
+                      key={id}
+                      id={id}
+                      name={t.name}
+                      description={t.description}
+                      count={t.consequences.length}
+                      dragDisabled={dragDisabled}
+                      onEdit={() => startEditThreat(tIdx)}
+                      onRemove={() => {
+                        // If we were looking at its consequences, bounce back.
+                        if (panel.kind === "cons" && panel.tIdx === tIdx) {
+                          backToThreats();
+                        }
+                        removeThreatAt(tIdx);
+                      }}
+                      onOpenConsequences={() => goConsFor(tIdx)}
+                    >
+                      {isEditing && (
+                        <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
+                          {tErr && (
+                            <p className="text-sm text-destructive">{tErr}</p>
+                          )}
+                          <div className="grid gap-1">
+                            <Label htmlFor={`t-name-${tIdx}`}>Name</Label>
+                            <Input
+                              id={`t-name-${tIdx}`}
+                              value={tName}
+                              onChange={(e) => setTName(e.target.value)}
+                              autoFocus
+                            />
+                          </div>
+                          <div className="grid gap-1">
+                            <Label htmlFor={`t-desc-${tIdx}`}>
+                              Short description{" "}
+                              <span className="text-muted-foreground">
+                                (Markdown + tokens)
+                              </span>
+                            </Label>
+                            <Textarea
+                              id={`t-desc-${tIdx}`}
+                              rows={2}
+                              value={tDesc}
+                              onChange={(e) => setTDesc(e.target.value)}
+                              placeholder="What the challenge starts to do…"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button onClick={saveThreat}>
+                              <Check className="h-4 w-4 mr-1" /> Save
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              onClick={cancelEditThreat}
+                            >
+                              <X className="h-4 w-4 mr-1" /> Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </ThreatRow>
+                  );
+                })}
+
+                {/* Add threat row */}
+                <li className="flex">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-1 w-full justify-center gap-2 border-dashed"
+                    onClick={addThreatPlaceholder}
+                  >
+                    <Plus className="h-4 w-4" /> Add threat
+                  </Button>
+                </li>
+              </ul>
+            </SortableContext>
+
+            {/* Footer actions for general consequences entry point */}
+            <div className="mt-4 flex justify-end">
+              <Button variant="outline" onClick={goGeneralCons}>
+                Edit general consequences
+              </Button>
+            </div>
+          </div>
+
+          {/* PANEL B: Consequences editor (right half) */}
+          <div className="w-full pl-2 min-w-0">
+            {panel.kind === "cons" && currentThreatIndex != null ? (
+              <div className="space-y-4">
+                {/* Back + context */}
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" onClick={backToThreats}>
+                    <ArrowLeft className="h-4 w-4 mr-1" /> Back
+                  </Button>
+                  <div className="font-semibold">
+                    Consequences for:{" "}
+                    {challenge.threats[currentThreatIndex]?.name}
+                  </div>
+                </div>
+
+                {challenge.threats[currentThreatIndex]?.description ? (
                   <div
                     className="text-sm text-foreground/80 prose-sm max-w-none"
                     dangerouslySetInnerHTML={{
-                      __html: renderLitmMarkdown(t.description),
+                      __html: renderLitmMarkdown(
+                        challenge.threats[currentThreatIndex]?.description || ""
+                      ),
                     }}
                   />
-                )}
-              </div>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => moveThreat(tIdx, Math.max(0, tIdx - 1))}
-                  title="Move up"
-                >
-                  <ArrowUp size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() =>
-                    moveThreat(
-                      tIdx,
-                      Math.min(challenge.threats.length - 1, tIdx + 1)
-                    )
-                  }
-                  title="Move down"
-                >
-                  <ArrowDown size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => startEditThreat(tIdx)}
-                  title="Edit"
-                >
-                  <Pencil size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive"
-                  onClick={() => removeThreatAt(tIdx)}
-                  title="Remove"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              </div>
-            </div>
+                ) : null}
 
-            {/* Inline editor for a threat */}
-            {editingTIndex === tIdx && (
-              <div className="rounded-md border p-3 space-y-3 bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">Edit Threat #{tIdx + 1}</h4>
-                  <Button
-                    variant="link"
-                    className="h-8 p-0"
-                    onClick={cancelEditThreat}
-                  >
-                    Cancel
+                {/* Consequences list */}
+                <SortableContext
+                  items={consIds}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <ul className="space-y-2">
+                    {challenge.threats[currentThreatIndex]?.consequences.map(
+                      (text, cIdx) => {
+                        const isEditing = editingCons === cIdx;
+                        return (
+                          <ConsequenceRow
+                            key={`c:${cIdx}`}
+                            id={`c:${cIdx}`}
+                            dragDisabled={dragDisabled}
+                            isEditing={isEditing}
+                            text={text}
+                            onEdit={() => startEditConsequence(cIdx, text)}
+                            onRemove={() =>
+                              removeConsequence(currentThreatIndex, cIdx)
+                            }
+                          >
+                            {isEditing && (
+                              <InlineConsequenceEditor
+                                value={consDraft}
+                                onChange={setConsDraft}
+                                onSave={saveConsequence}
+                                onCancel={() => {
+                                  setEditingCons(null);
+                                  setConsDraft("");
+                                }}
+                              />
+                            )}
+                          </ConsequenceRow>
+                        );
+                      }
+                    )}
+
+                    {/* Add consequence */}
+                    <li className="flex">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="mt-1 w-full justify-center gap-2 border-dashed"
+                        onClick={addConsequencePlaceholder}
+                      >
+                        <Plus className="h-4 w-4" /> Add consequence
+                      </Button>
+                    </li>
+                  </ul>
+                </SortableContext>
+              </div>
+            ) : panel.kind === "general" ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" onClick={backToThreats}>
+                    <ArrowLeft className="h-4 w-4 mr-1" /> Back
                   </Button>
+                  <div className="font-semibold">General Consequences</div>
                 </div>
-                <Input
-                  className="w-full"
-                  value={eName}
-                  onChange={(e) => setEName(e.target.value)}
-                />
-                <Textarea
-                  rows={2}
-                  value={eDesc}
-                  onChange={(e) => setEDesc(e.target.value)}
-                />
-                <Button onClick={confirmEditThreat}>Save</Button>
+
+                <SortableContext
+                  items={generalIds}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <ul className="space-y-2">
+                    {challenge.general_consequences.map((text, idx) => {
+                      const isEditing = editingGeneralCons === idx;
+                      return (
+                        <ConsequenceRow
+                          key={`gc:${idx}`}
+                          id={`gc:${idx}`}
+                          dragDisabled={dragDisabled}
+                          isEditing={isEditing}
+                          text={text}
+                          onEdit={() => startEditGeneral(idx, text)}
+                          onRemove={() => removeGeneralConsequence(idx)}
+                        >
+                          {isEditing && (
+                            <InlineConsequenceEditor
+                              value={generalDraft}
+                              onChange={setGeneralDraft}
+                              onSave={saveGeneral}
+                              onCancel={() => {
+                                setEditingGeneralCons(null);
+                                setGeneralDraft("");
+                              }}
+                            />
+                          )}
+                        </ConsequenceRow>
+                      );
+                    })}
+
+                    <li className="flex">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="mt-1 w-full justify-center gap-2 border-dashed"
+                        onClick={addGeneralPlaceholder}
+                      >
+                        <Plus className="h-4 w-4" /> Add general consequence
+                      </Button>
+                    </li>
+                  </ul>
+                </SortableContext>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center text-muted-foreground">
+                {/* Filler when panel.kind === "threats" but the slide hasn't moved yet */}
+                Select a threat to edit its consequences
               </div>
             )}
-
-            {/* Consequences list for this threat */}
-            <div className="space-y-2">
-              <div className="text-sm font-medium">Consequences</div>
-              <ul className="space-y-2">
-                {t.consequences.map((c, cIdx) => (
-                  <ConsequenceRow
-                    key={`${tIdx}-${cIdx}`}
-                    text={c}
-                    onMoveUp={() =>
-                      moveConsequence(tIdx, cIdx, Math.max(0, cIdx - 1))
-                    }
-                    onMoveDown={() =>
-                      moveConsequence(
-                        tIdx,
-                        cIdx,
-                        Math.min(t.consequences.length - 1, cIdx + 1)
-                      )
-                    }
-                    onDelete={() => removeConsequence(tIdx, cIdx)}
-                    onSave={(val) => updateConsequence(tIdx, cIdx, val)}
-                  />
-                ))}
-              </ul>
-
-              {/* Add consequence */}
-              <div className="flex items-center gap-2">
-                <Input
-                  className="flex-1"
-                  placeholder='e.g., "Pull a grabbed victim into its maw ({crushed-4})"'
-                  value={cNew[tIdx] ?? ""}
-                  onChange={(e) =>
-                    setCNew((s) => ({
-                      ...s,
-                      [tIdx]: (e.target as HTMLInputElement).value,
-                    }))
-                  }
-                />
-                <Button
-                  type="button"
-                  onClick={() => handleAddConsequence(tIdx)}
-                  className="inline-flex items-center gap-1"
-                >
-                  <Plus size={16} /> Add
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                You can use tokens like <code>{"{delirious-3}"}</code>,{" "}
-                <code>{"{grabbed-4}"}</code>, or phrases like “scratch a tag”.
-              </p>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      {/* General (floating) Consequences */}
-      <div className="rounded-md border p-4 space-y-3">
-        <div className="text-base font-semibold">
-          General Consequences (no specific Threat)
-        </div>
-
-        <ul className="space-y-2">
-          {challenge.general_consequences.map((c, idx) => (
-            <ConsequenceRow
-              key={`gc-${idx}`}
-              text={c}
-              onMoveUp={() => moveGeneralConsequence(idx, Math.max(0, idx - 1))}
-              onMoveDown={() =>
-                moveGeneralConsequence(
-                  idx,
-                  Math.min(challenge.general_consequences.length - 1, idx + 1)
-                )
-              }
-              onDelete={() => removeGeneralConsequence(idx)}
-              onSave={(val) => updateGeneralConsequence(idx, val)}
-            />
-          ))}
-        </ul>
-
-        <div className="flex items-center gap-2">
-          <Input
-            className="flex-1"
-            placeholder='e.g., "The poison spreads ({poisoned+2})"'
-            value={gcNew}
-            onChange={(e) => setGcNew(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            onClick={handleAddGeneralConsequence}
-            className="inline-flex items-center gap-1"
-          >
-            <Plus size={16} /> Add general consequence
-          </Button>
-          {gcErr && <p className="text-sm text-destructive">{gcErr}</p>}
+          </div>
         </div>
       </div>
-
-      <Separator />
-    </div>
-  );
-
-  if (variant === "bare") {
-    // No Card wrapper, tighter spacing – used inside Sheet
-    return <div className="space-y-6">{Body}</div>;
-  }
-
-  // Default Card wrapper (for any other page using the form)
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Threats &amp; Consequences</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">{Body}</CardContent>
-    </Card>
+    </DndContext>
   );
 }
 
-/* --- Small reusable row with inline edit (shadcn) --- */
-function ConsequenceRow({
-  text,
-  onMoveUp,
-  onMoveDown,
-  onDelete,
-  onSave,
+/* ----------------------------------------------------------------------------
+   Row components
+---------------------------------------------------------------------------- */
+
+function ThreatRow({
+  id,
+  name,
+  description,
+  dragDisabled,
+  count,
+  onEdit,
+  onRemove,
+  onOpenConsequences,
+  children,
 }: {
-  text: string;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
-  onDelete: () => void;
-  onSave: (val: string) => void;
+  id: string;
+  name: string;
+  description?: string | null;
+  dragDisabled: boolean;
+  count?: number;
+  onEdit: () => void;
+  onRemove: () => void;
+  onOpenConsequences: () => void;
+  children?: React.ReactNode;
 }) {
-  const [editing, setEditing] = useState(false);
-  const [val, setVal] = useState(text);
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: dragDisabled });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   return (
-    <li className="flex items-center justify-between gap-2 rounded-md border px-3 py-2">
-      {editing ? (
-        <Input
-          className="flex-1"
-          value={val}
-          onChange={(e) => setVal(e.target.value)}
-        />
-      ) : (
-        <div
-          className="flex-1 prose-sm max-w-none text-foreground/90"
-          dangerouslySetInnerHTML={{ __html: renderLitmMarkdown(text) }}
-        />
-      )}
-
-      <div className="flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={onMoveUp}
-          title="Move up"
-        >
-          <ArrowUp size={16} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={onMoveDown}
-          title="Move down"
-        >
-          <ArrowDown size={16} />
-        </Button>
-        {editing ? (
-          <Button
-            size="sm"
-            onClick={() => {
-              onSave(val.trim());
-              setEditing(false);
-            }}
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={`rounded-md border bg-white px-3 py-3 ${
+        isDragging ? "shadow-lg ring-1 ring-slate-200" : ""
+      }`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        {/* Left: drag + content */}
+        <div className="flex items-start gap-2 min-w-0">
+          <button
+            className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
+              ${dragDisabled ? "opacity-40 cursor-not-allowed hover:bg-transparent" : "cursor-grab active:cursor-grabbing"}`}
+            aria-label="Drag to reorder threat"
+            title={
+              dragDisabled ? "Finish editing to reorder" : "Drag to reorder"
+            }
+            disabled={dragDisabled}
+            {...(!dragDisabled ? attributes : {})}
+            {...(!dragDisabled ? listeners : {})}
           >
-            Save
-          </Button>
-        ) : (
+            <GripVertical className="h-4 w-4 text-slate-500" />
+          </button>
+
+          <div className="min-w-0">
+            <div className="font-semibold threat-pill !text-xs">{name}</div>
+            {description ? (
+              <div
+                className="text-sm prose-sm max-w-none font-(family-name:--font-ch-threat-desc)"
+                dangerouslySetInnerHTML={{
+                  __html: renderLitmMarkdown(description),
+                }}
+              />
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                No description
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-1">
+          {/* Consequences icon button with count */}
+
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={onOpenConsequences}
+              aria-label="Edit consequences"
+              title="Consequences"
+            >
+              <img
+                src="/assets/images/consequence.svg"
+                alt=""
+                className="h-6 w-6"
+              />
+            </Button>
+
+            {/* tiny count badge (optional) */}
+            {typeof count === "number" && count > 0 && (
+              <span className="pointer-events-none absolute -top-1 -right-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-secondary border-1 border-zinc-400 text-secondary-foreground text-sm font-bold font-serif leading-none px-1">
+                <span className="-translate-y-0.5">{count}</span>
+              </span>
+            )}
+          </div>
+
+          {/* Edit / Remove keep the same */}
           <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={() => setEditing(true)}
             title="Edit"
+            onClick={onEdit}
           >
-            <Pencil size={16} />
+            <Pencil className="h-4 w-4" />
           </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-destructive"
+            title="Remove"
+            onClick={onRemove}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Inline editor block (optional) */}
+      {children}
+    </li>
+  );
+}
+
+function ConsequenceRow({
+  id,
+  text,
+  dragDisabled,
+  isEditing,
+  onEdit,
+  onRemove,
+  children,
+}: {
+  id: string;
+  text: string;
+  dragDisabled: boolean;
+  isEditing: boolean;
+  onEdit: () => void;
+  onRemove: () => void;
+  children?: React.ReactNode; // inline editor when editing
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: dragDisabled });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center justify-between gap-2 rounded-md border bg-white px-3 py-2 ${
+        isDragging ? "shadow-lg ring-1 ring-slate-200" : ""
+      }`}
+    >
+      {/* Left: drag + text / editor */}
+      <div className="flex items-center gap-2 min-w-0 flex-1">
+        <button
+          className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
+            ${dragDisabled ? "opacity-40 cursor-not-allowed hover:bg-transparent" : "cursor-grab active:cursor-grabbing"}`}
+          aria-label="Drag to reorder consequence"
+          title={dragDisabled ? "Finish editing to reorder" : "Drag to reorder"}
+          disabled={dragDisabled}
+          {...(!dragDisabled ? attributes : {})}
+          {...(!dragDisabled ? listeners : {})}
+        >
+          <GripVertical className="h-4 w-4 text-slate-500" />
+        </button>
+
+        {isEditing ? (
+          <div className="flex-1 min-w-0">{children}</div>
+        ) : (
+          <div
+            className="flex-1 prose-sm max-w-none text-foreground/90 min-w-0"
+            dangerouslySetInnerHTML={{ __html: renderLitmMarkdown(text) }}
+          />
         )}
+      </div>
+
+      {/* Actions */}
+      {!isEditing ? (
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-destructive"
-          onClick={onDelete}
-          title="Remove"
+          className="h-8 w-8"
+          title="Edit"
+          onClick={onEdit}
         >
-          <Trash2 size={16} />
+          <Pencil className="h-4 w-4" />
         </Button>
-      </div>
+      ) : null}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-destructive"
+        title="Remove"
+        onClick={onRemove}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
     </li>
+  );
+}
+
+function InlineConsequenceEditor({
+  value,
+  onChange,
+  onSave,
+  onCancel,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <Input
+        className="flex-1"
+        autoFocus
+        value={value}
+        onChange={(e) => onChange((e.target as HTMLInputElement).value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") onSave();
+          if (e.key === "Escape") onCancel();
+        }}
+      />
+      <Button size="icon" title="Save" onClick={onSave}>
+        <Check className="h-4 w-4" />
+      </Button>
+      <Button size="icon" variant="secondary" title="Cancel" onClick={onCancel}>
+        <X className="h-4 w-4" />
+      </Button>
+    </div>
   );
 }
