@@ -39,6 +39,8 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
   const [eOnMax, setEOnMax] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  const dragDisabled = editingIndex !== null;
+
   // open editor for the focused index (from sheet deep link)
   useEffect(() => {
     if (typeof focusIndex === "number" && challenge.limits[focusIndex]) {
@@ -165,6 +167,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                 id={itemIds[idx]}
                 limit={l}
                 isEditing={editingIndex === idx}
+                dragDisabled={dragDisabled}
                 // row actions
                 onEdit={() => startEdit(idx)}
                 onRemove={() => removeLimitAt(idx)}
@@ -286,6 +289,7 @@ function SortableLimitItem({
   id,
   limit: l,
   isEditing,
+  dragDisabled,
   onEdit,
   onRemove,
   children,
@@ -293,6 +297,7 @@ function SortableLimitItem({
   id: string;
   limit: Limit;
   isEditing: boolean;
+  dragDisabled: boolean;
   onEdit: () => void;
   onRemove: () => void;
   children?: React.ReactNode; // inline editor renders here when open
@@ -304,7 +309,7 @@ function SortableLimitItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ id, disabled: dragDisabled });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -315,17 +320,22 @@ function SortableLimitItem({
     <li
       ref={setNodeRef}
       style={style}
-      className={`rounded-md border bg-white px-3 py-2 ${isDragging ? "shadow-lg ring-1 ring-slate-200" : ""}`}
+      className={`rounded-md border bg-white px-3 py-2 ${
+        isDragging ? "shadow-lg ring-1 ring-slate-200" : ""
+      }`}
     >
-      {/* Top row */}
       <div className="flex items-center justify-between gap-3">
-        {/* Left: handle + label */}
         <div className="flex items-start gap-2 min-w-0">
           <button
-            className="h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50 cursor-grab active:cursor-grabbing"
+            className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
+              ${dragDisabled ? "opacity-40 cursor-not-allowed hover:bg-transparent" : "cursor-grab active:cursor-grabbing"}`}
             aria-label="Drag to reorder"
-            {...attributes}
-            {...listeners}
+            title={
+              dragDisabled ? "Finish editing to reorder" : "Drag to reorder"
+            }
+            disabled={dragDisabled}
+            {...(!dragDisabled ? attributes : {})}
+            {...(!dragDisabled ? listeners : {})}
           >
             <GripVertical className="h-4 w-4 text-slate-500" />
           </button>

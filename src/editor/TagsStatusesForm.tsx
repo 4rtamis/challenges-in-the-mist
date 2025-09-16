@@ -1,23 +1,30 @@
-// src/editor/TagsStatusesForm.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useChallengeStore } from "@/store/challengeStore";
-import { parseToken, ensureFormatted, tokensEqual } from "@/utils/tags";
-import { renderLitmInline } from "@/utils/markdown";
+import { renderLitmMarkdown } from "@/utils/markdown";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch"; // optional hint toggle, can remove
+import { GripVertical, Pencil, Trash2, Plus } from "lucide-react";
 
 import {
-  ArrowUp,
-  ArrowDown,
-  Pencil,
-  Trash2,
-  Plus,
-  AlertTriangle,
-} from "lucide-react";
-
-type Mode = "power" | "status" | "weakness";
+  DndContext,
+  closestCenter,
+  type DragEndEvent,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function TagsStatusesForm({
   focusIndex,
@@ -27,377 +34,272 @@ export default function TagsStatusesForm({
   const { challenge, addToken, removeTokenAt, replaceTokenAt, moveToken } =
     useChallengeStore();
 
-  // Create state
-  const [mode, setMode] = useState<Mode>("power");
-  const [nameInput, setNameInput] = useState("");
-  const [statusVal, setStatusVal] = useState(""); // "" or digits
-  const [error, setError] = useState<string | null>(null);
-  const [limitDetect, setLimitDetect] = useState<string | null>(null);
-
-  // Edit state
+  // One inline editor at a time
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editMode, setEditMode] = useState<Mode>("power");
-  const [editName, setEditName] = useState("");
-  const [editStatusVal, setEditStatusVal] = useState("");
+  const [raw, setRaw] = useState(""); // raw string for the editor
+  const [error, setError] = useState<string | null>(null);
 
-  // Focus a row when opened from preview
+  // Open editor when sheet deep-links to an index
   useEffect(() => {
     if (
       typeof focusIndex === "number" &&
-      challenge.tags_and_statuses[focusIndex]
+      challenge.tags_and_statuses[focusIndex] != null
     ) {
       startEdit(focusIndex);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusIndex]);
 
-  function normalizeDigitsOnly(s: string) {
-    return s.replace(/\D+/g, "");
+  // dnd-kit sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  // IDs must be unique even if values repeat. Use "index::value" snapshot IDs.
+  const itemIds = useMemo(
+    () => challenge.tags_and_statuses.map((v, i) => `${i}::${v}`),
+    [challenge.tags_and_statuses]
+  );
+
+  function handleDragEnd(e: DragEndEvent) {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const from = Number(String(active.id).split("::")[0] || -1);
+    const to = Number(String(over.id).split("::")[0] || -1);
+    if (from >= 0 && to >= 0 && from !== to) moveToken(from, to);
   }
 
-  function resetCreate() {
-    setMode("power");
-    setNameInput("");
-    setStatusVal("");
+  const dragDisabled = editingIndex !== null;
+
+  // Helpers
+  function addPlaceholder() {
+    const samples = [
+      "{radiant beauty}",
+      "{hungry maw}",
+      "{!must be invited in}",
+      "{mysterious-3}",
+      "{furious-2}",
+      "{sword}, {mace} or {dagger}",
+    ];
+    const sample = samples[Math.floor(Math.random() * samples.length)];
+    const newIndex = challenge.tags_and_statuses.length;
+    addToken(sample);
+    // open editor for the newly added one
+    setEditingIndex(newIndex);
+    setRaw(sample);
     setError(null);
-    setLimitDetect(null);
-  }
-
-  // Smart-paste: parse curly content and prefill fields
-  function onSmartFillFromPaste(raw: string) {
-    const p = parseToken(raw);
-    if (!p) return;
-    if (p.kind === "limit") {
-      setLimitDetect(
-        `That looks like a Limit (“${p.name}${p.value !== "" ? ":" + p.value : ":"}”). Please add it in the Limits section.`
-      );
-      setMode("power");
-      setNameInput("");
-      setStatusVal("");
-      return;
-    }
-    setLimitDetect(null);
-    if (p.kind === "weakness") {
-      setMode("weakness");
-      setNameInput(p.name);
-      setStatusVal("");
-    } else if (p.kind === "status") {
-      setMode("status");
-      setNameInput(p.name);
-      setStatusVal(p.value ?? "");
-    } else {
-      setMode("power");
-      setNameInput(p.name);
-      setStatusVal("");
-    }
-  }
-
-  function handleAdd() {
-    setError(null);
-    setLimitDetect(null);
-
-    if (!nameInput.trim()) {
-      setError("Enter a name.");
-      return;
-    }
-
-    const cleanedVal = mode === "status" ? normalizeDigitsOnly(statusVal) : "";
-    const token = ensureFormatted(nameInput, mode, cleanedVal);
-
-    // Prevent adding limits here even if user typed/pasted them
-    const parsed = parseToken(token);
-    if (parsed?.kind === "limit") {
-      setLimitDetect(
-        `That looks like a Limit (“${parsed.name}${parsed.value !== "" ? ":" + parsed.value : ":"}”). Please add it in the Limits section.`
-      );
-      return;
-    }
-
-    const dup = challenge.tags_and_statuses.some((t) => tokensEqual(t, token));
-    if (dup) {
-      setError("Already added.");
-      return;
-    }
-
-    addToken(token);
-    resetCreate();
   }
 
   function startEdit(idx: number) {
-    const token = challenge.tags_and_statuses[idx];
-    const p = parseToken(token);
-    if (!p) return;
-
+    const v = challenge.tags_and_statuses[idx];
+    if (v == null) return;
     setEditingIndex(idx);
-    if (p.kind === "weakness") {
-      setEditMode("weakness");
-      setEditName(p.name);
-      setEditStatusVal("");
-    } else if (p.kind === "status") {
-      setEditMode("status");
-      setEditName(p.name);
-      setEditStatusVal(p.value ?? "");
-    } else {
-      setEditMode("power");
-      setEditName(p.kind === "power" ? p.name : "");
-      setEditStatusVal("");
-    }
+    setRaw(v);
+    setError(null);
   }
 
   function cancelEdit() {
     setEditingIndex(null);
-    setEditMode("power");
-    setEditName("");
-    setEditStatusVal("");
+    setRaw("");
     setError(null);
   }
 
   function confirmEdit() {
     if (editingIndex == null) return;
-
-    if (!editName.trim()) {
-      setError("Enter a name.");
+    const next = raw.trim();
+    if (!next) {
+      setError("Please enter a value.");
       return;
     }
-
-    const cleanedVal =
-      editMode === "status" ? normalizeDigitsOnly(editStatusVal) : "";
-    const token = ensureFormatted(editName, editMode, cleanedVal);
-
-    const parsed = parseToken(token);
-    if (parsed?.kind === "limit") {
-      setLimitDetect(
-        `That looks like a Limit (“${parsed.name}${parsed.value !== "" ? ":" + parsed.value : ":"}”). Please move it to the Limits section.`
-      );
-      return;
-    }
-
-    const dup = challenge.tags_and_statuses.some(
-      (t, i) => i !== editingIndex && tokensEqual(t, token)
-    );
-    if (dup) {
-      setError("Duplicate after edit.");
-      return;
-    }
-
-    replaceTokenAt(editingIndex, token);
+    // allow duplicates intentionally (they’re just strings)
+    replaceTokenAt(editingIndex, next);
     cancelEdit();
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Create */}
-      <div className="rounded-md border p-4 space-y-3">
-        {/* Mode selector */}
-        <div className="grid gap-2">
-          <Label className="text-sm">Type</Label>
-          <div className="inline-flex rounded-md border overflow-hidden">
-            {(["power", "status", "weakness"] as Mode[]).map((m) => (
-              <Button
-                key={m}
-                type="button"
-                variant={mode === m ? "default" : "ghost"}
-                className={`rounded-none ${mode === m ? "" : "bg-white"}`}
-                onClick={() => setMode(m)}
-              >
-                {m === "power" ? "Tag" : m[0].toUpperCase() + m.slice(1)}
-              </Button>
-            ))}
-          </div>
-        </div>
+  // Render Markdown as a single inline snippet (strip a lone wrapping <p>…</p>)
+  function renderInlineHTML(s: string) {
+    const html = renderLitmMarkdown(s);
+    const singleP = html.match(/^<p>([\s\S]*)<\/p>\s*$/);
+    return singleP ? singleP[1] : html;
+  }
 
-        {/* Name + optional status value */}
-        <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
-          <div className="grid gap-1">
-            <Label htmlFor="token-name">Name</Label>
-            <Input
-              id="token-name"
-              placeholder={
-                mode === "weakness"
-                  ? "e.g., beguiled"
-                  : mode === "status"
-                    ? "e.g., not-listening"
-                    : "e.g., sharp broken tools"
-              }
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              onPaste={(e) => {
-                const pasted = e.clipboardData.getData("text");
-                if (pasted?.includes("{")) {
-                  setTimeout(() => onSmartFillFromPaste(pasted), 0);
-                }
-              }}
+  return (
+    <div className="space-y-3">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+          <ul className="space-y-2">
+            {challenge.tags_and_statuses.map((value, idx) => (
+              <SortableTokenItem
+                key={itemIds[idx]}
+                id={itemIds[idx]}
+                value={value}
+                isEditing={editingIndex === idx}
+                dragDisabled={dragDisabled}
+                onEdit={() => startEdit(idx)}
+                onRemove={() => removeTokenAt(idx)}
+              >
+                {editingIndex === idx && (
+                  <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
+                    {error && (
+                      <p className="text-sm text-destructive">{error}</p>
+                    )}
+                    <div className="grid gap-2">
+                      <Label htmlFor={`tag-raw-${idx}`}>
+                        Raw value{" "}
+                        <span className="text-muted-foreground font-normal">
+                          (supports inline Markdown)
+                        </span>
+                      </Label>
+                      <Input
+                        id={`tag-raw-${idx}`}
+                        value={raw}
+                        onChange={(e) => setRaw(e.target.value)}
+                        placeholder="{power tag}, {status-3}, {!weakness tag} or plain text"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button onClick={confirmEdit}>Save</Button>
+                      <Button
+                        variant="link"
+                        className="h-8 p-0"
+                        onClick={cancelEdit}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </SortableTokenItem>
+            ))}
+
+            {/* Add button row */}
+            <li className="flex">
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-1 w-full justify-center gap-2 border-dashed"
+                onClick={addPlaceholder}
+              >
+                <Plus className="h-4 w-4" /> Add entry
+              </Button>
+            </li>
+          </ul>
+        </SortableContext>
+      </DndContext>
+    </div>
+  );
+}
+
+/* ---------- Sortable item ---------- */
+function SortableTokenItem({
+  id,
+  value,
+  isEditing,
+  dragDisabled,
+  onEdit,
+  onRemove,
+  children,
+}: {
+  id: string;
+  value: string;
+  isEditing: boolean;
+  dragDisabled: boolean;
+  onEdit: () => void;
+  onRemove: () => void;
+  children?: React.ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: dragDisabled });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  // Inline renderer helper (same as parent)
+  const inlineHTML = (s: string) => {
+    const html = renderLitmMarkdown(s);
+    const m = html.match(/^<p>([\s\S]*)<\/p>\s*$/);
+    return m ? m[1] : html;
+  };
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={`rounded-md border bg-white px-3 py-2 max-w-full ${
+        isDragging ? "shadow-lg ring-1 ring-slate-200" : ""
+      }`}
+    >
+      {/* Top row */}
+      <div className="flex items-center justify-between gap-3">
+        {/* Left: handle + rendered preview */}
+        <div className="flex items-start gap-2 min-w-0">
+          <button
+            className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
+              ${
+                dragDisabled
+                  ? "opacity-40 cursor-not-allowed hover:bg-transparent"
+                  : "cursor-grab active:cursor-grabbing"
+              }`}
+            aria-label="Drag to reorder"
+            title={
+              dragDisabled ? "Finish editing to reorder" : "Drag to reorder"
+            }
+            disabled={dragDisabled}
+            {...(!dragDisabled ? attributes : {})}
+            {...(!dragDisabled ? listeners : {})}
+          >
+            <GripVertical className="h-4 w-4 text-slate-500" />
+          </button>
+
+          <div className="min-w-0">
+            <span
+              className="prose-sm text-wrap max-w-none block truncate font-(family-name:--font-ch-tags-statuses)"
+              // the HTML is inline; keep a span
+              dangerouslySetInnerHTML={{ __html: inlineHTML(value) }}
+              title={value}
             />
           </div>
-
-          {mode === "status" && (
-            <div className="grid gap-1">
-              <Label htmlFor="token-status-val">Value (optional)</Label>
-              <Input
-                id="token-status-val"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder=""
-                className="w-[110px]"
-                value={statusVal}
-                onChange={(e) =>
-                  setStatusVal(normalizeDigitsOnly(e.target.value))
-                }
-              />
-            </div>
-          )}
         </div>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
-        {limitDetect && (
-          <p className="text-sm text-amber-700 flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4" /> {limitDetect}
-          </p>
-        )}
-
-        <p className="text-xs text-muted-foreground">
-          Tips: paste tokens like <code>{"{!beguiled}"}</code>,{" "}
-          <code>{"{not-listening-3}"}</code>, <code>{"{status-}"}</code> or{" "}
-          <code>{"{sharp tools}"}</code>. Status value can be empty; typical
-          scene entries are 1–4.
-        </p>
-
-        <div>
+        {/* Actions */}
+        <div className="flex items-center gap-1">
           <Button
-            type="button"
-            onClick={handleAdd}
-            className="inline-flex items-center gap-1"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={onEdit}
+            title="Edit"
           >
-            <Plus className="h-4 w-4" /> Add
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-destructive"
+            onClick={onRemove}
+            title="Remove"
+          >
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      {/* List */}
-      <ul className="space-y-2">
-        {challenge.tags_and_statuses.map((token, idx) => {
-          const parsed = parseToken(token);
-          const kind = parsed?.kind ?? "power";
-
-          return (
-            <li
-              key={`${token}-${idx}`}
-              className="flex items-center justify-between gap-3 rounded-md border px-3 py-2"
-            >
-              <div className="min-w-0">
-                {/* Render with your inline renderer for consistency */}
-                <span
-                  className="prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: renderLitmInline(token) }}
-                />
-              </div>
-
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => moveToken(idx, Math.max(0, idx - 1))}
-                  title="Move up"
-                  aria-label="Move up"
-                >
-                  <ArrowUp className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() =>
-                    moveToken(
-                      idx,
-                      Math.min(challenge.tags_and_statuses.length - 1, idx + 1)
-                    )
-                  }
-                  title="Move down"
-                  aria-label="Move down"
-                >
-                  <ArrowDown className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => startEdit(idx)}
-                  title="Edit"
-                  aria-label="Edit"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive"
-                  onClick={() => removeTokenAt(idx)}
-                  title="Remove"
-                  aria-label="Remove"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-
-      {/* Inline editor */}
-      {editingIndex != null && (
-        <div className="rounded-md border p-3 space-y-3 bg-muted/30">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h4 className="font-semibold">Edit Token #{editingIndex + 1}</h4>
-            <Button variant="link" className="h-8 p-0" onClick={cancelEdit}>
-              Cancel
-            </Button>
-          </div>
-
-          <div className="grid gap-3">
-            {/* Mode selector */}
-            <div className="inline-flex rounded-md border overflow-hidden w-fit">
-              {(["power", "status", "weakness"] as Mode[]).map((m) => (
-                <Button
-                  key={m}
-                  type="button"
-                  variant={editMode === m ? "default" : "ghost"}
-                  className={`rounded-none ${editMode === m ? "" : "bg-white"}`}
-                  onClick={() => setEditMode(m)}
-                >
-                  {m === "power" ? "Tag" : m[0].toUpperCase() + m.slice(1)}
-                </Button>
-              ))}
-            </div>
-
-            {/* Name + optional status value */}
-            <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
-              <Input
-                className="min-w-[220px]"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-              />
-              {editMode === "status" && (
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  className="w-[110px]"
-                  value={editStatusVal}
-                  onChange={(e) =>
-                    setEditStatusVal(normalizeDigitsOnly(e.target.value))
-                  }
-                />
-              )}
-            </div>
-
-            <div>
-              <Button onClick={confirmEdit}>Save</Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      {/* Inline editor content */}
+      {children}
+    </li>
   );
 }

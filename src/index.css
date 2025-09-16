@@ -196,9 +196,24 @@
 
 /* Weakness tag */
 .litm-weakness {
-  background: #ffe4e6; /* rose-100 */
-  color: #9f1239; /* rose-800 */
-  border-color: rgba(244, 63, 94, 0.4);
+  --litm-token-background-color: var(--litm-ganoush-orange);
+  padding-left: 1.8ch;
+}
+
+.litm-weakness::before {
+  content: "";
+  background-image: url("/assets/images/weakness-arrows.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: #946435;
+  display: inline-block;
+  width: 1.2ch;
+  aspect-ratio: 800 / 800;
+  position: absolute;
+  left: 0.3ch;
+  top: 50%;
+  transform: translateY(-40%);
 }
 
 /* Limit: number shown via ::after */
