@@ -1,5 +1,4 @@
-// src/editor/SpecialFeaturesForm.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useChallengeStore } from "@/store/challengeStore";
 import { renderLitmMarkdown } from "@/utils/markdown";
 
@@ -7,8 +6,24 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { GripVertical, Pencil, Trash2, Plus } from "lucide-react";
 
-import { ArrowUp, ArrowDown, Pencil, Trash2, Plus, Eye } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  type DragEndEvent,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function SpecialFeaturesForm({
   focusIndex,
@@ -23,18 +38,13 @@ export default function SpecialFeaturesForm({
     moveSpecialFeature,
   } = useChallengeStore();
 
-  // create
-  const [name, setName] = useState("");
-  const [desc, setDesc] = useState("");
-  const [showPreview, setShowPreview] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  // edit
-  const [editing, setEditing] = useState<number | null>(null);
+  // One inline editor at a time
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [eName, setEName] = useState("");
   const [eDesc, setEDesc] = useState("");
-  const [ePreview, setEPreview] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Deep-link open from preview/sheet
   useEffect(() => {
     if (
       typeof focusIndex === "number" &&
@@ -45,219 +55,266 @@ export default function SpecialFeaturesForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusIndex]);
 
-  function handleAdd() {
-    setErr(null);
-    if (!name.trim()) return setErr("Name is required.");
-    addSpecialFeature({ name: name.trim(), description: desc });
-    setName("");
-    setDesc("");
-    setShowPreview(false);
+  // dnd-kit sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  // Stable IDs for current render (index::name)
+  const itemIds = useMemo(
+    () =>
+      challenge.special_features.map(
+        (sf, i) => `${i}::${sf.name || "feature"}`
+      ),
+    [challenge.special_features]
+  );
+
+  function handleDragEnd(e: DragEndEvent) {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const from = Number(String(active.id).split("::")[0] || -1);
+    const to = Number(String(over.id).split("::")[0] || -1);
+    if (from >= 0 && to >= 0 && from !== to) moveSpecialFeature(from, to);
+  }
+
+  const dragDisabled = editingIndex !== null;
+
+  // Helpers
+  function uniquePlaceholderName(): string {
+    const base = "New Feature";
+    const used = new Set(
+      challenge.special_features.map((sf) => (sf.name || "").toLowerCase())
+    );
+    if (!used.has(base.toLowerCase())) return base;
+    let n = 2;
+    while (used.has(`${base} ${n}`.toLowerCase())) n++;
+    return `${base} ${n}`;
+  }
+
+  function addPlaceholder() {
+    const placeholder = { name: uniquePlaceholderName(), description: "" };
+    const newIndex = challenge.special_features.length;
+    addSpecialFeature(placeholder);
+    // open inline editor for the new item
+    setEditingIndex(newIndex);
+    setEName(placeholder.name);
+    setEDesc("");
+    setError(null);
   }
 
   function startEdit(i: number) {
     const sf = challenge.special_features[i];
     if (!sf) return;
-    setEditing(i);
-    setEName(sf.name);
+    setEditingIndex(i);
+    setEName(sf.name || "");
     setEDesc(sf.description || "");
-    setEPreview(false);
-    setErr(null);
-  }
-
-  function saveEdit() {
-    if (editing == null) return;
-    if (!eName.trim()) return setErr("Name is required.");
-    updateSpecialFeatureAt(editing, { name: eName.trim(), description: eDesc });
-    cancelEdit();
+    setError(null);
   }
 
   function cancelEdit() {
-    setEditing(null);
+    setEditingIndex(null);
     setEName("");
     setEDesc("");
-    setEPreview(false);
-    setErr(null);
+    setError(null);
+  }
+
+  function saveEdit() {
+    if (editingIndex == null) return;
+    if (!eName.trim()) return setError("Name is required.");
+    updateSpecialFeatureAt(editingIndex, {
+      name: eName.trim(),
+      description: eDesc,
+    });
+    cancelEdit();
   }
 
   return (
-    <div className="space-y-6">
-      {/* Create */}
-      <div className="rounded-md border p-4 space-y-3">
-        <div className="grid gap-1">
-          <Label htmlFor="sf-name">Name</Label>
-          <Input
-            id="sf-name"
-            placeholder="e.g., Gifts of Refuse"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+    <div className="space-y-3">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+          <ul className="space-y-3">
+            {challenge.special_features.map((sf, i) => (
+              <SortableFeatureItem
+                key={itemIds[i]}
+                id={itemIds[i]}
+                name={sf.name}
+                description={sf.description}
+                isEditing={editingIndex === i}
+                dragDisabled={dragDisabled}
+                onEdit={() => startEdit(i)}
+                onRemove={() => removeSpecialFeatureAt(i)}
+              >
+                {editingIndex === i && (
+                  <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
+                    {error && (
+                      <p className="text-sm text-destructive">{error}</p>
+                    )}
+                    <div className="grid gap-1">
+                      <Label htmlFor={`sf-name-${i}`}>Name</Label>
+                      <Input
+                        id={`sf-name-${i}`}
+                        value={eName}
+                        onChange={(e) => setEName(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid gap-1">
+                      <Label htmlFor={`sf-desc-${i}`}>
+                        Description{" "}
+                        <span className="text-muted-foreground">
+                          (Markdown)
+                        </span>
+                      </Label>
+                      <Textarea
+                        id={`sf-desc-${i}`}
+                        rows={4}
+                        value={eDesc}
+                        onChange={(e) => setEDesc(e.target.value)}
+                        placeholder="When this happens... then do that."
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button onClick={saveEdit}>Save</Button>
+                      <Button
+                        variant="link"
+                        className="h-8 p-0"
+                        onClick={cancelEdit}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </SortableFeatureItem>
+            ))}
+
+            {/* Add button row */}
+            <li className="flex">
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-1 w-full justify-center gap-2 border-dashed"
+                onClick={addPlaceholder}
+              >
+                <Plus className="h-4 w-4" /> Add feature
+              </Button>
+            </li>
+          </ul>
+        </SortableContext>
+      </DndContext>
+    </div>
+  );
+}
+
+/* ---------- Sortable item ---------- */
+function SortableFeatureItem({
+  id,
+  name,
+  description,
+  isEditing,
+  dragDisabled,
+  onEdit,
+  onRemove,
+  children,
+}: {
+  id: string;
+  name: string;
+  description?: string | null;
+  isEditing: boolean;
+  dragDisabled: boolean;
+  onEdit: () => void;
+  onRemove: () => void;
+  children?: React.ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: dragDisabled });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={`rounded-md border bg-white px-3 py-3 ${
+        isDragging ? "shadow-lg ring-1 ring-slate-200" : ""
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        {/* Left: handle + content */}
+        <div className="flex items-start gap-2 min-w-0">
+          <button
+            className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
+              ${
+                dragDisabled
+                  ? "opacity-40 cursor-not-allowed hover:bg-transparent"
+                  : "cursor-grab active:cursor-grabbing"
+              }`}
+            aria-label="Drag to reorder"
+            title={
+              dragDisabled ? "Finish editing to reorder" : "Drag to reorder"
+            }
+            disabled={dragDisabled}
+            {...(!dragDisabled ? attributes : {})}
+            {...(!dragDisabled ? listeners : {})}
+          >
+            <GripVertical className="h-4 w-4 text-slate-500" />
+          </button>
+
+          <div className="min-w-0">
+            <div className="font-medium truncate">{name}</div>
+            {description ? (
+              <div
+                className="text-sm text-foreground/80 prose-sm max-w-none"
+                dangerouslySetInnerHTML={{
+                  __html: renderLitmMarkdown(description),
+                }}
+              />
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                No description
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <Label htmlFor="sf-desc" className="text-sm text-muted-foreground">
-            Description (Markdown supported)
-          </Label>
+        {/* Actions */}
+        <div className="flex items-center gap-1">
           <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setShowPreview((v) => !v)}
-            className="inline-flex items-center gap-1"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            title="Edit"
+            onClick={onEdit}
           >
-            <Eye className="h-4 w-4" />
-            {showPreview ? "Hide preview" : "Show preview"}
+            <Pencil className="h-4 w-4" />
           </Button>
-        </div>
-
-        <Textarea
-          id="sf-desc"
-          rows={4}
-          placeholder="When this happens... then do that."
-          value={desc}
-          onChange={(e) => setDesc(e.target.value)}
-        />
-
-        {showPreview && (
-          <div
-            className="prose max-w-none border rounded-md p-3 bg-muted/30"
-            dangerouslySetInnerHTML={{ __html: renderLitmMarkdown(desc) }}
-          />
-        )}
-
-        <div className="flex items-center gap-2">
           <Button
-            type="button"
-            onClick={handleAdd}
-            className="inline-flex items-center gap-1"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-destructive"
+            title="Remove"
+            onClick={onRemove}
           >
-            <Plus className="h-4 w-4" /> Add feature
+            <Trash2 className="h-4 w-4" />
           </Button>
-          {err && <span className="text-sm text-destructive">{err}</span>}
         </div>
       </div>
 
-      {/* List */}
-      <ul className="space-y-3">
-        {challenge.special_features.map((sf, i) => (
-          <li
-            key={`${sf.name}-${i}`}
-            className="rounded-md border p-3 space-y-2"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="font-medium truncate">{sf.name}</div>
-                {sf.description && (
-                  <div
-                    className="text-sm text-foreground/80 prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{
-                      __html: renderLitmMarkdown(sf.description),
-                    }}
-                  />
-                )}
-              </div>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  title="Move up"
-                  onClick={() => moveSpecialFeature(i, Math.max(0, i - 1))}
-                >
-                  <ArrowUp className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  title="Move down"
-                  onClick={() =>
-                    moveSpecialFeature(
-                      i,
-                      Math.min(challenge.special_features.length - 1, i + 1)
-                    )
-                  }
-                >
-                  <ArrowDown className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  title="Edit"
-                  onClick={() => startEdit(i)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive"
-                  title="Remove"
-                  onClick={() => removeSpecialFeatureAt(i)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            {editing === i && (
-              <div className="rounded-md border p-3 space-y-3 bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">Edit Feature #{i + 1}</h4>
-                  <Button
-                    variant="link"
-                    className="h-8 p-0"
-                    onClick={cancelEdit}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-
-                <Input
-                  className="w-full"
-                  value={eName}
-                  onChange={(e) => setEName(e.target.value)}
-                />
-
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm text-muted-foreground">
-                    Description (Markdown)
-                  </Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setEPreview((v) => !v)}
-                    className="inline-flex items-center gap-1"
-                  >
-                    <Eye className="h-4 w-4" />{" "}
-                    {ePreview ? "Hide preview" : "Show preview"}
-                  </Button>
-                </div>
-
-                <Textarea
-                  rows={4}
-                  value={eDesc}
-                  onChange={(e) => setEDesc(e.target.value)}
-                />
-
-                {ePreview && (
-                  <div
-                    className="prose max-w-none border rounded-md p-3 bg-muted/30"
-                    dangerouslySetInnerHTML={{
-                      __html: renderLitmMarkdown(eDesc),
-                    }}
-                  />
-                )}
-
-                <div>
-                  <Button onClick={saveEdit}>Save</Button>
-                </div>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+      {/* Inline editor content */}
+      {children}
+    </li>
   );
 }
