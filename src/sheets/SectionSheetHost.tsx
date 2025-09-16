@@ -93,7 +93,10 @@ export default function SectionSheetHost() {
 
   return (
     <Sheet open={open} onOpenChange={(o) => (!o ? closeSheet() : undefined)}>
-      <SheetContent side="right" className="w-[560px] sm:max-w-none p-0">
+      <SheetContent
+        side="right"
+        className="w-[560px] sm:max-w-none p-0 h-screen flex flex-col"
+      >
         <div className="border-b px-6 py-4">
           <SheetHeader className="text-left">
             <SheetTitle>{title}</SheetTitle>
@@ -103,7 +106,7 @@ export default function SectionSheetHost() {
           </SheetHeader>
         </div>
 
-        <ScrollArea className="h-[calc(100vh-4rem)] px-6 py-4">
+        <ScrollArea className="px-6 py-4 flex-1 h-1">
           {content ?? (
             <div className="text-sm text-muted-foreground">
               Select a section in the preview to start editing.
