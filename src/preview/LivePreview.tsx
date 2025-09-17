@@ -1,16 +1,32 @@
-// src/preview/LivePreview.tsx
+import { SectionGate, SectionGroupGate } from "./components/SectionGate";
+import { useUIStore } from "@/store/uiStore";
 import BasicBlock from "./blocks/BasicBlock";
 import LimitsBlock from "./blocks/LimitsBlock";
 import SpecialFeaturesBlock from "./blocks/SpecialFeaturesBlock";
 import TagsMightBlock from "./blocks/TagsMightBlock";
 import ThreatsBlock from "./blocks/ThreatsBlock";
-import MetaFooterBlock from "./blocks/MetaFooterBlock"; // <-- add
+import MetaFooterBlock from "./blocks/MetaFooterBlock";
 import "./challengeTheme.css";
+import { cn } from "@/lib/utils";
 
 export default function LivePreview() {
+  const ui = useUIStore();
+  const zoom = ui.zoom;
+  const bg = ui.background;
+
   return (
-    <>
-      <div className="challenge-sheet">
+    <div>
+      <div
+        className={cn(
+          "challenge-sheet",
+          bg === "parchment"
+            ? "bg-parchment"
+            : bg === "plain"
+              ? "bg-plain"
+              : "bg-transparent"
+        )}
+        style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
+      >
         <div className="challenge-sheet__inner">
           <BasicBlock />
 
@@ -19,8 +35,14 @@ export default function LivePreview() {
             {/* LEFT COLUMN */}
             <div className="space-y-4 pr-4">
               <LimitsBlock />
-              <TagsMightBlock />
-              <SpecialFeaturesBlock />
+
+              <SectionGroupGate ids={["tagsStatuses", "might"]}>
+                <TagsMightBlock />
+              </SectionGroupGate>
+
+              <SectionGate id="specialFeatures">
+                <SpecialFeaturesBlock />
+              </SectionGate>
             </div>
 
             {/* VERTICAL DIVIDER */}
@@ -35,7 +57,9 @@ export default function LivePreview() {
       </div>
 
       {/* Meta footer + pill */}
-      <MetaFooterBlock />
-    </>
+      <SectionGate id="meta">
+        <MetaFooterBlock />
+      </SectionGate>
+    </div>
   );
 }

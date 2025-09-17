@@ -9,6 +9,9 @@ export default function ThreatsBlock() {
   const { challenge } = useChallengeStore();
   const { openSheet } = useSheetStore();
 
+  const hasThreats = challenge.threats.length > 0;
+  const hasGeneral = challenge.general_consequences.length > 0;
+
   return (
     <div>
       <SectionHeader
@@ -16,8 +19,10 @@ export default function ThreatsBlock() {
         title="Threats & Consequences"
         onClick={() => openSheet({ kind: "threats", mode: "create" })}
       />
+
       <div className="threat-section space-y-2 mt-2">
-        {challenge.threats.length ? (
+        {/* THREATS */}
+        {hasThreats &&
           challenge.threats.map((t, ti) => (
             <ClickableSection
               key={`${t.name}-${ti}`}
@@ -42,7 +47,7 @@ export default function ThreatsBlock() {
                 <div className="mt-1">
                   {t.consequences.map((c, ci) => (
                     <div key={ci} className="conseq-row">
-                      <div className="">
+                      <div>
                         <span className="ico ico-conseq" aria-hidden />
                       </div>
                       <div
@@ -56,8 +61,36 @@ export default function ThreatsBlock() {
                 </div>
               </div>
             </ClickableSection>
-          ))
-        ) : (
+          ))}
+
+        {/* GENERAL CONSEQUENCES (no threat header) */}
+        {hasGeneral && (
+          <ClickableSection
+            onClick={() => openSheet({ kind: "threats", mode: "create" })}
+            ariaLabel="Edit general consequences"
+          >
+            <div className="threat-card">
+              <div className="mt-1">
+                {challenge.general_consequences.map((c, idx) => (
+                  <div key={`gc-${idx}`} className="conseq-row">
+                    <div>
+                      <span className="ico ico-conseq" aria-hidden />
+                    </div>
+                    <div
+                      className="conseq-text"
+                      dangerouslySetInnerHTML={{
+                        __html: renderLitmMarkdown(c),
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </ClickableSection>
+        )}
+
+        {/* EMPTY STATE (only when no threats AND no general consequences) */}
+        {!hasThreats && !hasGeneral && (
           <button
             type="button"
             className="text-xs underline decoration-dotted opacity-80 hover:opacity-100 cursor-pointer"

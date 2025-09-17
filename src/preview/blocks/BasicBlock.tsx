@@ -4,6 +4,7 @@ import { renderLitmMarkdown } from "@/utils/markdown";
 import { useSheetStore } from "@/store/sheetStore";
 import { ClickableSection } from "../components/Clickable";
 import "../../preview/challengeTheme.css";
+import { SectionGate } from "../components/SectionGate";
 
 export default function BasicBlock() {
   const { challenge } = useChallengeStore();
@@ -33,40 +34,45 @@ export default function BasicBlock() {
       </ClickableSection>
 
       {/* Roles + Description */}
-      <ClickableSection
-        onClick={() => openSheet({ kind: "basic", mode: "edit" })}
-        ariaLabel="Edit roles"
-      >
-        <div className="text-center challenge-roles">
-          {challenge.roles.length ? (
-            challenge.roles.join(", ")
-          ) : (
-            <span className="underline decoration-dotted cursor-pointer">
-              add roles
-            </span>
-          )}
-        </div>
-      </ClickableSection>
-      <ClickableSection
-        onClick={() => openSheet({ kind: "basic", mode: "edit" })}
-        ariaLabel="Edit description"
-      >
-        <div className="flex justify-center my-2">
-          <div className="challenge-desc text-center" style={{ width: "77%" }}>
-            {challenge.description ? (
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: renderLitmMarkdown(challenge.description),
-                }}
-              />
+      <SectionGate id="rolesDesc">
+        <ClickableSection
+          onClick={() => openSheet({ kind: "basic", mode: "edit" })}
+          ariaLabel="Edit roles"
+        >
+          <div className="text-center challenge-roles">
+            {challenge.roles.length ? (
+              challenge.roles.join(", ")
             ) : (
               <span className="underline decoration-dotted cursor-pointer">
-                add a short description
+                add roles
               </span>
             )}
           </div>
-        </div>
-      </ClickableSection>
+        </ClickableSection>
+        <ClickableSection
+          onClick={() => openSheet({ kind: "basic", mode: "edit" })}
+          ariaLabel="Edit description"
+        >
+          <div className="flex justify-center my-2">
+            <div
+              className="challenge-desc text-center"
+              style={{ width: "77%" }}
+            >
+              {challenge.description ? (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: renderLitmMarkdown(challenge.description),
+                  }}
+                />
+              ) : (
+                <span className="underline decoration-dotted cursor-pointer">
+                  add a short description
+                </span>
+              )}
+            </div>
+          </div>
+        </ClickableSection>
+      </SectionGate>
     </>
   );
 }

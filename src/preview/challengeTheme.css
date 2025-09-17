@@ -86,13 +86,21 @@
 /* ---------- Page/card container ---------- */
 
 .challenge-sheet {
-  background-image: url(http://cdn.backgroundhost.com/backgrounds/subtlepatterns/white_plaster.png);
-  background-color: #eae2da;
-  background-blend-mode: luminosity;
+  background: transparent;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 20px;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+}
+
+.challenge-sheet.bg-plain {
+  background: var(--litm-parchment-bg, #f7f2e7);
+}
+
+.challenge-sheet.bg-parchment {
+  background-image: url(http://cdn.backgroundhost.com/backgrounds/subtlepatterns/white_plaster.png);
+  background-color: #eae2da;
+  background-blend-mode: luminosity;
 }
 
 /* Space wrapper (inner parchment) */
