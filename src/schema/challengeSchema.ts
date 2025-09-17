@@ -1,12 +1,5 @@
 import { z } from "zod";
-import type {
-  Challenge,
-  Might,
-  Limit,
-  Threat,
-  SpecialFeature,
-  MetaInfo,
-} from "../store/challengeStore";
+import type { Challenge } from "../store/challengeStore";
 import { parseToken } from "../utils/tags";
 import { rolesList } from "../utils/constants";
 
@@ -47,14 +40,26 @@ const SpecialFeatureSchema = z.object({
   description: z.string().optional().default(""),
 });
 
-const MetaSchema = z
-  .object({
-    sourcebook: z.string().optional(),
-    chapter: z.string().optional(),
-    page: z.coerce.number().int().optional(),
-    is_official: z.boolean().optional(),
-  })
-  .partial();
+const PublicationTypeEnum = z.enum([
+  "official",
+  "third_party",
+  "cauldron",
+  "homebrew",
+]);
+
+const MetaSchema = z.object({
+  publication_type: PublicationTypeEnum.optional(),
+  source: z.string().trim().min(1, "Source cannot be empty").optional(),
+  source_id: z.string().trim().min(1).optional(),
+  authors: z
+    .preprocess(
+      // Treat null/undefined as "not provided"
+      (v) => (v == null ? undefined : v),
+      z.array(z.string().trim().min(1)).default([])
+    )
+    .optional(),
+  page: z.coerce.number().int().min(1).optional(),
+});
 
 export const ChallengeSchema = z
   .object({

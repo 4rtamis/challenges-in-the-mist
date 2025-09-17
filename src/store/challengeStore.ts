@@ -24,11 +24,18 @@ export type Threat = {
 
 export type SpecialFeature = { name: string; description: string };
 
-export type MetaInfo = {
-  sourcebook?: string;
-  chapter?: string;
-  page?: number;
-  is_official?: boolean;
+export type PublicationType =
+  | "official"
+  | "third_party"
+  | "cauldron"
+  | "homebrew";
+
+export type ChallengeMeta = {
+  publication_type?: PublicationType;
+  source?: string; // title of book/product
+  source_id?: string; // optional id from catalog
+  authors?: string[]; // list of names
+  page?: number; // optional
 };
 
 export type Challenge = {
@@ -42,7 +49,7 @@ export type Challenge = {
   threats: Threat[];
   general_consequences: string[]; // floating consequences (our extension)
   special_features: SpecialFeature[]; // NEW
-  meta?: MetaInfo; // NEW
+  meta?: ChallengeMeta; // NEW
 };
 
 type ChallengeStore = {
@@ -99,7 +106,7 @@ type ChallengeStore = {
   moveSpecialFeature: (from: number, to: number) => void;
 
   // Meta
-  updateMeta: (update: Partial<MetaInfo>) => void;
+  updateMeta: (update: Partial<ChallengeMeta>) => void;
 };
 
 function clamp(n: number, lo: number, hi: number) {
