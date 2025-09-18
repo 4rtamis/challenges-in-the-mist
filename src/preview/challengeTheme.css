@@ -1,444 +1,445 @@
 /* ---------- Palette from your Typst colors ---------- */
 :root {
-  --litm-black: #000000;
-  --litm-dark-brown: #302522;
-  --litm-soft-brown: #4f311d;
-  --litm-light-brown: #724b32;
-  --litm-clear-brown: #856b5b;
-  --litm-gray-brown: #cfbfb4;
-  --litm-brick-red: #752b2b;
-  --litm-light-brick-red: #915656;
-  --litm-parchment-yellow: #e3d2c1;
-  --litm-pastel-green: #bccdb0;
-  --litm-pastel-yellow: #efd693;
-  --litm-grayish-red: #d9b2aa;
-  --litm-ganoush-orange: #edbb89;
+    --litm-black: #000000;
+    --litm-dark-brown: #302522;
+    --litm-soft-brown: #4f311d;
+    --litm-light-brown: #724b32;
+    --litm-clear-brown: #856b5b;
+    --litm-gray-brown: #cfbfb4;
+    --litm-brick-red: #752b2b;
+    --litm-light-brick-red: #915656;
+    --litm-parchment-yellow: #e3d2c1;
+    --litm-pastel-green: #bccdb0;
+    --litm-pastel-yellow: #efd693;
+    --litm-grayish-red: #d9b2aa;
+    --litm-ganoush-orange: #edbb89;
 }
 
 /* ---------- Font “slots” matching your Typst spec ---------- */
 :root {
-  --font-ch-name:
-    "Texturina", "IM Fell Great Primer", ui-serif, Georgia, "Times New Roman",
-    serif;
-  --font-ch-roles:
-    "Texturina", "IM Fell Great Primer", ui-serif, Georgia, "Times New Roman",
-    serif;
-  --font-ch-desc:
-    "Texturina", "Labrada", ui-serif, Georgia, "Times New Roman", serif;
-  --font-ch-sections:
-    "IM Fell Great Primer", ui-serif, Georgia, "Times New Roman", serif;
-  --font-ch-limits:
-    "CCTreasureTrove", "IM Fell Great Primer", ui-serif, Georgia,
-    "Times New Roman", serif;
-  --font-ch-threat-name:
-    "CCTreasureTrove", "IM Fell Great Primer", ui-serif, Georgia,
-    "Times New Roman", serif;
-  --font-ch-threat-desc: "Kalam", ui-serif, Georgia, "Times New Roman", serif;
-  --font-ch-threat-body: "Labrada", ui-serif, Georgia, "Times New Roman", serif;
-  --font-ch-special-feature:
-    "Labrada", ui-serif, Georgia, "Times New Roman", serif;
-  --font-ch-tags-statuses:
-    "Labrada", ui-serif, Georgia, "Times New Roman", serif;
-  --font-ch-might: "Labrada", ui-serif, Georgia, "Times New Roman", serif;
-  --font-ch-progress-limit:
-    "Labrada", ui-serif, Georgia, "Times New Roman", serif;
-  --font-small-heading:
-    "CCTreasureTrove", "IM Fell Great Primer", ui-serif, Georgia,
-    "Times New Roman", serif;
+    --font-ch-name:
+        'Texturina', 'IM Fell Great Primer', ui-serif, Georgia,
+        'Times New Roman', serif;
+    --font-ch-roles:
+        'Texturina', 'IM Fell Great Primer', ui-serif, Georgia,
+        'Times New Roman', serif;
+    --font-ch-desc:
+        'Texturina', 'Labrada', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-ch-sections:
+        'IM Fell Great Primer', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-ch-limits:
+        'CCTreasureTrove', 'IM Fell Great Primer', ui-serif, Georgia,
+        'Times New Roman', serif;
+    --font-ch-threat-name:
+        'CCTreasureTrove', 'IM Fell Great Primer', ui-serif, Georgia,
+        'Times New Roman', serif;
+    --font-ch-threat-desc: 'Kalam', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-ch-threat-body:
+        'Labrada', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-ch-special-feature:
+        'Labrada', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-ch-tags-statuses:
+        'Labrada', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-ch-might: 'Labrada', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-ch-progress-limit:
+        'Labrada', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-small-heading:
+        'CCTreasureTrove', 'IM Fell Great Primer', ui-serif, Georgia,
+        'Times New Roman', serif;
 }
 
 /* Inline “image as element” helpers */
 .ico {
-  display: inline-block;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+    display: inline-block;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 .ico-cross {
-  width: 17px;
-  height: 17px;
-  background-image: url("/assets/images/cross.svg");
+    background-image: url('/assets/images/cross.svg');
+    width: 17px;
+    height: 17px;
 }
 .ico-shield {
-  width: 22px;
-  height: 22px;
-  background-image: url("/assets/images/shield.svg");
+    background-image: url('/assets/images/shield.svg');
+    width: 22px;
+    height: 22px;
 }
 .ico-conseq {
-  width: 13px;
-  height: 13px;
-  background-image: url("/assets/images/consequence.svg");
+    background-image: url('/assets/images/consequence.svg');
+    width: 13px;
+    height: 13px;
 }
 .ico-might-origin {
-  background-image: url("/assets/images/might-origin.svg");
+    background-image: url('/assets/images/might-origin.svg');
 }
 .ico-might-adventure {
-  width: 13px;
-  height: 13px;
-  background-image: url("/assets/images/might-adventure.svg");
+    background-image: url('/assets/images/might-adventure.svg');
+    width: 13px;
+    height: 13px;
 }
 .ico-might-greatness {
-  width: 13px;
-  height: 13px;
-  background-image: url("/assets/images/might-greatness.svg");
+    background-image: url('/assets/images/might-greatness.svg');
+    width: 13px;
+    height: 13px;
 }
 
 /* ---------- Page/card container ---------- */
 
 .challenge-sheet {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 20px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    background: transparent;
+    overflow: hidden;
 }
 
 .challenge-sheet.bg-plain {
-  background: var(--litm-parchment-bg, #f7f2e7);
+    background: var(--litm-parchment-bg, #f7f2e7);
 }
 
 .challenge-sheet.bg-parchment {
-  background-image: url(/assets/images/white_plaster.png);
-  background-color: #eae2da;
-  background-blend-mode: luminosity;
+    background-image: url(/assets/images/white_plaster.png);
+    background-color: #eae2da;
+    background-blend-mode: luminosity;
 }
 
 /* Space wrapper (inner parchment) */
 .challenge-sheet__inner {
-  padding: 1rem 2rem;
+    padding: 1rem 2rem;
 }
 
 /* ---------- Header (name + rating) ---------- */
 .challenge-name {
-  font-family: var(--font-ch-name);
-  color: var(--litm-soft-brown);
-  font-weight: bold;
-  font-size: 1.25rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+    color: var(--litm-soft-brown);
+    font-weight: bold;
+    font-size: 1.25rem;
+    font-family: var(--font-ch-name);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 .challenge-rating {
-  display: inline-flex;
-  gap: 1px;
+    display: inline-flex;
+    gap: 1px;
 }
 
 /* ---------- Roles ---------- */
 .challenge-roles {
-  font-family: var(--font-ch-roles);
-  color: var(--litm-light-brown);
-  font-size: 0.85rem;
-  font-style: italic;
-  font-weight: 700;
+    color: var(--litm-light-brown);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.85rem;
+    font-family: var(--font-ch-roles);
 }
 
 /* ---------- Description ---------- */
 .challenge-desc {
-  font-family: var(--font-ch-desc);
-  font-size: 0.8rem;
-  line-height: 1.4;
-  font-weight: 500;
-  color: var(--litm-dark-brown);
+    color: var(--litm-dark-brown);
+    font-weight: 500;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    font-family: var(--font-ch-desc);
 }
 
 /* ---------- Section header (center + left variants) ---------- */
 .section-title {
-  font-family: var(--font-ch-sections);
-  font-size: 0.5rem;
-  font-weight: 700;
-  color: var(--litm-clear-brown);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
+    color: var(--litm-clear-brown);
+    font-weight: 700;
+    font-size: 0.5rem;
+    font-family: var(--font-ch-sections);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 .section-line {
-  height: 1px;
-  background: var(--litm-clear-brown);
-  opacity: 0.7;
+    opacity: 0.7;
+    background: var(--litm-clear-brown);
+    height: 1px;
 }
 .section--center {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 6px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 6px;
 }
 .section--left {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 6px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 6px;
 }
 .section--left .section-line {
-  width: 60%;
+    width: 60%;
 }
 
 /* ---------- Limits row ---------- */
 .limit-row {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 0.1rem;
-  width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 0.1rem;
+    width: 100%;
 }
 
 .limit-name {
-  position: relative;
-  display: inline-block;
-  font-family: var(--font-ch-limits);
-  font-weight: 700;
-  font-size: 0.7rem;
-  text-transform: uppercase;
+    display: inline-block;
+    position: relative;
+    font-weight: 700;
+    font-size: 0.7rem;
+    font-family: var(--font-ch-limits);
+    text-transform: uppercase;
 }
 /* “highlight” behind the text baseline */
 .limit-name::before {
-  content: "";
-  position: absolute;
-  width: 100%;
-  left: 0;
-  right: 0;
-  bottom: 0.3em; /* slightly below baseline */
-  top: 0.2em;
-  background: var(--litm-grayish-red);
-  z-index: -1;
-  box-sizing: content-box;
-  border-right: 1rem solid var(--litm-grayish-red);
-  border-radius: 2px;
+    position: absolute;
+    top: 0.2em;
+    right: 0;
+    bottom: 0.3em; /* slightly below baseline */
+    left: 0;
+    z-index: -1;
+    box-sizing: content-box;
+    border-right: 1rem solid var(--litm-grayish-red);
+    border-radius: 2px;
+    background: var(--litm-grayish-red);
+    width: 100%;
+    content: '';
 }
 
 /* Shield badge with number overlay */
 .limit-shield {
-  position: relative;
-  width: 1.3rem;
-  height: 1.3rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: url("/assets/images/shield.svg") no-repeat center / contain;
+    display: inline-flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    background: url('/assets/images/shield.svg') no-repeat center / contain;
+    width: 1.3rem;
+    height: 1.3rem;
 }
 .limit-shield__num {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-55%);
-  font-family: var(--font-ch-limits);
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--litm-parchment-yellow);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-55%);
+    color: var(--litm-parchment-yellow);
+    font-weight: 700;
+    font-size: 0.9rem;
+    font-family: var(--font-ch-limits);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
 }
 
-.limit-shield__num[data-value="4"] {
-  transform: translateY(-60%);
+.limit-shield__num[data-value='4'] {
+    transform: translateY(-60%);
 }
 
-.limit-shield__num[data-value="6"] {
-  transform: translateY(-40%);
+.limit-shield__num[data-value='6'] {
+    transform: translateY(-40%);
 }
 
 /* --- Progress limits --- */
 .limit-progress {
-  margin-top: 0.2rem;
+    margin-top: 0.2rem;
 }
 
 .limit-progress__arrow {
-  width: 0.8rem;
-  height: auto;
-  transform: translateY(20%);
-  display: inline-block;
+    display: inline-block;
+    transform: translateY(20%);
+    width: 0.8rem;
+    height: auto;
 }
 
 .limit-progress__glyph {
-  width: 18px;
-  height: 18px;
-  margin-top: 1px; /* optical alignment with first text line */
+    margin-top: 1px; /* optical alignment with first text line */
+    width: 18px;
+    height: 18px;
 }
 
 .limit-progress__text {
-  /* match the right-column body sizing (threat body look) */
-  font-size: 0.7rem;
-  text-align: center;
-  font-family: var(--font-ch-progress-limit);
-  line-height: 1.3;
+    /* match the right-column body sizing (threat body look) */
+    font-size: 0.7rem;
+    line-height: 1.3;
+    font-family: var(--font-ch-progress-limit);
+    text-align: center;
 }
 
 /* ---------- Special features ---------- */
 .feature-name {
-  font-weight: 700;
-  font-size: 0.76rem;
-  font-family: var(--font-ch-special-feature);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: black;
-  text-align: center;
+    color: black;
+    font-weight: 700;
+    font-size: 0.76rem;
+    font-family: var(--font-ch-special-feature);
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
 }
 .feature-body {
-  font-size: 0.75rem;
-  font-family: var(--font-ch-special-feature);
-  color: black;
-  text-align: center;
-  line-height: 1.3;
+    color: black;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    font-family: var(--font-ch-special-feature);
+    text-align: center;
 }
 
 /* ---------- Tags/Statuses + Might ---------- */
 .tags-line {
-  font-family: var(--font-ch-tags-statuses);
-  font-weight: normal;
-  font-size: 0.85rem;
-  line-height: 1.2;
-  color: black;
+    color: black;
+    font-weight: normal;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    font-family: var(--font-ch-tags-statuses);
 }
 .might-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: black;
-  line-height: 1.3;
-  font-family: var(--font-ch-might);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: black;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    font-family: var(--font-ch-might);
 }
 
 .might-row .ico {
-  width: 0.9rem;
-  height: 0.9rem;
+    width: 0.9rem;
+    height: 0.9rem;
 }
 
 .might-row .ico-might-adventure {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 .might-row .ico-might-greatness {
-  vertical-align: -8%;
+    vertical-align: -8%;
 }
 
 /* ---------- Threats ---------- */
 .threat-card {
-  position: relative;
+    position: relative;
 }
 
 .threat-header {
-  line-height: 1;
+    line-height: 1;
 }
 
 .threat-pill {
-  display: inline-flex;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 0.5rem 0.1rem;
-  height: 1.6em;
-  background: var(--litm-gray-brown);
-  color: #000;
-  font-family: var(--font-ch-threat-name);
-  font-size: 0.5rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-right: 0.8rem;
-  transform: translateY(-10%);
+    display: inline-flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(-10%);
+    margin-right: 0.8rem;
+    background: var(--litm-gray-brown);
+    padding: 0.5rem 0.1rem;
+    height: 1.6em;
+    color: #000;
+    font-weight: 700;
+    font-size: 0.5rem;
+    font-family: var(--font-ch-threat-name);
+    letter-spacing: 0.12em;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 /* Decorative end-caps */
 .threat-pill::before,
 .threat-pill::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  height: 100%;
-  aspect-ratio: 100 / 250;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  pointer-events: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    aspect-ratio: 100 / 250;
+    height: 100%;
+    pointer-events: none;
+    content: '';
 }
 
 .threat-pill::before {
-  left: 0em; /* lets it stick out */
-  transform: translateX(-90%);
-  background-image: url("/assets/images/threat-name-edge-left.svg");
+    left: 0em; /* lets it stick out */
+    transform: translateX(-90%);
+    background-image: url('/assets/images/threat-name-edge-left.svg');
 }
 
 .threat-pill::after {
-  right: 0em;
-  transform: translateX(90%);
-  background-image: url("/assets/images/threat-name-edge-right.svg");
+    right: 0em;
+    transform: translateX(90%);
+    background-image: url('/assets/images/threat-name-edge-right.svg');
 }
 
 .threat-desc {
-  font-family: var(--font-ch-threat-desc);
-  font-size: 0.9rem;
-  font-weight: 400;
-  color: black;
-  line-height: 1;
+    color: black;
+    font-weight: 400;
+    font-size: 0.9rem;
+    line-height: 1;
+    font-family: var(--font-ch-threat-desc);
 }
 
 .threat-desc p {
-  display: inline;
-  line-height: 0;
+    display: inline;
+    line-height: 0;
 }
 
 .ico-conseq {
-  width: 1rem;
-  height: 1rem;
+    width: 1rem;
+    height: 1rem;
 }
 
 .conseq-row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: 0.2rem;
-  line-height: 1.3;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.2rem;
+    line-height: 1.3;
 }
 .conseq-text {
-  font-family: var(--font-ch-threat-body);
-  font-size: 0.8rem;
-  color: black;
+    color: black;
+    font-size: 0.8rem;
+    font-family: var(--font-ch-threat-body);
 }
 
 /* subtle divider between threats */
 .threat-section > *:not(:last-child) .threat-card::after {
-  content: "";
-  display: block;
-  width: 50%;
-  height: 1px;
-  background: var(--litm-gray-brown);
-  opacity: 0.8;
-  margin-top: 0.3rem;
-  margin-left: 1.5rem;
+    display: block;
+    opacity: 0.8;
+    margin-top: 0.3rem;
+    margin-left: 1.5rem;
+    background: var(--litm-gray-brown);
+    width: 50%;
+    height: 1px;
+    content: '';
 }
 
 /* ---------- Vertical divider art ---------- */
 .sheet-grid {
-  display: grid;
-  grid-template-columns: 1.7fr 6px 4fr; /* left | divider | right */
-  gap: 0;
+    display: grid;
+    grid-template-columns: 1.7fr 6px 4fr; /* left | divider | right */
+    gap: 0;
 }
 .sheet-divider {
-  position: relative;
-  background: transparent;
+    position: relative;
+    background: transparent;
 }
 .sheet-divider::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: top center / 8px 400px repeat-y
-    url("/assets/images/white-line.svg");
-  width: 8px;
-  opacity: 0.5;
-  transform: translateX(-0.5px);
+    position: absolute;
+    transform: translateX(-0.5px);
+    opacity: 0.5;
+    inset: 0;
+    background: top center / 8px 400px repeat-y
+        url('/assets/images/white-line.svg');
+    width: 8px;
+    content: '';
 }
 
 /* ---------- Footer (metadata, badges) ---------- */
 .meta-footer {
-  font-size: 0.68rem;
-  color: var(--litm-clear-brown);
+    color: var(--litm-clear-brown);
+    font-size: 0.68rem;
 }
 .meta-footer .badge {
-  display: inline-block;
-  padding: 0.1rem 0.4rem;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 0.25rem;
-  background: #fff7ed; /* amber-50-ish */
-  color: #92400e; /* amber-800-ish */
-  margin-left: 0.35rem;
+    display: inline-block;
+    margin-left: 0.35rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0.25rem;
+    background: #fff7ed; /* amber-50-ish */
+    padding: 0.1rem 0.4rem;
+    color: #92400e; /* amber-800-ish */
 }

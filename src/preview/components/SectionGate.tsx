@@ -1,35 +1,35 @@
-import { useChallengeStore } from "@/store/challengeStore";
+import { useChallengeStore } from '@/store/challengeStore'
 import {
-  useUIStore,
-  shouldShow,
-  groupShouldShow,
-  type SectionId,
-} from "@/store/uiStore";
+    groupShouldShow,
+    shouldShow,
+    useUIStore,
+    type SectionId,
+} from '@/store/uiStore'
 
 export function SectionGate({
-  id,
-  children,
+    id,
+    children,
 }: {
-  id: SectionId;
-  children: React.ReactNode;
+    id: SectionId
+    children: React.ReactNode
 }) {
-  const { challenge } = useChallengeStore();
-  // subscribe to UI store so changes re-render
-  const ui = useUIStore();
-  if (!shouldShow(challenge, id, ui)) return null;
-  return <>{children}</>;
+    const { challenge } = useChallengeStore()
+    // subscribe to UI store so changes re-render
+    const ui = useUIStore()
+    if (!shouldShow(challenge, id, ui)) return null
+    return <>{children}</>
 }
 
 export function SectionGroupGate({
-  ids,
-  children,
+    ids,
+    children,
 }: {
-  ids: SectionId[];
-  children: React.ReactNode;
+    ids: SectionId[]
+    children: React.ReactNode
 }) {
-  const { challenge } = useChallengeStore();
-  // subscribe to UI store so changes re-render
-  const ui = useUIStore();
-  if (!groupShouldShow(challenge, ids, ui)) return null;
-  return <>{children}</>;
+    const { challenge } = useChallengeStore()
+    // subscribe to UI store so changes re-render
+    const ui = useUIStore()
+    if (!groupShouldShow(challenge, ids, ui)) return null
+    return <>{children}</>
 }

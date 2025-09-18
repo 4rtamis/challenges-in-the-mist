@@ -1,105 +1,132 @@
 // src/preview/blocks/ThreatsBlock.tsx
-import { useChallengeStore } from "@/store/challengeStore";
-import { useSheetStore } from "@/store/sheetStore";
-import { renderLitmMarkdown } from "@/utils/markdown";
-import { SectionHeader } from "../components/SectionHeader";
-import { ClickableSection } from "../components/Clickable";
+import { useChallengeStore } from '@/store/challengeStore'
+import { useSheetStore } from '@/store/sheetStore'
+import { renderLitmMarkdown } from '@/utils/markdown'
+import { ClickableSection } from '../components/Clickable'
+import { SectionHeader } from '../components/SectionHeader'
 
 export default function ThreatsBlock() {
-  const { challenge } = useChallengeStore();
-  const { openSheet } = useSheetStore();
+    const { challenge } = useChallengeStore()
+    const { openSheet } = useSheetStore()
 
-  const hasThreats = challenge.threats.length > 0;
-  const hasGeneral = challenge.general_consequences.length > 0;
+    const hasThreats = challenge.threats.length > 0
+    const hasGeneral = challenge.general_consequences.length > 0
 
-  return (
-    <div>
-      <SectionHeader
-        align="left"
-        title="Threats & Consequences"
-        onClick={() => openSheet({ kind: "threats", mode: "create" })}
-      />
+    return (
+        <div>
+            <SectionHeader
+                align="left"
+                title="Threats & Consequences"
+                onClick={() => openSheet({ kind: 'threats', mode: 'create' })}
+            />
 
-      <div className="threat-section space-y-2 mt-2">
-        {/* THREATS */}
-        {hasThreats &&
-          challenge.threats.map((t, ti) => (
-            <ClickableSection
-              key={`${t.name}-${ti}`}
-              onClick={() =>
-                openSheet({ kind: "threats", index: ti, mode: "edit" })
-              }
-              ariaLabel={`Edit threat ${t.name}`}
-            >
-              <div className="threat-card">
-                <div className="threat-header">
-                  <span className="threat-pill">{t.name || ""}</span>
-                  {t.description && (
-                    <span
-                      className="threat-desc"
-                      dangerouslySetInnerHTML={{
-                        __html: renderLitmMarkdown(t.description),
-                      }}
-                    />
-                  )}
-                </div>
+            <div className="threat-section space-y-2 mt-2">
+                {/* THREATS */}
+                {hasThreats &&
+                    challenge.threats.map((t, ti) => (
+                        <ClickableSection
+                            key={`${t.name}-${ti}`}
+                            onClick={() =>
+                                openSheet({
+                                    kind: 'threats',
+                                    index: ti,
+                                    mode: 'edit',
+                                })
+                            }
+                            ariaLabel={`Edit threat ${t.name}`}
+                        >
+                            <div className="threat-card">
+                                <div className="threat-header">
+                                    <span className="threat-pill">
+                                        {t.name || ''}
+                                    </span>
+                                    {t.description && (
+                                        <span
+                                            className="threat-desc"
+                                            dangerouslySetInnerHTML={{
+                                                __html: renderLitmMarkdown(
+                                                    t.description
+                                                ),
+                                            }}
+                                        />
+                                    )}
+                                </div>
 
-                <div className="mt-1">
-                  {t.consequences.map((c, ci) => (
-                    <div key={ci} className="conseq-row">
-                      <div>
-                        <span className="ico ico-conseq" aria-hidden />
-                      </div>
-                      <div
-                        className="conseq-text"
-                        dangerouslySetInnerHTML={{
-                          __html: renderLitmMarkdown(c),
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </ClickableSection>
-          ))}
+                                <div className="mt-1">
+                                    {t.consequences.map((c, ci) => (
+                                        <div key={ci} className="conseq-row">
+                                            <div>
+                                                <span
+                                                    className="ico ico-conseq"
+                                                    aria-hidden
+                                                />
+                                            </div>
+                                            <div
+                                                className="conseq-text"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: renderLitmMarkdown(
+                                                        c
+                                                    ),
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </ClickableSection>
+                    ))}
 
-        {/* GENERAL CONSEQUENCES (no threat header) */}
-        {hasGeneral && (
-          <ClickableSection
-            onClick={() => openSheet({ kind: "threats", mode: "create" })}
-            ariaLabel="Edit general consequences"
-          >
-            <div className="threat-card">
-              <div className="mt-1">
-                {challenge.general_consequences.map((c, idx) => (
-                  <div key={`gc-${idx}`} className="conseq-row">
-                    <div>
-                      <span className="ico ico-conseq" aria-hidden />
-                    </div>
-                    <div
-                      className="conseq-text"
-                      dangerouslySetInnerHTML={{
-                        __html: renderLitmMarkdown(c),
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
+                {/* GENERAL CONSEQUENCES (no threat header) */}
+                {hasGeneral && (
+                    <ClickableSection
+                        onClick={() =>
+                            openSheet({ kind: 'threats', mode: 'create' })
+                        }
+                        ariaLabel="Edit general consequences"
+                    >
+                        <div className="threat-card">
+                            <div className="mt-1">
+                                {challenge.general_consequences.map(
+                                    (c, idx) => (
+                                        <div
+                                            key={`gc-${idx}`}
+                                            className="conseq-row"
+                                        >
+                                            <div>
+                                                <span
+                                                    className="ico ico-conseq"
+                                                    aria-hidden
+                                                />
+                                            </div>
+                                            <div
+                                                className="conseq-text"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: renderLitmMarkdown(
+                                                        c
+                                                    ),
+                                                }}
+                                            />
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        </div>
+                    </ClickableSection>
+                )}
+
+                {/* EMPTY STATE (only when no threats AND no general consequences) */}
+                {!hasThreats && !hasGeneral && (
+                    <button
+                        type="button"
+                        className="text-xs underline decoration-dotted opacity-80 hover:opacity-100 cursor-pointer"
+                        onClick={() =>
+                            openSheet({ kind: 'threats', mode: 'create' })
+                        }
+                    >
+                        add threats & consequences
+                    </button>
+                )}
             </div>
-          </ClickableSection>
-        )}
-
-        {/* EMPTY STATE (only when no threats AND no general consequences) */}
-        {!hasThreats && !hasGeneral && (
-          <button
-            type="button"
-            className="text-xs underline decoration-dotted opacity-80 hover:opacity-100 cursor-pointer"
-            onClick={() => openSheet({ kind: "threats", mode: "create" })}
-          >
-            add threats & consequences
-          </button>
-        )}
-      </div>
-    </div>
-  );
+        </div>
+    )
 }
