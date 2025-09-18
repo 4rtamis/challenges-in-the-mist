@@ -87,17 +87,6 @@ export default function AppTopBar() {
           <Button
             variant="ghost"
             size="icon"
-            title="Examples"
-            onClick={() =>
-              toast("Examples: show a small picker of sample challenges.")
-            }
-          >
-            <BookOpen className="h-4 w-4" />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
             title="Settings"
             onClick={() => toast("Settings: theme & language (coming soon).")}
           >

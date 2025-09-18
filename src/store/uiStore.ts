@@ -16,8 +16,6 @@ export type SectionId =
 type Background = "parchment" | "plain" | "transparent";
 
 type ExportPrefs = {
-  respectHidden: boolean;
-  autoHideEmpty: boolean;
   scale: 2 | 1 | 3;
   transparent: boolean;
 };
@@ -58,8 +56,6 @@ export const useUIStore = create<UIState>()(
       autoHideEmpty: true,
       hidden: defaultHidden,
       exportPrefs: {
-        respectHidden: true,
-        autoHideEmpty: true,
         scale: 2,
         transparent: false,
       },
@@ -77,7 +73,7 @@ export const useUIStore = create<UIState>()(
         set({
           zoom: 1,
           background: "parchment",
-          autoHideEmpty: true,
+          autoHideEmpty: false,
           hidden: defaultHidden,
         }),
     }),

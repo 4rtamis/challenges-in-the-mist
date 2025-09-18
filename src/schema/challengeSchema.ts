@@ -49,8 +49,8 @@ const PublicationTypeEnum = z.enum([
 
 const MetaSchema = z.object({
   publication_type: PublicationTypeEnum.optional(),
-  source: z.string().trim().min(1, "Source cannot be empty").optional(),
-  source_id: z.string().trim().min(1).optional(),
+  source: z.string().trim().optional(),
+  source_id: z.string().trim().optional(),
   authors: z
     .preprocess(
       // Treat null/undefined as "not provided"

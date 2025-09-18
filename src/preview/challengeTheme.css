@@ -98,7 +98,7 @@
 }
 
 .challenge-sheet.bg-parchment {
-  background-image: url(http://cdn.backgroundhost.com/backgrounds/subtlepatterns/white_plaster.png);
+  background-image: url(/assets/images/white_plaster.png);
   background-color: #eae2da;
   background-blend-mode: luminosity;
 }
