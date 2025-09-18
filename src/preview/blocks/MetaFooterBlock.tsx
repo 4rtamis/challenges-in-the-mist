@@ -47,7 +47,7 @@ export default function MetaFooterBlock() {
             </div>
           ) : (
             <span className="text-xs cursor-pointer text-muted-foreground underline decoration-dotted">
-              Add attribution (type, source, authors, page)
+              add attribution (type, source, authors, page)
             </span>
           )}
         </div>

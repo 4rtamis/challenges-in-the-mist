@@ -12,7 +12,7 @@ const toNull = (s?: string | null) => {
 
 const MightSchema = z.object({
   name: z.string().trim().min(1, "Might name is required"),
-  level: z.enum(["adventure", "greatness"]).default("adventure"),
+  level: z.enum(["origin", "adventure", "greatness"]).default("adventure"),
   vulnerability: z.string().nullable().optional().transform(toNull),
 });
 

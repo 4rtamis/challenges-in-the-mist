@@ -24,12 +24,16 @@ import {
 } from "lucide-react";
 import ViewMenu from "./ViewMenu";
 import ExportDialog from "./ExportDialog";
-
+import ImportDialog from "./ImportDialog";
+import NewDialog from "./NewDialog";
 import { useState } from "react";
+import { set } from "zod";
 
 export default function AppTopBar() {
   const { replaceChallenge } = useChallengeStore();
   const [exportOpen, setExportOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [newOpen, setNewOpen] = useState(false);
 
   return (
     <div className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -48,26 +52,7 @@ export default function AppTopBar() {
             size="icon"
             title="New"
             onClick={() => {
-              if (
-                confirm(
-                  "Start a new empty challenge? Unsaved changes will be lost."
-                )
-              ) {
-                replaceChallenge({
-                  name: "",
-                  description: "",
-                  rating: 1,
-                  roles: [],
-                  limits: [],
-                  special_features: [],
-                  tags_and_statuses: [],
-                  mights: [],
-                  threats: [],
-                  general_consequences: [],
-                  meta: {},
-                } as any);
-                toast("New challenge created.");
-              }
+              setNewOpen(true);
             }}
           >
             <FilePlus2 className="h-4 w-4" />
@@ -77,9 +62,7 @@ export default function AppTopBar() {
             variant="ghost"
             size="icon"
             title="Import (.toml)"
-            onClick={() =>
-              toast("Import: open your existing Import flow (Sheet/Bar) here.")
-            }
+            onClick={() => setImportOpen(true)}
           >
             <Upload className="h-4 w-4" />
           </Button>
@@ -132,6 +115,8 @@ export default function AppTopBar() {
         </div>
       </div>
 
+      <NewDialog open={newOpen} onOpenChange={setNewOpen} />
+      <ImportDialog open={importOpen} onOpenChange={setImportOpen} />
       <ExportDialog open={exportOpen} onOpenChange={setExportOpen} />
     </div>
   );

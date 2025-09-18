@@ -3,7 +3,7 @@
 import { Toaster } from "@/components/ui/sonner";
 
 import LivePreview from "@/preview/LivePreview";
-import SectionSheetHost from "@/sheets/SectionSheetHost";
+import SectionSheetHost from "@/editor/SectionSheetHost";
 import AppTopBar from "./ui/AppTopBar";
 
 export default function App() {

@@ -1,4 +1,3 @@
-// src/sheets/SectionSheetHost.tsx
 import { useMemo } from "react";
 import { useSheetStore } from "@/store/sheetStore";
 import {
@@ -34,7 +33,7 @@ export default function SectionSheetHost() {
             target.mode === "create"
               ? "Add new threat(s) with related consequences."
               : "Edit threats and their consequences.",
-          content: <ThreatsForm variant="bare" focusIndex={target.index} />,
+          content: <ThreatsForm focusIndex={target.index} />,
         };
       case "limits":
         return {

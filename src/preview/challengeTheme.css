@@ -105,7 +105,7 @@
 
 /* Space wrapper (inner parchment) */
 .challenge-sheet__inner {
-  padding: 28px 28px 16px 28px;
+  padding: 1rem 2rem;
 }
 
 /* ---------- Header (name + rating) ---------- */
