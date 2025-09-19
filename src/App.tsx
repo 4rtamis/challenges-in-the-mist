@@ -3,10 +3,12 @@
 import { Toaster } from '@/components/ui/sonner'
 
 import SectionSheetHost from '@/editor/SectionSheetHost'
+import { useAutosave } from '@/hooks/useAutosave'
 import LivePreview from '@/preview/LivePreview'
 import AppTopBar from './ui/AppTopBar'
 
 export default function App() {
+    useAutosave()
     return (
         <>
             <AppTopBar />
