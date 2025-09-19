@@ -169,7 +169,6 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                 key={itemIds[idx]}
                                 id={itemIds[idx]}
                                 might={m}
-                                isEditing={editingIndex === idx}
                                 dragDisabled={dragDisabled}
                                 onEdit={() => startEdit(idx)}
                                 onRemove={() => removeMightAt(idx)}
@@ -310,7 +309,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
 function SortableMightItem({
     id,
     might: m,
-    isEditing,
+
     dragDisabled,
     onEdit,
     onRemove,
@@ -318,7 +317,6 @@ function SortableMightItem({
 }: {
     id: string
     might: Might
-    isEditing: boolean
     dragDisabled: boolean
     onEdit: () => void
     onRemove: () => void

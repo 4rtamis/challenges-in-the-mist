@@ -117,13 +117,6 @@ export default function TagsStatusesForm({
         cancelEdit()
     }
 
-    // Render Markdown as a single inline snippet (strip a lone wrapping <p>…</p>)
-    function renderInlineHTML(s: string) {
-        const html = renderLitmMarkdown(s)
-        const singleP = html.match(/^<p>([\s\S]*)<\/p>\s*$/)
-        return singleP ? singleP[1] : html
-    }
-
     return (
         <div className="space-y-3">
             <DndContext
@@ -141,7 +134,6 @@ export default function TagsStatusesForm({
                                 key={itemIds[idx]}
                                 id={itemIds[idx]}
                                 value={value}
-                                isEditing={editingIndex === idx}
                                 dragDisabled={dragDisabled}
                                 onEdit={() => startEdit(idx)}
                                 onRemove={() => removeTokenAt(idx)}
@@ -209,7 +201,6 @@ export default function TagsStatusesForm({
 function SortableTokenItem({
     id,
     value,
-    isEditing,
     dragDisabled,
     onEdit,
     onRemove,
@@ -217,7 +208,6 @@ function SortableTokenItem({
 }: {
     id: string
     value: string
-    isEditing: boolean
     dragDisabled: boolean
     onEdit: () => void
     onRemove: () => void

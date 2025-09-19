@@ -151,7 +151,6 @@ export default function SpecialFeaturesForm({
                                 id={itemIds[i]}
                                 name={sf.name}
                                 description={sf.description}
-                                isEditing={editingIndex === i}
                                 dragDisabled={dragDisabled}
                                 onEdit={() => startEdit(i)}
                                 onRemove={() => removeSpecialFeatureAt(i)}
@@ -232,7 +231,7 @@ function SortableFeatureItem({
     id,
     name,
     description,
-    isEditing,
+
     dragDisabled,
     onEdit,
     onRemove,
@@ -241,7 +240,6 @@ function SortableFeatureItem({
     id: string
     name: string
     description?: string | null
-    isEditing: boolean
     dragDisabled: boolean
     onEdit: () => void
     onRemove: () => void

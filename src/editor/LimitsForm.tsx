@@ -173,7 +173,6 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                                 key={itemIds[idx]}
                                 id={itemIds[idx]}
                                 limit={l}
-                                isEditing={editingIndex === idx}
                                 dragDisabled={dragDisabled}
                                 // row actions
                                 onEdit={() => startEdit(idx)}
@@ -325,7 +324,6 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
 function SortableLimitItem({
     id,
     limit: l,
-    isEditing,
     dragDisabled,
     onEdit,
     onRemove,
@@ -333,7 +331,6 @@ function SortableLimitItem({
 }: {
     id: string
     limit: Limit
-    isEditing: boolean
     dragDisabled: boolean
     onEdit: () => void
     onRemove: () => void

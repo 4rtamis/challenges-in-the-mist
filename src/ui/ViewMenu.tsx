@@ -20,7 +20,6 @@ export default function ViewMenu({ children }: { children: React.ReactNode }) {
         toggleHidden,
         autoHideEmpty,
         setAutoHideEmpty,
-        zoom,
         setZoom,
         background,
         setBackground,
