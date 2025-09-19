@@ -1,5 +1,14 @@
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Cog, Download, Eye, FilePlus2, HelpCircle, Upload } from 'lucide-react'
+import {
+    Cog,
+    Download,
+    Eye,
+    FilePlus2,
+    HelpCircle,
+    TagIcon,
+    Upload,
+} from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import ExportDialog from './ExportDialog'
@@ -22,6 +31,10 @@ export default function AppTopBar() {
                         <span className="opacity-70">
                             Challenges in the Mist
                         </span>
+                        <Badge variant="outline" className="ml-2">
+                            <TagIcon />
+                            0.1.0
+                        </Badge>
                     </div>
                 </div>
 
