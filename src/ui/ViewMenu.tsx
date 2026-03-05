@@ -12,7 +12,12 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useUIStore, type SectionId } from '@/store/uiStore'
+import {
+    PREVIEW_WIDTH_MAX,
+    PREVIEW_WIDTH_MIN,
+    useUIStore,
+    type SectionId,
+} from '@/store/uiStore'
 
 export default function ViewMenu({ children }: { children: React.ReactNode }) {
     const {
@@ -21,6 +26,8 @@ export default function ViewMenu({ children }: { children: React.ReactNode }) {
         autoHideEmpty,
         setAutoHideEmpty,
         setZoom,
+        previewWidth,
+        setPreviewWidth,
         background,
         setBackground,
         resetViewPrefs,
@@ -74,6 +81,31 @@ export default function ViewMenu({ children }: { children: React.ReactNode }) {
                         <DropdownMenuItem onClick={() => setZoom(1.5)}>
                             150%
                         </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
+
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Preview width</DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="w-64 p-3">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{PREVIEW_WIDTH_MIN}px</span>
+                            <span className="font-medium text-foreground">
+                                {previewWidth}px
+                            </span>
+                            <span>{PREVIEW_WIDTH_MAX}px</span>
+                        </div>
+                        <input
+                            type="range"
+                            min={PREVIEW_WIDTH_MIN}
+                            max={PREVIEW_WIDTH_MAX}
+                            step={10}
+                            value={previewWidth}
+                            onChange={(e) =>
+                                setPreviewWidth(Number(e.target.value))
+                            }
+                            className="mt-2 w-full accent-primary"
+                            aria-label="Preview width"
+                        />
                     </DropdownMenuSubContent>
                 </DropdownMenuSub>
 

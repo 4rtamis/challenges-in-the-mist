@@ -20,8 +20,13 @@ type ExportPrefs = {
     transparent: boolean
 }
 
+export const PREVIEW_WIDTH_MIN = 700
+export const PREVIEW_WIDTH_MAX = 1400
+export const PREVIEW_WIDTH_DEFAULT = 1152
+
 type UIState = {
     zoom: number
+    previewWidth: number
     background: Background
     autoHideEmpty: boolean
     hidden: Record<SectionId, boolean>
@@ -29,6 +34,7 @@ type UIState = {
 
     // actions
     setZoom: (z: number) => void
+    setPreviewWidth: (w: number) => void
     setBackground: (b: Background) => void
     toggleHidden: (id: SectionId) => void
     setHidden: (id: SectionId, value: boolean) => void
@@ -52,6 +58,7 @@ export const useUIStore = create<UIState>()(
     persist(
         (set) => ({
             zoom: 1,
+            previewWidth: PREVIEW_WIDTH_DEFAULT,
             background: 'parchment',
             autoHideEmpty: true,
             hidden: defaultHidden,
@@ -61,6 +68,13 @@ export const useUIStore = create<UIState>()(
             },
 
             setZoom: (z) => set({ zoom: Math.max(0.5, Math.min(2, z)) }),
+            setPreviewWidth: (w) =>
+                set({
+                    previewWidth: Math.max(
+                        PREVIEW_WIDTH_MIN,
+                        Math.min(PREVIEW_WIDTH_MAX, w)
+                    ),
+                }),
             setBackground: (b) => set({ background: b }),
             toggleHidden: (id) =>
                 set((s) => ({ hidden: { ...s.hidden, [id]: !s.hidden[id] } })),
@@ -72,6 +86,7 @@ export const useUIStore = create<UIState>()(
             resetViewPrefs: () =>
                 set({
                     zoom: 1,
+                    previewWidth: PREVIEW_WIDTH_DEFAULT,
                     background: 'parchment',
                     autoHideEmpty: false,
                     hidden: defaultHidden,
