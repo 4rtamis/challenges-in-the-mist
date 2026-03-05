@@ -225,7 +225,7 @@
 
 .litm-limit[data-limit-value] {
     background-position: 0 70%;
-    background-size: 80% 50%;
+    background-size: calc(100% - 10px) 50%;
 }
 
 .litm-limit[data-limit-value]::before {

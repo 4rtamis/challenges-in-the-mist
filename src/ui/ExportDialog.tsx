@@ -93,7 +93,7 @@ export default function ExportDialog({
             })
             const name = slugify(challenge.name || 'challenge')
             await snap.download({
-                filename: `${name}@${pixelRatio}x.png`,
+                filename: `${name}@${pixelRatio}x`,
                 format: 'png',
             })
             toast.success('Exported PNG.')
