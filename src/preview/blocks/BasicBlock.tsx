@@ -19,13 +19,9 @@ export default function BasicBlock() {
                 onClick={() => openSheet({ kind: 'basic', mode: 'edit' })}
                 ariaLabel="Edit basic info"
             >
-                <div className="flex flex-row gap-[7pt] items-center justify-center">
-                    <div className="min-w-0">
-                        <h2 className="challenge-name truncate uppercase">
-                            {challenge.name || 'Untitled Challenge'}
-                        </h2>
-                    </div>
-                    <div className="challenge-rating">
+                <h2 className="challenge-name uppercase text-center">
+                    <span>{challenge.name || 'Untitled Challenge'}</span>
+                    <span className="challenge-rating align-middle ml-[7pt]">
                         {Array.from({ length: rating }).map((_, i) => (
                             <span
                                 key={i}
@@ -33,8 +29,8 @@ export default function BasicBlock() {
                                 aria-hidden
                             />
                         ))}
-                    </div>
-                </div>
+                    </span>
+                </h2>
             </ClickableSection>
 
             {/* Roles + Description */}

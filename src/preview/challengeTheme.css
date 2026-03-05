@@ -122,6 +122,7 @@
 .challenge-rating {
     display: inline-flex;
     gap: 1px;
+    margin-bottom: 4px;
 }
 
 /* ---------- Roles ---------- */
