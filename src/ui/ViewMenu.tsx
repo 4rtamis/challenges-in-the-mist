@@ -1,3 +1,11 @@
+import { useActiveTemplate } from '@/core/workspace/selectors'
+import type { ReactNode } from 'react'
+import {
+    PREVIEW_WIDTH_MAX,
+    PREVIEW_WIDTH_MIN,
+    useUIStore,
+    type SectionId,
+} from '@/store/uiStore'
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -12,14 +20,16 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-    PREVIEW_WIDTH_MAX,
-    PREVIEW_WIDTH_MIN,
-    useUIStore,
-    type SectionId,
-} from '@/store/uiStore'
 
-export default function ViewMenu({ children }: { children: React.ReactNode }) {
+export default function ViewMenu({
+    children,
+    disabled = false,
+}: {
+    children: ReactNode
+    disabled?: boolean
+}) {
+    const template = useActiveTemplate()
+
     const {
         hidden,
         toggleHidden,
@@ -33,13 +43,14 @@ export default function ViewMenu({ children }: { children: React.ReactNode }) {
         resetViewPrefs,
     } = useUIStore()
 
-    const sectionItems: { id: SectionId; label: string }[] = [
-        { id: 'rolesDesc', label: 'Roles & Description' },
-        { id: 'tagsStatuses', label: 'Tags & Statuses' },
-        { id: 'might', label: 'Might' },
-        { id: 'specialFeatures', label: 'Special Features' },
-        { id: 'meta', label: 'Meta footer' },
-    ]
+    if (disabled || !template || !template.implemented) {
+        return <>{children}</>
+    }
+
+    const sectionItems = template.viewConfig.sectionItems as Array<{
+        id: SectionId
+        label: string
+    }>
 
     return (
         <DropdownMenu>
@@ -48,20 +59,20 @@ export default function ViewMenu({ children }: { children: React.ReactNode }) {
                 <DropdownMenuLabel>View</DropdownMenuLabel>
                 <DropdownMenuCheckboxItem
                     checked={autoHideEmpty}
-                    onCheckedChange={(v) => setAutoHideEmpty(!!v)}
+                    onCheckedChange={(value) => setAutoHideEmpty(!!value)}
                 >
                     Auto-hide empty sections
                 </DropdownMenuCheckboxItem>
 
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Show sections</DropdownMenuLabel>
-                {sectionItems.map((s) => (
+                {sectionItems.map((section) => (
                     <DropdownMenuCheckboxItem
-                        key={s.id}
-                        checked={!hidden[s.id]}
-                        onCheckedChange={() => toggleHidden(s.id)}
+                        key={section.id}
+                        checked={!hidden[section.id]}
+                        onCheckedChange={() => toggleHidden(section.id)}
                     >
-                        {s.label}
+                        {section.label}
                     </DropdownMenuCheckboxItem>
                 ))}
 
@@ -69,18 +80,14 @@ export default function ViewMenu({ children }: { children: React.ReactNode }) {
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger>Zoom</DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>
-                        <DropdownMenuItem onClick={() => setZoom(0.75)}>
-                            75%
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setZoom(1)}>
-                            100%
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setZoom(1.25)}>
-                            125%
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setZoom(1.5)}>
-                            150%
-                        </DropdownMenuItem>
+                        {template.viewConfig.zoomOptions.map((zoom) => (
+                            <DropdownMenuItem
+                                key={zoom}
+                                onClick={() => setZoom(zoom)}
+                            >
+                                {Math.round(zoom * 100)}%
+                            </DropdownMenuItem>
+                        ))}
                     </DropdownMenuSubContent>
                 </DropdownMenuSub>
 
@@ -100,8 +107,8 @@ export default function ViewMenu({ children }: { children: React.ReactNode }) {
                             max={PREVIEW_WIDTH_MAX}
                             step={10}
                             value={previewWidth}
-                            onChange={(e) =>
-                                setPreviewWidth(Number(e.target.value))
+                            onChange={(event) =>
+                                setPreviewWidth(Number(event.target.value))
                             }
                             className="mt-2 w-full accent-primary"
                             aria-label="Preview width"
@@ -114,25 +121,24 @@ export default function ViewMenu({ children }: { children: React.ReactNode }) {
                     <DropdownMenuSubContent>
                         <DropdownMenuRadioGroup
                             value={background}
-                            onValueChange={(v) => setBackground(v as any)}
+                            onValueChange={(value) => setBackground(value as any)}
                         >
-                            <DropdownMenuRadioItem value="parchment">
-                                Parchment
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="plain">
-                                Plain
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="transparent">
-                                Transparent
-                            </DropdownMenuRadioItem>
+                            {template.viewConfig.backgroundOptions.map(
+                                (option) => (
+                                    <DropdownMenuRadioItem
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </DropdownMenuRadioItem>
+                                )
+                            )}
                         </DropdownMenuRadioGroup>
                     </DropdownMenuSubContent>
                 </DropdownMenuSub>
 
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={resetViewPrefs}>
-                    Reset view
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={resetViewPrefs}>Reset view</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )

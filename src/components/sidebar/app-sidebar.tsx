@@ -11,6 +11,8 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
+import { templatesByGame } from '@/core/templates/seeds'
+import { useWorkspaceStore } from '@/core/workspace/store'
 
 import {
     Collapsible,
@@ -19,6 +21,7 @@ import {
 } from '@/components/ui/collapsible'
 
 import { LifeBuoy, Minus, Plus, Send } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { NavSecondary } from './nav-secondary'
 import { ProjectSwitcher } from './project-switcher'
 
@@ -26,93 +29,31 @@ const data = {
     projects: [
         {
             name: 'Lantern',
-            logo: 'lantern-logo.svg',
-            description: 'Challenge maker',
+            logo: '/lantern-logo.svg',
+            description: 'Template editor',
             href: 'https://lantern.ravenloft.fr',
             current: true,
         },
         {
             name: 'Mistdraw',
-            logo: 'assets/images/mistdraw-logo.svg',
+            logo: '/assets/images/mistdraw-logo.svg',
             description: 'Whiteboard-based VTT',
             href: 'https://mistrdaw.ravenloft.fr',
             current: false,
         },
         {
             name: 'Brumes',
-            logo: 'assets/images/brumes-logo.svg',
+            logo: '/assets/images/brumes-logo.svg',
             description: 'Obsidian plugin',
             href: 'https://brumes.ravenloft.fr',
             current: false,
         },
         {
             name: 'Archives',
-            logo: 'assets/images/archives-logo.svg',
+            logo: '/assets/images/archives-logo.svg',
             description: 'Blog template',
             href: 'https://archives.ravenloft.fr',
             current: false,
-        },
-    ],
-
-    navMain: [
-        {
-            title: 'City of Mist',
-            url: '#',
-            items: [
-                {
-                    title: 'Danger',
-                    url: '#',
-                },
-                {
-                    title: 'Custom Move',
-                    url: '#',
-                },
-                {
-                    title: 'Iceberg',
-                    url: '#',
-                },
-                {
-                    title: 'Theme Kit',
-                    url: '#',
-                },
-            ],
-        },
-        {
-            title: 'Legend in the Mist',
-            url: '#',
-            items: [
-                {
-                    title: 'Challenge',
-                    url: '#',
-                },
-                {
-                    title: 'Journey',
-                    url: '#',
-                },
-                {
-                    title: 'Story Theme',
-                    url: '#',
-                },
-                {
-                    title: 'Theme Kit',
-                    url: '#',
-                    isActive: false,
-                },
-            ],
-        },
-        {
-            title: ':Otherscape',
-            url: '#',
-            items: [
-                {
-                    title: 'Challenge',
-                    url: '#',
-                },
-                {
-                    title: 'Theme Kit',
-                    url: '#',
-                },
-            ],
         },
     ],
     navSecondary: [
@@ -130,6 +71,14 @@ const data = {
 }
 
 export function AppSidebar() {
+    const navigate = useNavigate()
+    const createTab = useWorkspaceStore((s) => s.createTab)
+    const activeTabId = useWorkspaceStore((s) => s.activeTabId)
+    const tabs = useWorkspaceStore((s) => s.tabs)
+
+    const activeTemplateId =
+        tabs.find((tab) => tab.id === activeTabId)?.templateId ?? null
+
     return (
         <Sidebar variant="sidebar">
             <SidebarHeader>
@@ -138,42 +87,66 @@ export function AppSidebar() {
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarMenu>
-                        {data.navMain.map((item, index) => (
+                        {templatesByGame.map((group) => (
                             <Collapsible
-                                key={item.title}
-                                defaultOpen={index === 1}
+                                key={group.gameId}
+                                defaultOpen={group.gameId === 'legend'}
                                 className="group/collapsible"
                             >
                                 <SidebarMenuItem>
                                     <CollapsibleTrigger asChild>
                                         <SidebarMenuButton>
-                                            {item.title}{' '}
+                                            {group.gameLabel}
                                             <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
                                             <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
                                         </SidebarMenuButton>
                                     </CollapsibleTrigger>
-                                    {item.items?.length ? (
-                                        <CollapsibleContent>
-                                            <SidebarMenuSub>
-                                                {item.items.map((item) => (
-                                                    <SidebarMenuSubItem
-                                                        key={item.title}
+                                    <CollapsibleContent>
+                                        <SidebarMenuSub>
+                                            {group.templates.map((template) => (
+                                                <SidebarMenuSubItem
+                                                    key={template.id}
+                                                >
+                                                    <SidebarMenuSubButton
+                                                        asChild
+                                                        isActive={
+                                                            activeTemplateId ===
+                                                            template.id
+                                                        }
                                                     >
-                                                        <SidebarMenuSubButton
-                                                            asChild
-                                                            isActive={
-                                                                item.isActive
+                                                        <button
+                                                            type="button"
+                                                            className="flex w-full items-center justify-between"
+                                                            disabled={
+                                                                !template.implemented
                                                             }
+                                                            onClick={() => {
+                                                                const tabId =
+                                                                    createTab(
+                                                                        template.id
+                                                                    )
+                                                                if (!tabId)
+                                                                    return
+                                                                navigate(
+                                                                    `/tabs/${tabId}`
+                                                                )
+                                                            }}
                                                         >
-                                                            <a href={item.url}>
-                                                                {item.title}
-                                                            </a>
-                                                        </SidebarMenuSubButton>
-                                                    </SidebarMenuSubItem>
-                                                ))}
-                                            </SidebarMenuSub>
-                                        </CollapsibleContent>
-                                    ) : null}
+                                                            <span>
+                                                                {template.label}
+                                                            </span>
+                                                            {!template.implemented && (
+                                                                <span className="text-[10px] opacity-65 uppercase tracking-wide">
+                                                                    {template.comingSoonLabel ||
+                                                                        'Coming soon'}
+                                                                </span>
+                                                            )}
+                                                        </button>
+                                                    </SidebarMenuSubButton>
+                                                </SidebarMenuSubItem>
+                                            ))}
+                                        </SidebarMenuSub>
+                                    </CollapsibleContent>
                                 </SidebarMenuItem>
                             </Collapsible>
                         ))}
@@ -182,7 +155,7 @@ export function AppSidebar() {
                 <NavSecondary items={data.navSecondary} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>
-                <div className="flex justify-center items-center text-xs">
+                <div className="flex items-center justify-center text-xs">
                     Created by 4rtamis
                 </div>
             </SidebarFooter>

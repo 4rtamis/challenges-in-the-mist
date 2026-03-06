@@ -1,102 +1,170 @@
-import type { Challenge } from '@/store/challengeStore'
+import type { Challenge } from '@/core/templates/legendChallengeModel'
+import {
+    PREVIEW_WIDTH_DEFAULT,
+    PREVIEW_WIDTH_MAX,
+    PREVIEW_WIDTH_MIN,
+    defaultChallengeView,
+    defaultHidden,
+} from '@/core/templates/legendChallengeModel'
+import type {
+    ChallengeViewState,
+    SectionId,
+} from '@/core/templates/legendChallengeModel'
+import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
-// Identify sections we can show/hide
-export type SectionId =
-    | 'rolesDesc'
-    | 'limits'
-    | 'tagsStatuses'
-    | 'might'
-    | 'specialFeatures'
-    | 'threats'
-    | 'generalConsequences'
-    | 'meta'
+export type {
+    Background,
+    ChallengeViewState,
+    ExportPrefs,
+    SectionId,
+} from '@/core/templates/legendChallengeModel'
 
-type Background = 'parchment' | 'plain' | 'transparent'
+export { PREVIEW_WIDTH_DEFAULT, PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN }
 
-type ExportPrefs = {
-    scale: 2 | 1 | 3
-    transparent: boolean
-}
-
-export const PREVIEW_WIDTH_MIN = 700
-export const PREVIEW_WIDTH_MAX = 1400
-export const PREVIEW_WIDTH_DEFAULT = 1152
-
-type UIState = {
-    zoom: number
-    previewWidth: number
-    background: Background
-    autoHideEmpty: boolean
-    hidden: Record<SectionId, boolean>
-    exportPrefs: ExportPrefs
-
-    // actions
+type UIState = ChallengeViewState & {
     setZoom: (z: number) => void
     setPreviewWidth: (w: number) => void
-    setBackground: (b: Background) => void
+    setBackground: (b: ChallengeViewState['background']) => void
     toggleHidden: (id: SectionId) => void
     setHidden: (id: SectionId, value: boolean) => void
     setAutoHideEmpty: (v: boolean) => void
-    setExportPrefs: (partial: Partial<ExportPrefs>) => void
+    setExportPrefs: (partial: Partial<ChallengeViewState['exportPrefs']>) => void
     resetViewPrefs: () => void
 }
 
-const defaultHidden: Record<SectionId, boolean> = {
-    rolesDesc: false,
-    limits: false,
-    tagsStatuses: false,
-    might: false,
-    specialFeatures: false,
-    threats: false,
-    generalConsequences: false,
-    meta: false,
+function pickViewState(state: ChallengeViewState): ChallengeViewState {
+    return {
+        zoom: state.zoom,
+        previewWidth: state.previewWidth,
+        background: state.background,
+        autoHideEmpty: state.autoHideEmpty,
+        hidden: cloneValue(state.hidden),
+        exportPrefs: cloneValue(state.exportPrefs),
+    }
 }
 
-export const useUIStore = create<UIState>()(
-    persist(
-        (set) => ({
-            zoom: 1,
-            previewWidth: PREVIEW_WIDTH_DEFAULT,
-            background: 'parchment',
-            autoHideEmpty: true,
-            hidden: defaultHidden,
-            exportPrefs: {
-                scale: 2,
-                transparent: false,
-            },
+function cloneValue<T>(value: T): T {
+    if (typeof structuredClone === 'function') {
+        return structuredClone(value)
+    }
 
-            setZoom: (z) => set({ zoom: Math.max(0.5, Math.min(2, z)) }),
-            setPreviewWidth: (w) =>
-                set({
-                    previewWidth: Math.max(
-                        PREVIEW_WIDTH_MIN,
-                        Math.min(PREVIEW_WIDTH_MAX, w)
-                    ),
-                }),
-            setBackground: (b) => set({ background: b }),
-            toggleHidden: (id) =>
-                set((s) => ({ hidden: { ...s.hidden, [id]: !s.hidden[id] } })),
-            setHidden: (id, value) =>
-                set((s) => ({ hidden: { ...s.hidden, [id]: value } })),
-            setAutoHideEmpty: (v) => set({ autoHideEmpty: v }),
-            setExportPrefs: (partial) =>
-                set((s) => ({ exportPrefs: { ...s.exportPrefs, ...partial } })),
-            resetViewPrefs: () =>
-                set({
-                    zoom: 1,
-                    previewWidth: PREVIEW_WIDTH_DEFAULT,
-                    background: 'parchment',
-                    autoHideEmpty: false,
-                    hidden: defaultHidden,
-                }),
-        }),
-        { name: 'litm-ui-prefs' }
-    )
-)
+    return JSON.parse(JSON.stringify(value)) as T
+}
 
-// Helpers
+function getActiveLegendTabId(): string | null {
+    const ws = useWorkspaceStore.getState()
+    const active = getActiveTab(ws)
+    return active?.templateId === 'legend.challenge' ? active.id : null
+}
+
+function syncViewToWorkspace(nextView: ChallengeViewState) {
+    const tabId = getActiveLegendTabId()
+    if (!tabId) return
+
+    useWorkspaceStore.getState().patchTabView(tabId, cloneValue(nextView) as Record<string, unknown>)
+}
+
+const defaultView = cloneValue(defaultChallengeView)
+
+export const useUIStore = create<UIState>((set, get) => {
+    const apply = (producer: (current: ChallengeViewState) => ChallengeViewState) => {
+        const next = pickViewState(producer(pickViewState(get())))
+        set(next)
+        syncViewToWorkspace(next)
+    }
+
+    return {
+        ...defaultView,
+
+        setZoom: (z) =>
+            apply((current) => ({
+                ...current,
+                zoom: Math.max(0.5, Math.min(2, z)),
+            })),
+
+        setPreviewWidth: (w) =>
+            apply((current) => ({
+                ...current,
+                previewWidth: Math.max(
+                    PREVIEW_WIDTH_MIN,
+                    Math.min(PREVIEW_WIDTH_MAX, w)
+                ),
+            })),
+
+        setBackground: (b) =>
+            apply((current) => ({
+                ...current,
+                background: b,
+            })),
+
+        toggleHidden: (id) =>
+            apply((current) => ({
+                ...current,
+                hidden: {
+                    ...current.hidden,
+                    [id]: !current.hidden[id],
+                },
+            })),
+
+        setHidden: (id, value) =>
+            apply((current) => ({
+                ...current,
+                hidden: {
+                    ...current.hidden,
+                    [id]: value,
+                },
+            })),
+
+        setAutoHideEmpty: (v) =>
+            apply((current) => ({
+                ...current,
+                autoHideEmpty: v,
+            })),
+
+        setExportPrefs: (partial) =>
+            apply((current) => ({
+                ...current,
+                exportPrefs: {
+                    ...current.exportPrefs,
+                    ...partial,
+                },
+            })),
+
+        resetViewPrefs: () =>
+            apply(() => ({
+                ...cloneValue(defaultChallengeView),
+                hidden: cloneValue(defaultHidden),
+            })),
+    }
+})
+
+let lastTabId: string | null = null
+let lastViewRef: unknown = null
+
+function syncUIStoreFromWorkspace() {
+    const workspace = useWorkspaceStore.getState()
+    const active = getActiveTab(workspace)
+
+    if (active?.templateId !== 'legend.challenge') {
+        if (lastTabId !== null || lastViewRef !== null) {
+            lastTabId = null
+            lastViewRef = null
+            useUIStore.setState(cloneValue(defaultChallengeView))
+        }
+        return
+    }
+
+    if (active.id === lastTabId && active.view === lastViewRef) return
+
+    lastTabId = active.id
+    lastViewRef = active.view
+    useUIStore.setState(cloneValue(active.view as ChallengeViewState))
+}
+
+useWorkspaceStore.subscribe(syncUIStoreFromWorkspace)
+syncUIStoreFromWorkspace()
+
 export function isEmptySection(ch: Challenge, id: SectionId): boolean {
     switch (id) {
         case 'rolesDesc':
@@ -116,48 +184,25 @@ export function isEmptySection(ch: Challenge, id: SectionId): boolean {
         case 'meta': {
             const m = ch.meta
             if (!m) return true
-            // Works with both old and new meta shapes; if you already migrated:
-            // publication/source/authors/page; otherwise sourcebook/chapter/page/is_official
-            const anyNew =
-                'publication' in m ||
-                'source' in m ||
-                'authors' in m ||
-                'page' in m
-            if (anyNew) {
-                const nm: any = m
-                const hasNew =
-                    !!nm.publication ||
-                    !!(nm.source && String(nm.source).trim()) ||
-                    (Array.isArray(nm.authors) && nm.authors.length > 0) ||
-                    nm.page != null
-                return !hasNew
-            }
-            const hasOld =
-                !!(m as any).sourcebook ||
-                !!(m as any).chapter ||
-                (m as any).page != null ||
-                (m as any).is_official != null
-            return !hasOld
+
+            const hasNew =
+                !!m.publication_type ||
+                !!(m.source && String(m.source).trim()) ||
+                (Array.isArray(m.authors) && m.authors.length > 0) ||
+                m.page != null
+            return !hasNew
         }
         default:
             return true
     }
 }
 
-export function shouldShow(
-    ch: Challenge,
-    id: SectionId,
-    ui = useUIStore.getState()
-) {
+export function shouldShow(ch: Challenge, id: SectionId, ui: UIState) {
     if (ui.hidden[id]) return false
     if (ui.autoHideEmpty && isEmptySection(ch, id)) return false
     return true
 }
 
-export function groupShouldShow(
-    ch: Challenge,
-    sectionIds: SectionId[],
-    ui = useUIStore.getState()
-) {
+export function groupShouldShow(ch: Challenge, sectionIds: SectionId[], ui: UIState) {
     return sectionIds.some((id) => shouldShow(ch, id, ui))
 }
