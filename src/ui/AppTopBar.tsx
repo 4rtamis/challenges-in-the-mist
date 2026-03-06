@@ -9,29 +9,14 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { useWorkspaceStore } from '@/core/workspace/store'
 import type { WorkspaceTab } from '@/core/workspace/types'
-import {
-    Cog,
-    Download,
-    Eye,
-    FilePlus2,
-    HelpCircle,
-    TagIcon,
-    Upload,
-    X,
-} from 'lucide-react'
+import { TagIcon, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import ExportDialog from './ExportDialog'
-import ImportDialog from './ImportDialog'
-import NewDialog from './NewDialog'
-import ViewMenu from './ViewMenu'
 
 const HIDE_CLOSE_TAB_ALERT_KEY = 'mist:hide-close-tab-alert:v1'
 
@@ -44,9 +29,6 @@ export default function AppTopBar() {
     const activateTab = useWorkspaceStore((s) => s.activateTab)
     const closeTab = useWorkspaceStore((s) => s.closeTab)
 
-    const [exportOpen, setExportOpen] = useState(false)
-    const [importOpen, setImportOpen] = useState(false)
-    const [newOpen, setNewOpen] = useState(false)
     const [confirmCloseTabId, setConfirmCloseTabId] = useState<string | null>(
         null
     )
@@ -69,8 +51,6 @@ export default function AppTopBar() {
         () => tabs.find((tab) => tab.id === confirmCloseTabId) ?? null,
         [confirmCloseTabId, tabs]
     )
-
-    const hasActiveTab = activeTabId != null
 
     function closeAndNavigate(tabId: string) {
         const next = closeTab(tabId)
@@ -146,73 +126,6 @@ export default function AppTopBar() {
                     </div>
                 )}
             </div>
-
-            <div className="flex items-center gap-1">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    title="New"
-                    disabled={!hasActiveTab}
-                    onClick={() => setNewOpen(true)}
-                >
-                    <FilePlus2 className="h-4 w-4" />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    title="Import (.toml)"
-                    disabled={!hasActiveTab}
-                    onClick={() => setImportOpen(true)}
-                >
-                    <Upload className="h-4 w-4" />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    title="Export"
-                    disabled={!hasActiveTab}
-                    onClick={() => setExportOpen(true)}
-                >
-                    <Download className="h-4 w-4" />
-                </Button>
-
-                <ViewMenu disabled={!hasActiveTab}>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        title="View"
-                        disabled={!hasActiveTab}
-                    >
-                        <Eye className="h-4 w-4" />
-                    </Button>
-                </ViewMenu>
-
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    title="Settings"
-                    onClick={() =>
-                        toast('Settings: theme & language (coming soon).')
-                    }
-                >
-                    <Cog className="h-4 w-4" />
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    title="Help / Shortcuts"
-                    onClick={() => toast('Help & shortcuts (coming soon).')}
-                >
-                    <HelpCircle className="h-4 w-4" />
-                </Button>
-            </div>
-
-            <NewDialog open={newOpen} onOpenChange={setNewOpen} />
-            <ImportDialog open={importOpen} onOpenChange={setImportOpen} />
-            <ExportDialog open={exportOpen} onOpenChange={setExportOpen} />
 
             <AlertDialog
                 open={confirmCloseTabId !== null}
