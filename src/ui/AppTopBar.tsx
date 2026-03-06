@@ -23,23 +23,18 @@ export default function AppTopBar() {
     const [newOpen, setNewOpen] = useState(false)
 
     return (
-        <div className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center">
+        <div className="sticky top-0 z-40 w-full px-3 py-2 min-h-9 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center">
             <SidebarTrigger />
-            <div className="mx-auto max-w-6xl w-full px-3 py-2 flex items-center justify-between">
-                {/* Left: brand / game selector placeholder */}
-                <div className="flex items-center gap-3">
-                    <div className="text-sm font-semibold tracking-wide">
-                        LANTERN —{' '}
-                        <span className="opacity-70">
-                            Challenges in the Mist
-                        </span>
-                        <Badge variant="outline" className="ml-2">
-                            <TagIcon />
-                            0.1.0
-                        </Badge>
-                    </div>
-                </div>
 
+            <div className="text-sm font-semibold uppercase border-x px-2 md:pl-2.5 md:pr-3 mr-3">
+                Lantern
+                <Badge variant="outline" className="ml-2">
+                    <TagIcon />
+                    <span className="-translate-y-0.5">0.1.0</span>
+                </Badge>
+            </div>
+
+            <div className="max-w-6xl w-full flex items-center justify-between">
                 {/* Right: actions */}
                 <div className="flex items-center gap-1">
                     <Button
