@@ -1,7 +1,8 @@
 // src/App.tsx
 
+import { AppSidebar } from '@/components/app-sidebar'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
-
 import SectionSheetHost from '@/editor/SectionSheetHost'
 import { useAutosave } from '@/hooks/useAutosave'
 import LivePreview from '@/preview/LivePreview'
@@ -14,17 +15,22 @@ export default function App() {
 
     return (
         <>
-            <AppTopBar />
+            <SidebarProvider>
+                <AppSidebar />
+                <div className="w-full">
+                    <AppTopBar />
 
-            {/* Main preview area */}
-            <main
-                className="mx-auto w-full px-4 sm:px-6 py-6"
-                style={{ maxWidth: `${previewWidth}px` }}
-            >
-                <LivePreview />
-            </main>
-            <SectionSheetHost />
-            <Toaster richColors closeButton position="top-center" expand />
+                    {/* Main preview area */}
+                    <main
+                        className="mx-auto w-full px-4 sm:px-6 py-6"
+                        style={{ maxWidth: `${previewWidth}px` }}
+                    >
+                        <LivePreview />
+                    </main>
+                </div>
+                <SectionSheetHost />
+                <Toaster richColors closeButton position="top-center" expand />
+            </SidebarProvider>
         </>
     )
 }

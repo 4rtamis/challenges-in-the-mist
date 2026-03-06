@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 import {
     Cog,
     Download,
@@ -22,8 +23,9 @@ export default function AppTopBar() {
     const [newOpen, setNewOpen] = useState(false)
 
     return (
-        <div className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="mx-auto max-w-6xl px-3 py-2 flex items-center justify-between">
+        <div className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center">
+            <SidebarTrigger />
+            <div className="mx-auto max-w-6xl w-full px-3 py-2 flex items-center justify-between">
                 {/* Left: brand / game selector placeholder */}
                 <div className="flex items-center gap-3">
                     <div className="text-sm font-semibold tracking-wide">
