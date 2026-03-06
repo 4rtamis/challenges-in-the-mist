@@ -153,7 +153,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
     }
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -163,7 +163,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                     items={itemIds}
                     strategy={verticalListSortingStrategy}
                 >
-                    <ul className="space-y-2">
+                    <ul className="space-y-1.5">
                         {challenge.mights.map((m, idx) => (
                             <SortableMightItem
                                 key={itemIds[idx]}
@@ -174,23 +174,25 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                 onRemove={() => removeMightAt(idx)}
                             >
                                 {editingIndex === idx && (
-                                    <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
+                                    <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
                                         {error && (
                                             <p className="text-sm text-destructive">
                                                 {error}
                                             </p>
                                         )}
 
-                                        <div className="grid gap-3 md:grid-cols-[1fr_auto_auto] md:items-end">
+                                        <div className="grid gap-2 md:grid-cols-[1fr_auto] md:items-end">
                                             {/* Name */}
                                             <div className="grid gap-1">
                                                 <Label
                                                     htmlFor={`might-name-${idx}`}
+                                                    className="text-xs"
                                                 >
                                                     Name
                                                 </Label>
                                                 <Input
                                                     id={`might-name-${idx}`}
+                                                    className="h-8 px-2 text-sm"
                                                     value={eName}
                                                     onChange={(e) =>
                                                         setEName(e.target.value)
@@ -200,10 +202,10 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
 
                                             {/* Level icons (buttons) */}
                                             <div className="grid gap-1">
-                                                <Label className="text-sm">
+                                                <Label className="text-xs">
                                                     Level
                                                 </Label>
-                                                <div className="flex items-center gap-1">
+                                                <div className="flex items-center gap-0.5">
                                                     {LEVELS.map((lv) => (
                                                         <button
                                                             key={lv}
@@ -212,7 +214,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                                                 setELevel(lv)
                                                             }
                                                             title={lv} // optional tooltip
-                                                            className={`rounded-md border p-1 transition
+                                                            className={`rounded-md border p-0.5 transition
                                 ${eLevel === lv ? 'ring-2 ring-slate-400' : 'hover:bg-slate-50'}`}
                                                             aria-pressed={
                                                                 eLevel === lv
@@ -225,40 +227,42 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                                                     ]
                                                                 }
                                                                 alt={lv}
-                                                                className="h-6 w-6"
+                                                                className="h-5 w-5"
                                                             />
                                                         </button>
                                                     ))}
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            {/* Vulnerability switch */}
-                                            <div className="flex items-center gap-2 pt-5 md:pt-0">
-                                                <Switch
-                                                    id={`might-vuln-${idx}`}
-                                                    checked={hasVuln}
-                                                    onCheckedChange={(v) =>
-                                                        setHasVuln(!!v)
-                                                    }
-                                                />
-                                                <Label
-                                                    htmlFor={`might-vuln-${idx}`}
-                                                    className="text-sm"
-                                                >
-                                                    Vulnerability
-                                                </Label>
-                                            </div>
+                                        {/* Vulnerability switch */}
+                                        <div className="flex items-center gap-2">
+                                            <Switch
+                                                id={`might-vuln-${idx}`}
+                                                checked={hasVuln}
+                                                onCheckedChange={(v) =>
+                                                    setHasVuln(!!v)
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor={`might-vuln-${idx}`}
+                                                className="text-xs"
+                                            >
+                                                Vulnerability
+                                            </Label>
                                         </div>
 
                                         {hasVuln && (
                                             <div className="grid gap-1">
                                                 <Label
                                                     htmlFor={`might-vuln-input-${idx}`}
+                                                    className="text-xs"
                                                 >
                                                     Vulnerability
                                                 </Label>
                                                 <Input
                                                     id={`might-vuln-input-${idx}`}
+                                                    className="h-8 px-2 text-sm"
                                                     placeholder="e.g., flattery"
                                                     value={eVulnerability}
                                                     onChange={(e) =>
@@ -271,12 +275,16 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                                         )}
 
                                         <div className="flex items-center gap-2">
-                                            <Button onClick={confirmEdit}>
+                                            <Button
+                                                size="sm"
+                                                className="h-7 px-2.5 text-xs"
+                                                onClick={confirmEdit}
+                                            >
                                                 Save
                                             </Button>
                                             <Button
                                                 variant="link"
-                                                className="h-8 p-0"
+                                                className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
                                                 Cancel
@@ -292,10 +300,11 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="mt-1 w-full justify-center gap-2 border-dashed"
+                                size="sm"
+                                className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-4 w-4" /> Add might
+                                <Plus className="h-3.5 w-3.5" /> Add might
                             </Button>
                         </li>
                     </ul>
@@ -340,7 +349,7 @@ function SortableMightItem({
         <li
             ref={setNodeRef}
             style={style}
-            className={`rounded-md border bg-white px-3 py-2 ${
+            className={`rounded-md border bg-white px-2.5 py-1.5 ${
                 isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
             }`}
         >
@@ -349,7 +358,7 @@ function SortableMightItem({
                 <div className="flex items-center gap-2 min-w-0">
                     {/* drag handle */}
                     <button
-                        className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
+                        className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
               ${
                   dragDisabled
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
@@ -365,7 +374,7 @@ function SortableMightItem({
                         {...(!dragDisabled ? attributes : {})}
                         {...(!dragDisabled ? listeners : {})}
                     >
-                        <GripVertical className="h-4 w-4 text-slate-500" />
+                        <GripVertical className="h-3.5 w-3.5 text-slate-500" />
                     </button>
 
                     {/* level icon */}
@@ -392,21 +401,21 @@ function SortableMightItem({
                 <div className="flex items-center gap-1">
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
+                        size="icon-sm"
+                        className="h-7 w-7"
                         onClick={onEdit}
                         title="Edit"
                     >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive"
+                        size="icon-sm"
+                        className="h-7 w-7 text-destructive"
                         onClick={onRemove}
                         title="Remove"
                     >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                 </div>
             </div>

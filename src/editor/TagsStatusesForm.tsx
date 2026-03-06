@@ -245,7 +245,7 @@ function SortableTokenItem({
             {/* Top row */}
             <div className="flex items-center justify-between gap-3">
                 {/* Left: handle + rendered preview */}
-                <div className="flex items-start gap-2 min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
                     <button
                         className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
               ${

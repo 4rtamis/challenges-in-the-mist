@@ -22,23 +22,25 @@ export default function BasicForm() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Name + Rating */}
-            <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+            <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
                 <div className="grid gap-1">
                     <Label htmlFor="challenge-name">Challenge name</Label>
                     <Input
                         id="challenge-name"
+                        className="h-8 px-2 text-sm"
                         placeholder="e.g., The Heap Thing"
                         value={challenge.name}
                         onChange={(e) => setChallenge({ name: e.target.value })}
                     />
                 </div>
 
-                <div className="grid gap-1 w-[120px]">
+                <div className="grid w-[88px] gap-1">
                     <Label htmlFor="challenge-rating">Rating (1-5)</Label>
                     <Input
                         id="challenge-rating"
+                        className="h-8 px-2 text-sm"
                         type="number"
                         min={1}
                         max={5}
@@ -55,7 +57,7 @@ export default function BasicForm() {
             {/* Roles */}
             <div className="space-y-2">
                 <Label>Roles</Label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                     {rolesList.map((role) => {
                         const active = challenge.roles.includes(role)
                         return (
@@ -63,7 +65,8 @@ export default function BasicForm() {
                                 key={role}
                                 type="button"
                                 variant={active ? 'default' : 'outline'}
-                                className="h-8 rounded-full"
+                                size="sm"
+                                className="h-7 rounded-full px-2.5 text-xs"
                                 onClick={() => toggleRole(role)}
                             >
                                 {role}
@@ -84,6 +87,7 @@ export default function BasicForm() {
                 <Textarea
                     id="challenge-desc"
                     rows={4}
+                    className="px-2 py-1 text-sm"
                     placeholder="Write a short summary of the challenge here..."
                     value={challenge.description}
                     onChange={(e) =>

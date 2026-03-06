@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { SidebarContent, SidebarFooter } from '@/components/ui/sidebar'
 import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useActiveTab, useActiveTemplate } from '@/core/workspace/selectors'
 import BasicForm from '@/editor/BasicForm'
 import LimitsForm from '@/editor/LimitsForm'
@@ -23,7 +24,7 @@ import {
 } from '@/store/uiStore'
 import { slugify } from '@/utils/strings'
 import { snapdom, type CaptureResult } from '@zumer/snapdom'
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
 type EditorContent = {
@@ -135,8 +136,6 @@ function GeneralAppearanceSection() {
         toggleHidden,
         autoHideEmpty,
         setAutoHideEmpty,
-        setZoom,
-        zoom,
         previewWidth,
         setPreviewWidth,
         background,
@@ -174,7 +173,7 @@ function GeneralAppearanceSection() {
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Sections
                 </p>
-                <div className="space-y-1.5">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                     {sectionItems.map((section) => (
                         <label
                             key={section.id}
@@ -186,26 +185,6 @@ function GeneralAppearanceSection() {
                             />
                             <span className="text-xs">{section.label}</span>
                         </label>
-                    ))}
-                </div>
-            </div>
-
-            <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Zoom
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                    {template.viewConfig.zoomOptions.map((zoomOption) => (
-                        <Button
-                            key={zoomOption}
-                            type="button"
-                            size="sm"
-                            variant={zoom === zoomOption ? 'default' : 'outline'}
-                            className="h-7 px-2 text-xs"
-                            onClick={() => setZoom(zoomOption)}
-                        >
-                            {Math.round(zoomOption * 100)}%
-                        </Button>
                     ))}
                 </div>
             </div>
@@ -245,7 +224,7 @@ function GeneralAppearanceSection() {
                     onValueChange={(value) =>
                         setBackground(value as Background)
                     }
-                    className="space-y-1.5"
+                    className="flex flex-wrap items-center gap-3"
                 >
                     {template.viewConfig.backgroundOptions.map((option) => (
                         <label
@@ -279,10 +258,17 @@ function ExportSection() {
     const activeTab = useActiveTab()
     const activeTemplate = useActiveTemplate()
     const { exportPrefs, setExportPrefs } = useUIStore()
-    const [busy, setBusy] = useState<'png' | 'svg' | 'toml' | null>(null)
+    const [busy, setBusy] = useState<'png' | 'toml' | null>(null)
+    const [exportTab, setExportTab] = useState<'toml' | 'png'>('toml')
 
     const exportToml = activeTemplate?.io.exportToml
     const canExportImage = !!activeTemplate?.io.canExportImage
+
+    useEffect(() => {
+        if (!canExportImage) {
+            setExportTab('toml')
+        }
+    }, [canExportImage])
 
     function downloadText(filename: string, text: string) {
         const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
@@ -321,21 +307,6 @@ function ExportSection() {
         }
     }
 
-    async function handleCopyTOML() {
-        if (!activeTab || !exportToml) return
-
-        try {
-            setBusy('toml')
-            const toml = exportToml(activeTab.doc as never)
-            await navigator.clipboard.writeText(toml)
-            toast.success('Copied TOML to clipboard.')
-        } catch (errorAny: any) {
-            toast.error(errorAny?.message || 'Clipboard copy failed.')
-        } finally {
-            setBusy(null)
-        }
-    }
-
     async function handleExportPNG() {
         const node = getPreviewNode()
         if (!node) {
@@ -368,135 +339,87 @@ function ExportSection() {
         }
     }
 
-    async function handleExportSVG() {
-        const node = getPreviewNode()
-        if (!node) {
-            toast.error('Preview not found. Make sure the preview is visible.')
-            return
-        }
-
-        node.classList.add('exporting')
-        try {
-            setBusy('svg')
-            const pixelRatio = Number(exportPrefs.scale) || 1
-            const snap: CaptureResult = await snapdom(node, {
-                scale: pixelRatio,
-                embedFonts: true,
-                backgroundColor: exportPrefs.transparent
-                    ? 'transparent'
-                    : undefined,
-            })
-
-            await snap.download({
-                filename: `${getFileStem()}@${pixelRatio}x.svg`,
-                format: 'svg',
-            })
-            toast.success('Exported SVG.')
-        } catch (errorAny: any) {
-            toast.error(errorAny?.message || 'Failed to export SVG.')
-        } finally {
-            setBusy(null)
-            node.classList.remove('exporting')
-        }
-    }
-
     return (
         <div className="space-y-4">
-            <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    TOML
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                    <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        className="h-8 text-xs"
-                        onClick={handleCopyTOML}
-                        disabled={busy !== null || !activeTab || !exportToml}
-                    >
-                        Copy TOML
-                    </Button>
-                    <Button
-                        type="button"
-                        size="sm"
-                        className="h-8 text-xs"
-                        onClick={handleExportTOML}
-                        disabled={busy !== null || !activeTab || !exportToml}
-                    >
-                        Export TOML
-                    </Button>
-                </div>
-            </div>
+            <Tabs
+                value={exportTab}
+                onValueChange={(value) => setExportTab(value as 'toml' | 'png')}
+                className="space-y-4"
+            >
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="toml">TOML</TabsTrigger>
+                    <TabsTrigger value="png" disabled={!canExportImage}>
+                        PNG
+                    </TabsTrigger>
+                </TabsList>
 
-            {canExportImage ? (
-                <>
-                    <div className="flex items-center justify-between gap-4">
-                        <Label htmlFor="export-transparent" className="text-xs">
-                            Transparent background
-                        </Label>
-                        <Switch
-                            id="export-transparent"
-                            checked={exportPrefs.transparent}
-                            onCheckedChange={(value) =>
-                                setExportPrefs({ transparent: !!value })
-                            }
-                        />
-                    </div>
+                {exportTab === 'png' ? (
+                    canExportImage ? (
+                        <>
+                            <div className="flex items-center justify-between gap-4">
+                                <Label htmlFor="export-transparent" className="text-xs">
+                                    Transparent background
+                                </Label>
+                                <Switch
+                                    id="export-transparent"
+                                    checked={exportPrefs.transparent}
+                                    onCheckedChange={(value) =>
+                                        setExportPrefs({ transparent: !!value })
+                                    }
+                                />
+                            </div>
 
-                    <div className="space-y-2">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                            Image scale
+                            <div className="space-y-2">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                    Image scale
+                                </p>
+                                <RadioGroup
+                                    value={String(exportPrefs.scale)}
+                                    onValueChange={(value) =>
+                                        setExportPrefs({ scale: Number(value) as 1 | 2 | 3 })
+                                    }
+                                    className="flex items-center gap-3"
+                                >
+                                    <label className="flex cursor-pointer items-center gap-1.5">
+                                        <RadioGroupItem value="1" id="export-scale-1" />
+                                        <span className="text-xs">1x</span>
+                                    </label>
+                                    <label className="flex cursor-pointer items-center gap-1.5">
+                                        <RadioGroupItem value="2" id="export-scale-2" />
+                                        <span className="text-xs">2x</span>
+                                    </label>
+                                    <label className="flex cursor-pointer items-center gap-1.5">
+                                        <RadioGroupItem value="3" id="export-scale-3" />
+                                        <span className="text-xs">3x</span>
+                                    </label>
+                                </RadioGroup>
+                            </div>
+                        </>
+                    ) : (
+                        <p className="text-sm text-muted-foreground">
+                            Image export is not available for this template.
                         </p>
-                        <RadioGroup
-                            value={String(exportPrefs.scale)}
-                            onValueChange={(value) =>
-                                setExportPrefs({ scale: Number(value) as 1 | 2 | 3 })
-                            }
-                            className="flex items-center gap-3"
-                        >
-                            <label className="flex cursor-pointer items-center gap-1.5">
-                                <RadioGroupItem value="1" id="export-scale-1" />
-                                <span className="text-xs">1x</span>
-                            </label>
-                            <label className="flex cursor-pointer items-center gap-1.5">
-                                <RadioGroupItem value="2" id="export-scale-2" />
-                                <span className="text-xs">2x</span>
-                            </label>
-                            <label className="flex cursor-pointer items-center gap-1.5">
-                                <RadioGroupItem value="3" id="export-scale-3" />
-                                <span className="text-xs">3x</span>
-                            </label>
-                        </RadioGroup>
-                    </div>
+                    )
+                ) : (
+                    <p className="text-sm text-muted-foreground">
+                        Export your template data as TOML.
+                    </p>
+                )}
+            </Tabs>
 
-                    <div className="grid grid-cols-2 gap-2">
-                        <Button
-                            type="button"
-                            size="sm"
-                            className="h-8 text-xs"
-                            onClick={handleExportPNG}
-                            disabled={busy !== null || !activeTab || !canExportImage}
-                        >
-                            Export PNG
-                        </Button>
-                        <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            className="h-8 text-xs"
-                            onClick={handleExportSVG}
-                            disabled={busy !== null || !activeTab || !canExportImage}
-                        >
-                            Export SVG
-                        </Button>
-                    </div>
-                </>
-            ) : (
-                <p className="text-sm text-muted-foreground">
-                    Image export is not available for this template.
-                </p>
-            )}
+            <Button
+                type="button"
+                size="sm"
+                className="h-8 w-full text-xs"
+                onClick={exportTab === 'toml' ? handleExportTOML : handleExportPNG}
+                disabled={
+                    busy !== null ||
+                    !activeTab ||
+                    (exportTab === 'toml' ? !exportToml : !canExportImage)
+                }
+            >
+                {exportTab === 'toml' ? 'Export TOML' : 'Export PNG'}
+            </Button>
         </div>
     )
 }
@@ -517,7 +440,9 @@ export default function SectionSheetHost() {
                             Editor
                         </AccordionTrigger>
                         <AccordionContent className="pb-3">
-                            <EditorSection />
+                            <div className="[&_input[data-slot=input]]:text-xs [&_textarea[data-slot=textarea]]:text-xs [&_textarea[data-slot=textarea]]:leading-snug">
+                                <EditorSection />
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
@@ -526,7 +451,7 @@ export default function SectionSheetHost() {
             <div className="shrink-0 border-t bg-background/95 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                 <Accordion
                     type="multiple"
-                    defaultValue={['appearance']}
+                    defaultValue={[]}
                     className="w-full"
                 >
                     <AccordionItem value="appearance">

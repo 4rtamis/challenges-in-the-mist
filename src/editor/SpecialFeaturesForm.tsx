@@ -269,7 +269,7 @@ function SortableFeatureItem({
         >
             <div className="flex items-start justify-between gap-3">
                 {/* Left: handle + content */}
-                <div className="flex items-start gap-2 min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
                     <button
                         className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
               ${

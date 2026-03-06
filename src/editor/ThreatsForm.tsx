@@ -291,7 +291,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                             items={threatIds}
                             strategy={verticalListSortingStrategy}
                         >
-                            <ul className="space-y-3">
+                            <ul className="space-y-2">
                                 {challenge.threats.map((t, tIdx) => {
                                     const id = threatIds[tIdx]
                                     const isEditing = editingThreat === tIdx
@@ -320,7 +320,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                             }
                                         >
                                             {isEditing && (
-                                                <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
+                                                <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
                                                     {tErr && (
                                                         <p className="text-sm text-destructive">
                                                             {tErr}
@@ -329,11 +329,13 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                                     <div className="grid gap-1">
                                                         <Label
                                                             htmlFor={`t-name-${tIdx}`}
+                                                            className="text-xs"
                                                         >
                                                             Name
                                                         </Label>
                                                         <Input
                                                             id={`t-name-${tIdx}`}
+                                                            className="h-8 px-2 text-sm"
                                                             value={tName}
                                                             onChange={(e) =>
                                                                 setTName(
@@ -347,6 +349,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                                     <div className="grid gap-1">
                                                         <Label
                                                             htmlFor={`t-desc-${tIdx}`}
+                                                            className="text-xs"
                                                         >
                                                             Short description{' '}
                                                             <span className="text-muted-foreground">
@@ -357,6 +360,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                                         <Textarea
                                                             id={`t-desc-${tIdx}`}
                                                             rows={2}
+                                                            className="min-h-16 px-2 py-1 text-sm"
                                                             value={tDesc}
                                                             onChange={(e) =>
                                                                 setTDesc(
@@ -369,18 +373,22 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <Button
+                                                            size="sm"
+                                                            className="h-7 px-2.5 text-xs"
                                                             onClick={saveThreat}
                                                         >
-                                                            <Check className="h-4 w-4 mr-1" />{' '}
+                                                            <Check className="mr-1 h-3.5 w-3.5" />{' '}
                                                             Save
                                                         </Button>
                                                         <Button
                                                             variant="secondary"
+                                                            size="sm"
+                                                            className="h-7 px-2.5 text-xs"
                                                             onClick={
                                                                 cancelEditThreat
                                                             }
                                                         >
-                                                            <X className="h-4 w-4 mr-1" />{' '}
+                                                            <X className="mr-1 h-3.5 w-3.5" />{' '}
                                                             Cancel
                                                         </Button>
                                                     </div>
@@ -395,10 +403,12 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="mt-1 w-full justify-center gap-2 border-dashed"
+                                        size="sm"
+                                        className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                         onClick={addThreatPlaceholder}
                                     >
-                                        <Plus className="h-4 w-4" /> Add threat
+                                        <Plus className="h-3.5 w-3.5" /> Add
+                                        threat
                                     </Button>
                                 </li>
                             </ul>
@@ -406,7 +416,12 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
 
                         {/* Footer actions for general consequences entry point */}
                         <div className="mt-4 flex justify-end">
-                            <Button variant="outline" onClick={goGeneralCons}>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 px-2.5 text-xs"
+                                onClick={goGeneralCons}
+                            >
                                 Edit general consequences
                             </Button>
                         </div>
@@ -415,15 +430,16 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                     {/* PANEL B: Consequences editor (right half) */}
                     <div className="w-full pl-2 min-w-0">
                         {panel.kind === 'cons' && currentThreatIndex != null ? (
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 {/* Back + context */}
                                 <div className="flex items-center gap-2">
                                     <Button
                                         variant="ghost"
                                         size="sm"
+                                        className="h-7 px-2 text-xs"
                                         onClick={backToThreats}
                                     >
-                                        <ArrowLeft className="h-4 w-4 mr-1" />{' '}
+                                        <ArrowLeft className="mr-1 h-3.5 w-3.5" />{' '}
                                         Back
                                     </Button>
                                     <div className="font-semibold">
@@ -455,7 +471,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                     items={consIds}
                                     strategy={verticalListSortingStrategy}
                                 >
-                                    <ul className="space-y-2">
+                                    <ul className="space-y-1.5">
                                         {challenge.threats[
                                             currentThreatIndex
                                         ]?.consequences.map((text, cIdx) => {
@@ -507,27 +523,29 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                className="mt-1 w-full justify-center gap-2 border-dashed"
+                                                size="sm"
+                                                className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                                 onClick={
                                                     addConsequencePlaceholder
                                                 }
                                             >
-                                                <Plus className="h-4 w-4" /> Add
-                                                consequence
+                                                <Plus className="h-3.5 w-3.5" />{' '}
+                                                Add consequence
                                             </Button>
                                         </li>
                                     </ul>
                                 </SortableContext>
                             </div>
                         ) : panel.kind === 'general' ? (
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 <div className="flex items-center gap-2">
                                     <Button
                                         variant="ghost"
                                         size="sm"
+                                        className="h-7 px-2 text-xs"
                                         onClick={backToThreats}
                                     >
-                                        <ArrowLeft className="h-4 w-4 mr-1" />{' '}
+                                        <ArrowLeft className="mr-1 h-3.5 w-3.5" />{' '}
                                         Back
                                     </Button>
                                     <div className="font-semibold">
@@ -539,7 +557,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                     items={generalIds}
                                     strategy={verticalListSortingStrategy}
                                 >
-                                    <ul className="space-y-2">
+                                    <ul className="space-y-1.5">
                                         {challenge.general_consequences.map(
                                             (text, idx) => {
                                                 const isEditing =
@@ -595,11 +613,12 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                             <Button
                                                 type="button"
                                                 variant="outline"
-                                                className="mt-1 w-full justify-center gap-2 border-dashed"
+                                                size="sm"
+                                                className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                                 onClick={addGeneralPlaceholder}
                                             >
-                                                <Plus className="h-4 w-4" /> Add
-                                                general consequence
+                                                <Plus className="h-3.5 w-3.5" />{' '}
+                                                Add general consequence
                                             </Button>
                                         </li>
                                     </ul>
@@ -661,15 +680,15 @@ function ThreatRow({
         <li
             ref={setNodeRef}
             style={style}
-            className={`rounded-md border bg-white px-3 py-3 ${
+            className={`rounded-md border bg-white px-2.5 py-2 ${
                 isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
             }`}
         >
             <div className="flex items-start justify-between gap-2">
                 {/* Left: drag + content */}
-                <div className="flex items-start gap-2 min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
                     <button
-                        className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
+                        className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
               ${dragDisabled ? 'opacity-40 cursor-not-allowed hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
                         aria-label="Drag to reorder threat"
                         title={
@@ -681,7 +700,7 @@ function ThreatRow({
                         {...(!dragDisabled ? attributes : {})}
                         {...(!dragDisabled ? listeners : {})}
                     >
-                        <GripVertical className="h-4 w-4 text-slate-500" />
+                        <GripVertical className="h-3.5 w-3.5 text-slate-500" />
                     </button>
 
                     <div className="min-w-0">
@@ -710,8 +729,8 @@ function ThreatRow({
                     <div className="relative">
                         <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
+                            size="icon-sm"
+                            className="h-7 w-7"
                             onClick={onOpenConsequences}
                             aria-label="Edit consequences"
                             title="Consequences"
@@ -719,13 +738,13 @@ function ThreatRow({
                             <img
                                 src="/assets/images/consequence.svg"
                                 alt=""
-                                className="h-6 w-6"
+                                className="h-5 w-5"
                             />
                         </Button>
 
                         {/* tiny count badge (optional) */}
                         {typeof count === 'number' && count > 0 && (
-                            <span className="pointer-events-none absolute -top-1 -right-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-secondary border-1 border-zinc-400 text-secondary-foreground text-sm font-bold font-serif leading-none px-1">
+                            <span className="pointer-events-none absolute -right-1 -top-1 inline-flex h-3.5 min-w-[0.9rem] items-center justify-center rounded-full border border-zinc-400 bg-secondary px-1 text-[10px] leading-none text-secondary-foreground">
                                 <span className="-translate-y-0.5">
                                     {count}
                                 </span>
@@ -736,21 +755,21 @@ function ThreatRow({
                     {/* Edit / Remove keep the same */}
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
+                        size="icon-sm"
+                        className="h-7 w-7"
                         title="Edit"
                         onClick={onEdit}
                     >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive"
+                        size="icon-sm"
+                        className="h-7 w-7 text-destructive"
                         title="Remove"
                         onClick={onRemove}
                     >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                 </div>
             </div>
@@ -796,14 +815,14 @@ function ConsequenceRow({
         <li
             ref={setNodeRef}
             style={style}
-            className={`flex items-center justify-between gap-2 rounded-md border bg-white px-3 py-2 ${
+            className={`flex items-center justify-between gap-1.5 rounded-md border bg-white px-2.5 py-1.5 ${
                 isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
             }`}
         >
             {/* Left: drag + text / editor */}
-            <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="flex min-w-0 flex-1 items-center gap-1.5">
                 <button
-                    className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
+                    className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
             ${dragDisabled ? 'opacity-40 cursor-not-allowed hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
                     aria-label="Drag to reorder consequence"
                     title={
@@ -815,7 +834,7 @@ function ConsequenceRow({
                     {...(!dragDisabled ? attributes : {})}
                     {...(!dragDisabled ? listeners : {})}
                 >
-                    <GripVertical className="h-4 w-4 text-slate-500" />
+                    <GripVertical className="h-3.5 w-3.5 text-slate-500" />
                 </button>
 
                 {isEditing ? (
@@ -834,22 +853,22 @@ function ConsequenceRow({
             {!isEditing ? (
                 <Button
                     variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
+                    size="icon-sm"
+                    className="h-7 w-7"
                     title="Edit"
                     onClick={onEdit}
                 >
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-3.5 w-3.5" />
                 </Button>
             ) : null}
             <Button
                 variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-destructive"
+                size="icon-sm"
+                className="h-7 w-7 text-destructive"
                 title="Remove"
                 onClick={onRemove}
             >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3.5 w-3.5" />
             </Button>
         </li>
     )
@@ -867,9 +886,9 @@ function InlineConsequenceEditor({
     onCancel: () => void
 }) {
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
             <Input
-                className="flex-1"
+                className="h-8 flex-1 px-2 text-sm"
                 autoFocus
                 value={value}
                 onChange={(e) => onChange((e.target as HTMLInputElement).value)}
@@ -878,16 +897,22 @@ function InlineConsequenceEditor({
                     if (e.key === 'Escape') onCancel()
                 }}
             />
-            <Button size="icon" title="Save" onClick={onSave}>
-                <Check className="h-4 w-4" />
+            <Button
+                size="icon-xs"
+                className="h-5 w-5 shrink-0"
+                title="Save"
+                onClick={onSave}
+            >
+                <Check className="h-3 w-3" />
             </Button>
             <Button
-                size="icon"
+                size="icon-xs"
                 variant="secondary"
+                className="h-5 w-5 shrink-0"
                 title="Cancel"
                 onClick={onCancel}
             >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3" />
             </Button>
         </div>
     )
