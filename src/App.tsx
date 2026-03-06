@@ -1,6 +1,6 @@
 // src/App.tsx
 
-import { AppSidebar } from '@/components/app-sidebar'
+import { AppSidebar } from '@/components/sidebar/app-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
 import SectionSheetHost from '@/editor/SectionSheetHost'
