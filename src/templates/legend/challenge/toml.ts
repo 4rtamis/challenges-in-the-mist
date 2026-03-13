@@ -1,6 +1,7 @@
 import { parse as tomlParse, stringify as tomlStringify } from 'smol-toml'
-import { ChallengeSchema, computeWarnings } from './schema'
-import type { Challenge } from './model'
+import { LegendInTheMistChallengeSchema } from './schema'
+import { toChallengeDocument, type Challenge } from './model'
+import { computeLegendInTheMistChallengeWarnings } from './warnings'
 
 /** Import and validate. Throws with a readable message on errors. */
 export const importFromTOML = (t: string) => importFromTOMLWithWarnings(t)
@@ -10,7 +11,7 @@ export function importFromTOMLWithWarnings(tomlText: string): {
     warnings: string[]
 } {
     const raw = tomlParse(tomlText) // may throw if not TOML
-    const parsed = ChallengeSchema.safeParse(raw) // shape + normalization
+    const parsed = LegendInTheMistChallengeSchema.safeParse(raw)
 
     if (!parsed.success) {
         // Flatten Zod issues into a friendly message
@@ -20,14 +21,14 @@ export function importFromTOMLWithWarnings(tomlText: string): {
         throw new Error(msg)
     }
 
-    const challenge = parsed.data
-    const warnings = computeWarnings(challenge)
+    const challenge = toChallengeDocument(parsed.data)
+    const warnings = computeLegendInTheMistChallengeWarnings(challenge)
     return { challenge, warnings }
 }
 
 /** Ensure we only export validated, normalized data. */
 export function exportToTOML(ch: Challenge): string {
-    const parsed = ChallengeSchema.safeParse(ch)
+    const parsed = LegendInTheMistChallengeSchema.safeParse(ch)
     if (!parsed.success) {
         const msg = parsed.error.issues
             .map((i) => `${i.path.join('.') || 'root'}: ${i.message}`)

@@ -13,7 +13,7 @@ import {
 } from './model'
 import { challengeSections } from './metadata'
 import { ChallengePreview } from './preview/ChallengePreview'
-import { ChallengeSchema } from './schema'
+import { LegendInTheMistChallengeSchema } from './schema'
 import { getSampleChallenge } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
 import { getChallengePreviewWidth } from './hooks'
@@ -86,7 +86,7 @@ const challengeTemplate: AnyTemplateDefinition = {
     gameLabel: 'Legend in the Mist',
     label: 'Challenge',
     implemented: true,
-    schema: ChallengeSchema,
+    schema: LegendInTheMistChallengeSchema,
     createBlank: blankChallenge,
     createExample: getSampleChallenge,
     createInitialView: () => cloneValue(defaultChallengeView),

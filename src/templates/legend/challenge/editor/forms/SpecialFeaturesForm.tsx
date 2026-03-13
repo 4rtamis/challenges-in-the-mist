@@ -97,13 +97,16 @@ export default function SpecialFeaturesForm({
     }
 
     function addPlaceholder() {
-        const placeholder = { name: uniquePlaceholderName(), description: '' }
+        const placeholder = {
+            name: uniquePlaceholderName(),
+            description: 'Describe when this feature triggers and what it does.',
+        }
         const newIndex = challenge.special_features.length
         addSpecialFeature(placeholder)
         // open inline editor for the new item
         setEditingIndex(newIndex)
         setEName(placeholder.name)
-        setEDesc('')
+        setEDesc(placeholder.description)
         setError(null)
     }
 
@@ -126,9 +129,10 @@ export default function SpecialFeaturesForm({
     function saveEdit() {
         if (editingIndex == null) return
         if (!eName.trim()) return setError('Name is required.')
+        if (!eDesc.trim()) return setError('Description is required.')
         updateSpecialFeatureAt(editingIndex, {
             name: eName.trim(),
-            description: eDesc,
+            description: eDesc.trim(),
         })
         cancelEdit()
     }

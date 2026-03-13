@@ -99,12 +99,12 @@ function SourceCombobox({
     placeholder,
 }: {
     items: CatalogItem[]
-    value?: string // id
+    value?: string
     onSelect: (item: CatalogItem) => void
     placeholder: string
 }) {
     const [open, setOpen] = useState(false)
-    const current = items.find((i) => i.id === value)
+    const current = items.find((item) => item.title === value)
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -182,18 +182,17 @@ function TypeSegment({
 /* ---------- Main MetaForm ---------- */
 export default function MetaForm() {
     const { challenge, updateMeta } = useChallengeStore()
-    const m = challenge.meta ?? {}
+    const m = challenge.meta
 
-    const type = m.publication_type as PublicationType | undefined
+    const type = m?.publication_type as PublicationType | undefined
 
     // Ensure arrays exist in UI
-    const authors = useMemo(() => m.authors ?? [], [m.authors])
+    const authors = useMemo(() => m?.authors ?? [], [m?.authors])
 
     function setType(next: PublicationType) {
         // reset source fields when switching types (keeps page)
         updateMeta({
             publication_type: next,
-            source_id: undefined,
             source: '',
             authors: [],
         })
@@ -201,7 +200,6 @@ export default function MetaForm() {
 
     function pickFromCatalog(item: CatalogItem) {
         updateMeta({
-            source_id: item.id,
             source: item.title,
             authors: item.authors,
         })
@@ -225,7 +223,7 @@ export default function MetaForm() {
                                 ? OFFICIAL_SOURCES
                                 : THIRD_PARTY_SOURCES
                         }
-                        value={m.source_id}
+                        value={m?.source}
                         onSelect={pickFromCatalog}
                         placeholder={
                             type === 'official'
@@ -252,7 +250,7 @@ export default function MetaForm() {
                 </Label>
                 <Input
                     id="meta-source"
-                    value={m.source ?? ''}
+                    value={m?.source ?? ''}
                     onChange={(e) => updateMeta({ source: e.target.value })}
                     placeholder={
                         type === 'cauldron'
@@ -284,7 +282,7 @@ export default function MetaForm() {
                     id="meta-page"
                     type="number"
                     min={1}
-                    value={m.page ?? ''}
+                    value={m?.page ?? ''}
                     onChange={(e) =>
                         updateMeta({
                             page: e.target.value

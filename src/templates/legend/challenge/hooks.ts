@@ -36,6 +36,19 @@ function strOrNull(v?: string | null) {
     return s ? s : null
 }
 
+function strOrFallback(v: string | undefined, fallback: string) {
+    const s = (v ?? '').trim()
+    return s || fallback
+}
+
+function normalizeRequiredStrings(values: string[] | undefined, fallback: string) {
+    const normalized = (values ?? [])
+        .map((value) => value.trim())
+        .filter(Boolean)
+
+    return normalized.length > 0 ? normalized : [fallback]
+}
+
 function cloneValue<T>(value: T): T {
     if (typeof structuredClone === 'function') {
         return structuredClone(value)
@@ -230,8 +243,14 @@ export function useChallengeStore() {
                     ...current.threats,
                     {
                         name: threat.name.trim(),
-                        description: threat.description ?? '',
-                        consequences: [...(threat.consequences || [])],
+                        description: strOrFallback(
+                            threat.description,
+                            'Describe how this threat escalates.'
+                        ),
+                        consequences: normalizeRequiredStrings(
+                            threat.consequences,
+                            'Describe a consequence.'
+                        ),
                     },
                 ],
             })),
@@ -245,9 +264,15 @@ export function useChallengeStore() {
                     ...prev,
                     ...update,
                     name: (update.name ?? prev.name).trim(),
-                    description: update.description ?? prev.description ?? '',
+                    description: strOrFallback(
+                        update.description ?? prev.description,
+                        prev.description
+                    ),
                     consequences: update.consequences
-                        ? [...update.consequences]
+                        ? normalizeRequiredStrings(
+                              update.consequences,
+                              prev.consequences[0] ?? 'Describe a consequence.'
+                          )
                         : [...prev.consequences],
                 }
 
@@ -276,9 +301,12 @@ export function useChallengeStore() {
                 const threat = threats[threatIndex]
                 if (!threat) return current
 
+                const nextText = text.trim()
+                if (!nextText) return current
+
                 threats[threatIndex] = {
                     ...threat,
-                    consequences: [...threat.consequences, text],
+                    consequences: [...threat.consequences, nextText],
                 }
 
                 return { ...current, threats }
@@ -292,7 +320,10 @@ export function useChallengeStore() {
                 const consequences = [...threat.consequences]
                 if (cIndex < 0 || cIndex >= consequences.length) return current
 
-                consequences[cIndex] = text
+                const nextText = text.trim()
+                if (!nextText) return current
+
+                consequences[cIndex] = nextText
                 threats[threatIndex] = { ...threat, consequences }
 
                 return { ...current, threats }
@@ -302,6 +333,8 @@ export function useChallengeStore() {
                 const threats = [...current.threats]
                 const threat = threats[threatIndex]
                 if (!threat) return current
+
+                if (threat.consequences.length <= 1) return current
 
                 const consequences = [...threat.consequences]
                 consequences.splice(cIndex, 1)
@@ -368,7 +401,10 @@ export function useChallengeStore() {
                     ...current.special_features,
                     {
                         name: feature.name.trim(),
-                        description: feature.description ?? '',
+                        description: strOrFallback(
+                            feature.description,
+                            'Describe when this feature triggers and what it does.'
+                        ),
                     },
                 ],
             })),
@@ -382,7 +418,10 @@ export function useChallengeStore() {
                     ...prev,
                     ...update,
                     name: (update.name ?? prev.name).trim(),
-                    description: update.description ?? prev.description ?? '',
+                    description: strOrFallback(
+                        update.description ?? prev.description,
+                        prev.description
+                    ),
                 }
 
                 return { ...current, special_features: arr }
@@ -408,6 +447,8 @@ export function useChallengeStore() {
             apply((current) => ({
                 ...current,
                 meta: {
+                    publication_type:
+                        current.meta?.publication_type || 'homebrew',
                     ...(current.meta || {}),
                     ...update,
                 },

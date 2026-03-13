@@ -2,6 +2,7 @@
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { useChallengeStore } from '../../hooks'
 import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -46,6 +47,10 @@ type Panel =
     | { kind: 'threats' }
     | { kind: 'cons'; tIdx: number }
     | { kind: 'general' }
+
+const THREAT_DESCRIPTION_LIMIT = 100
+const DEFAULT_THREAT_DESCRIPTION = 'Describe how this threat escalates.'
+const DEFAULT_CONSEQUENCE = 'Describe a consequence.'
 
 export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
     const {
@@ -186,9 +191,16 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
 
     function addThreatPlaceholder() {
         const name = uniqueThreatName()
-        addThreat({ name, description: '', consequences: [] })
-        const idx = challenge.threats.length // end
-        startEditThreat(idx)
+        const idx = challenge.threats.length
+        addThreat({
+            name,
+            description: DEFAULT_THREAT_DESCRIPTION,
+            consequences: [DEFAULT_CONSEQUENCE],
+        })
+        setEditingThreat(idx)
+        setTName(name)
+        setTDesc(DEFAULT_THREAT_DESCRIPTION)
+        setTErr(null)
     }
 
     function startEditThreat(idx: number) {
@@ -210,8 +222,16 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
     function saveThreat() {
         if (editingThreat == null) return
         const name = tName.trim()
+        const description = tDesc.trim()
         if (!name) return setTErr('Threat name is required.')
-        updateThreatAt(editingThreat, { name, description: tDesc.trim() })
+        if (!description) return setTErr('Threat description is required.')
+        if (description.length > THREAT_DESCRIPTION_LIMIT) {
+            return setTErr(
+                `Threat description must be ${THREAT_DESCRIPTION_LIMIT} characters or fewer.`
+            )
+        }
+
+        updateThreatAt(editingThreat, { name, description })
         cancelEditThreat()
     }
 
@@ -233,10 +253,10 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
 
     function addConsequencePlaceholder() {
         if (currentThreatIndex == null) return
-        addConsequence(currentThreatIndex, 'New consequence')
+        addConsequence(currentThreatIndex, DEFAULT_CONSEQUENCE)
         const idx = challenge.threats[currentThreatIndex].consequences.length // end
         setEditingCons(idx)
-        setConsDraft('New consequence')
+        setConsDraft(DEFAULT_CONSEQUENCE)
     }
 
     function startEditConsequence(cIdx: number, text: string) {
@@ -246,7 +266,13 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
 
     function saveConsequence() {
         if (currentThreatIndex == null || editingCons == null) return
-        updateConsequence(currentThreatIndex, editingCons, consDraft.trim())
+        const next = consDraft.trim()
+        if (!next) {
+            toast.error('Consequence cannot be empty.')
+            return
+        }
+
+        updateConsequence(currentThreatIndex, editingCons, next)
         setEditingCons(null)
         setConsDraft('')
     }
@@ -369,7 +395,17 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                                                 )
                                                             }
                                                             placeholder="What the challenge starts to do…"
+                                                            maxLength={
+                                                                THREAT_DESCRIPTION_LIMIT
+                                                            }
                                                         />
+                                                        <div className="text-[11px] text-muted-foreground">
+                                                            {tDesc.trim().length}/
+                                                            {
+                                                                THREAT_DESCRIPTION_LIMIT
+                                                            }{' '}
+                                                            characters
+                                                        </div>
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <Button
@@ -491,10 +527,17 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                                         )
                                                     }
                                                     onRemove={() =>
-                                                        removeConsequence(
-                                                            currentThreatIndex,
-                                                            cIdx
-                                                        )
+                                                        challenge.threats[
+                                                            currentThreatIndex
+                                                        ]?.consequences
+                                                            .length <= 1
+                                                            ? toast.error(
+                                                                  'Each threat needs at least one consequence.'
+                                                              )
+                                                            : removeConsequence(
+                                                                  currentThreatIndex,
+                                                                  cIdx
+                                                              )
                                                     }
                                                 >
                                                     {isEditing && (

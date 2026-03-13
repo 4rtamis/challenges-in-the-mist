@@ -1,39 +1,22 @@
-export type MightLevel = 'origin' | 'adventure' | 'greatness'
+import type {
+    ChallengeMeta,
+    LegendInTheMistChallenge,
+    Limit,
+    Might,
+    MightLevel,
+    PublicationType,
+    SpecialFeature,
+    Threat,
+} from './schema'
 
-export type Might = {
-    name: string
-    level: MightLevel
-    vulnerability?: string | null
-}
-
-export type Limit = {
-    name: string
-    level: number
-    is_immune?: boolean
-    is_progress?: boolean
-    on_max?: string | null
-}
-
-export type Threat = {
-    name: string
-    description: string
-    consequences: string[]
-}
-
-export type SpecialFeature = { name: string; description: string }
-
-export type PublicationType =
-    | 'official'
-    | 'third_party'
-    | 'cauldron'
-    | 'homebrew'
-
-export type ChallengeMeta = {
-    publication_type?: PublicationType
-    source?: string
-    source_id?: string
-    authors?: string[]
-    page?: number
+export type {
+    ChallengeMeta,
+    Limit,
+    Might,
+    MightLevel,
+    PublicationType,
+    SpecialFeature,
+    Threat,
 }
 
 export type Challenge = {
@@ -48,6 +31,24 @@ export type Challenge = {
     general_consequences: string[]
     special_features: SpecialFeature[]
     meta?: ChallengeMeta
+}
+
+export function toChallengeDocument(
+    challenge: LegendInTheMistChallenge
+): Challenge {
+    return {
+        name: challenge.name,
+        description: challenge.description ?? '',
+        rating: challenge.rating,
+        roles: challenge.roles ?? [],
+        tags_and_statuses: challenge.tags_and_statuses ?? [],
+        mights: challenge.mights ?? [],
+        limits: challenge.limits ?? [],
+        threats: challenge.threats ?? [],
+        general_consequences: challenge.general_consequences ?? [],
+        special_features: challenge.special_features ?? [],
+        meta: challenge.meta,
+    }
 }
 
 export type SectionId =
@@ -123,7 +124,7 @@ export const defaultChallengeSheetState: ChallengeSheetState = {
 }
 
 export const blankChallenge = (): Challenge => ({
-    name: '',
+    name: 'Untitled Challenge',
     description: '',
     rating: 1,
     roles: [],
@@ -133,10 +134,4 @@ export const blankChallenge = (): Challenge => ({
     threats: [],
     general_consequences: [],
     special_features: [],
-    meta: {
-        publication_type: 'homebrew',
-        source: '',
-        authors: [],
-        page: undefined,
-    },
 })

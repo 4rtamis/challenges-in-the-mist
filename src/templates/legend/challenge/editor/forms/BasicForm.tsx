@@ -32,7 +32,11 @@ export default function BasicForm() {
                         className="h-8 px-2 text-sm"
                         placeholder="e.g., The Heap Thing"
                         value={challenge.name}
-                        onChange={(e) => setChallenge({ name: e.target.value })}
+                        onChange={(e) =>
+                            setChallenge({
+                                name: e.target.value || 'Untitled Challenge',
+                            })
+                        }
                     />
                 </div>
 

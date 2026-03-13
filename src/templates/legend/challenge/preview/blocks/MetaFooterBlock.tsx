@@ -14,15 +14,15 @@ const TYPE_LABEL: Record<PublicationType, string> = {
 export default function MetaFooterBlock() {
     const { challenge } = useChallengeStore()
     const { openSheet } = useChallengeSheetStore()
-    const m = challenge.meta ?? {}
+    const m = challenge.meta
 
     const hasAny =
-        !!m.publication_type ||
-        !!m.source ||
-        (m.authors && m.authors.length > 0) ||
-        m.page != null
+        !!m?.publication_type ||
+        !!m?.source ||
+        (m?.authors != null && m.authors.length > 0) ||
+        m?.page != null
 
-    const typeLabel = m.publication_type
+    const typeLabel = m?.publication_type
         ? TYPE_LABEL[m.publication_type]
         : undefined
 
@@ -41,17 +41,17 @@ export default function MetaFooterBlock() {
                             {typeLabel && (
                                 <span className="badge">{typeLabel}</span>
                             )}
-                            {m.source && (
+                            {m?.source && (
                                 <span className="font-semibold truncate">
                                     {m.source}
                                 </span>
                             )}
-                            {m.authors && m.authors.length > 0 && (
+                            {m?.authors && m.authors.length > 0 && (
                                 <span className="">
                                     by {m.authors.join(', ')}
                                 </span>
                             )}
-                            {m.page != null && (
+                            {m?.page != null && (
                                 <span className=""> (p.{m.page})</span>
                             )}
                         </div>
