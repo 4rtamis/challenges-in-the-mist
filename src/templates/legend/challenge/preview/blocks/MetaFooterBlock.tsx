@@ -1,7 +1,7 @@
 import {
     type PublicationType,
-    useChallengeSheetStore,
-    useChallengeStore,
+    useLegendInTheMistChallengeSheetStore,
+    useLegendInTheMistChallengeStore,
 } from '../../hooks'
 
 const TYPE_LABEL: Record<PublicationType, string> = {
@@ -12,9 +12,9 @@ const TYPE_LABEL: Record<PublicationType, string> = {
 }
 
 export default function MetaFooterBlock() {
-    const { challenge } = useChallengeStore()
-    const { openSheet } = useChallengeSheetStore()
-    const m = challenge.meta
+    const { legendInTheMistChallenge } = useLegendInTheMistChallengeStore()
+    const { openSheet } = useLegendInTheMistChallengeSheetStore()
+    const m = legendInTheMistChallenge.meta
 
     const hasAny =
         !!m?.publication_type ||

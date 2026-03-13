@@ -8,7 +8,7 @@ import {
     PREVIEW_WIDTH_MIN,
 } from '../model'
 import { challengeBackgroundOptions, challengeSections } from '../metadata'
-import { useChallengeViewStore } from '../hooks'
+import { useLegendInTheMistChallengeViewStore } from '../hooks'
 
 export function ChallengeAppearancePanel() {
     const {
@@ -21,7 +21,7 @@ export function ChallengeAppearancePanel() {
         background,
         setBackground,
         resetViewPrefs,
-    } = useChallengeViewStore()
+    } = useLegendInTheMistChallengeViewStore()
 
     return (
         <div className="space-y-4">

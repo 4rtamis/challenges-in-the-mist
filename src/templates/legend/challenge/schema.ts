@@ -372,6 +372,6 @@ export type Limit = z.infer<typeof LimitSchema>
 export type Threat = z.infer<typeof ThreatSchema>
 export type SpecialFeature = z.infer<typeof SpecialFeatureSchema>
 export type ChallengeMeta = z.infer<typeof MetaSchema>
-export type LegendInTheMistChallenge = z.infer<
+export type LegendInTheMistChallengeData = z.infer<
     typeof LegendInTheMistChallengeSchema
 >

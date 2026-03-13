@@ -5,7 +5,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { type Limit, useChallengeStore } from '../../hooks'
+import { type Limit, useLegendInTheMistChallengeStore } from '../../hooks'
 
 import {
     DndContext,
@@ -27,8 +27,8 @@ import { CSS } from '@dnd-kit/utilities'
 const PRESET_LIMITS = ['Harm', 'Scare', 'Convince', 'Subdue', 'Banish']
 
 export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
-    const { challenge, addLimit, updateLimitAt, removeLimitAt, moveLimit } =
-        useChallengeStore()
+    const { legendInTheMistChallenge, addLimit, updateLimitAt, removeLimitAt, moveLimit } =
+        useLegendInTheMistChallengeStore()
 
     // --- inline editor state (for a single item at a time) ---
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -43,7 +43,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
 
     // open editor for the focused index (from sheet deep link)
     useEffect(() => {
-        if (typeof focusIndex === 'number' && challenge.limits[focusIndex]) {
+        if (typeof focusIndex === 'number' && legendInTheMistChallenge.limits[focusIndex]) {
             startEdit(focusIndex)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,8 +58,8 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
     )
 
     const itemIds = useMemo(
-        () => challenge.limits.map((l) => l.name),
-        [challenge.limits]
+        () => legendInTheMistChallenge.limits.map((l) => l.name),
+        [legendInTheMistChallenge.limits]
     )
 
     function handleDragEnd(e: DragEndEvent) {
@@ -73,13 +73,13 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
     // ---- helpers ----
     function isDuplicateName(nm: string, except?: number) {
         const target = nm.trim().toLowerCase()
-        return challenge.limits.some(
+        return legendInTheMistChallenge.limits.some(
             (l, i) => i !== except && l.name.trim().toLowerCase() === target
         )
     }
 
     function startEdit(idx: number) {
-        const l = challenge.limits[idx]
+        const l = legendInTheMistChallenge.limits[idx]
         if (!l) return
         setEditingIndex(idx)
         setEName(l.name)
@@ -118,7 +118,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
 
     function uniquePlaceholderName(): string {
         // Prefer an unused preset at random
-        const used = new Set(challenge.limits.map((l) => l.name.toLowerCase()))
+        const used = new Set(legendInTheMistChallenge.limits.map((l) => l.name.toLowerCase()))
         const available = PRESET_LIMITS.filter(
             (p) => !used.has(p.toLowerCase())
         )
@@ -143,7 +143,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
             on_max: null,
         }
         // Add at the end, then open editor for it.
-        const newIndex = challenge.limits.length
+        const newIndex = legendInTheMistChallenge.limits.length
         addLimit(placeholder)
         // Optimistically open the editor with placeholder values.
         setEditingIndex(newIndex)
@@ -168,7 +168,7 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
                     strategy={verticalListSortingStrategy}
                 >
                     <ul className="space-y-1.5">
-                        {challenge.limits.map((l, idx) => (
+                        {legendInTheMistChallenge.limits.map((l, idx) => (
                             <SortableLimitItem
                                 key={itemIds[idx]}
                                 id={itemIds[idx]}

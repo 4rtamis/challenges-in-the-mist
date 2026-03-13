@@ -1,12 +1,12 @@
 // src/preview/blocks/LimitsBlock.tsx
-import { useChallengeSheetStore, useChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeSheetStore, useLegendInTheMistChallengeStore } from '../../hooks'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { ClickableSection } from '../components/Clickable'
 import { SectionHeader } from '../components/SectionHeader'
 
 export default function LimitsBlock() {
-    const { challenge } = useChallengeStore()
-    const { openSheet } = useChallengeSheetStore()
+    const { legendInTheMistChallenge } = useLegendInTheMistChallengeStore()
+    const { openSheet } = useLegendInTheMistChallengeSheetStore()
 
     return (
         <div className="space-y-0.5">
@@ -16,8 +16,8 @@ export default function LimitsBlock() {
             />
 
             <div className="flex flex-col items-center gap-0.5">
-                {challenge.limits.length ? (
-                    challenge.limits.map((l, i) => (
+                {legendInTheMistChallenge.limits.length ? (
+                    legendInTheMistChallenge.limits.map((l, i) => (
                         <ClickableSection
                             key={`${l.name}-${i}`}
                             onClick={() =>

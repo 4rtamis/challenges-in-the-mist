@@ -1,15 +1,15 @@
 // src/preview/blocks/ThreatsBlock.tsx
-import { useChallengeSheetStore, useChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeSheetStore, useLegendInTheMistChallengeStore } from '../../hooks'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { ClickableSection } from '../components/Clickable'
 import { SectionHeader } from '../components/SectionHeader'
 
 export default function ThreatsBlock() {
-    const { challenge } = useChallengeStore()
-    const { openSheet } = useChallengeSheetStore()
+    const { legendInTheMistChallenge } = useLegendInTheMistChallengeStore()
+    const { openSheet } = useLegendInTheMistChallengeSheetStore()
 
-    const hasThreats = challenge.threats.length > 0
-    const hasGeneral = challenge.general_consequences.length > 0
+    const hasThreats = legendInTheMistChallenge.threats.length > 0
+    const hasGeneral = legendInTheMistChallenge.general_consequences.length > 0
 
     return (
         <div>
@@ -22,7 +22,7 @@ export default function ThreatsBlock() {
             <div className="threat-section space-y-2 mt-2">
                 {/* THREATS */}
                 {hasThreats &&
-                    challenge.threats.map((t, ti) => (
+                    legendInTheMistChallenge.threats.map((t, ti) => (
                         <ClickableSection
                             key={`${t.name}-${ti}`}
                             onClick={() =>
@@ -85,7 +85,7 @@ export default function ThreatsBlock() {
                     >
                         <div className="threat-card">
                             <div className="mt-1">
-                                {challenge.general_consequences.map(
+                                {legendInTheMistChallenge.general_consequences.map(
                                     (c, idx) => (
                                         <div
                                             key={`gc-${idx}`}

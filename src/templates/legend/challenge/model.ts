@@ -1,6 +1,6 @@
 import type {
     ChallengeMeta,
-    LegendInTheMistChallenge,
+    LegendInTheMistChallengeData,
     Limit,
     Might,
     MightLevel,
@@ -19,7 +19,7 @@ export type {
     Threat,
 }
 
-export type Challenge = {
+export type LegendInTheMistChallenge = {
     name: string
     description: string
     rating: number
@@ -33,21 +33,22 @@ export type Challenge = {
     meta?: ChallengeMeta
 }
 
-export function toChallengeDocument(
-    challenge: LegendInTheMistChallenge
-): Challenge {
+export function toLegendInTheMistChallengeDocument(
+    legendInTheMistChallenge: LegendInTheMistChallengeData
+): LegendInTheMistChallenge {
     return {
-        name: challenge.name,
-        description: challenge.description ?? '',
-        rating: challenge.rating,
-        roles: challenge.roles ?? [],
-        tags_and_statuses: challenge.tags_and_statuses ?? [],
-        mights: challenge.mights ?? [],
-        limits: challenge.limits ?? [],
-        threats: challenge.threats ?? [],
-        general_consequences: challenge.general_consequences ?? [],
-        special_features: challenge.special_features ?? [],
-        meta: challenge.meta,
+        name: legendInTheMistChallenge.name,
+        description: legendInTheMistChallenge.description ?? '',
+        rating: legendInTheMistChallenge.rating,
+        roles: legendInTheMistChallenge.roles ?? [],
+        tags_and_statuses: legendInTheMistChallenge.tags_and_statuses ?? [],
+        mights: legendInTheMistChallenge.mights ?? [],
+        limits: legendInTheMistChallenge.limits ?? [],
+        threats: legendInTheMistChallenge.threats ?? [],
+        general_consequences:
+            legendInTheMistChallenge.general_consequences ?? [],
+        special_features: legendInTheMistChallenge.special_features ?? [],
+        meta: legendInTheMistChallenge.meta,
     }
 }
 
@@ -68,7 +69,7 @@ export type ExportPrefs = {
     transparent: boolean
 }
 
-export type ChallengeViewState = {
+export type LegendInTheMistChallengeViewState = {
     zoom: number
     previewWidth: number
     background: Background
@@ -86,7 +87,7 @@ export type SheetTarget =
     | { kind: 'special'; mode?: 'create' | 'edit'; index?: number }
     | { kind: 'threats'; mode?: 'create' | 'edit'; index?: number }
 
-export type ChallengeSheetState = {
+export type LegendInTheMistChallengeSheetState = {
     open: boolean
     target: SheetTarget | null
 }
@@ -106,7 +107,8 @@ export const defaultHidden: Record<SectionId, boolean> = {
     meta: false,
 }
 
-export const defaultChallengeView: ChallengeViewState = {
+export const defaultLegendInTheMistChallengeView:
+    LegendInTheMistChallengeViewState = {
     zoom: 1,
     previewWidth: PREVIEW_WIDTH_DEFAULT,
     background: 'parchment',
@@ -118,12 +120,13 @@ export const defaultChallengeView: ChallengeViewState = {
     },
 }
 
-export const defaultChallengeSheetState: ChallengeSheetState = {
+export const defaultLegendInTheMistChallengeSheetState:
+    LegendInTheMistChallengeSheetState = {
     open: false,
     target: null,
 }
 
-export const blankChallenge = (): Challenge => ({
+export const blankLegendInTheMistChallenge = (): LegendInTheMistChallenge => ({
     name: 'Untitled Challenge',
     description: '',
     rating: 1,

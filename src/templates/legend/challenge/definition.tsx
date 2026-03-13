@@ -5,18 +5,18 @@ import { ChallengeAppearancePanel } from './editor/ChallengeAppearancePanel'
 import { ChallengeEditorPanel } from './editor/ChallengeEditorPanel'
 import { ChallengeImageExportSettings } from './editor/ChallengeImageExportSettings'
 import {
-    blankChallenge,
-    defaultChallengeSheetState,
-    defaultChallengeView,
-    type Challenge,
-    type ChallengeViewState,
+    blankLegendInTheMistChallenge,
+    defaultLegendInTheMistChallengeSheetState,
+    defaultLegendInTheMistChallengeView,
+    type LegendInTheMistChallenge,
+    type LegendInTheMistChallengeViewState,
 } from './model'
 import { challengeSections } from './metadata'
 import { ChallengePreview } from './preview/ChallengePreview'
 import { LegendInTheMistChallengeSchema } from './schema'
-import { getSampleChallenge } from './sample'
+import { getSampleLegendInTheMistChallenge } from './sample'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
-import { getChallengePreviewWidth } from './hooks'
+import { getLegendInTheMistChallengePreviewWidth } from './hooks'
 
 function cloneValue<T>(value: T): T {
     if (typeof structuredClone === 'function') {
@@ -40,7 +40,7 @@ function createImageExportAction(format: 'png' | 'svg') {
         }: {
             fileStem: string
             getPreviewNode: () => HTMLElement | null
-            view: ChallengeViewState
+            view: LegendInTheMistChallengeViewState
         }) => {
             const node = getPreviewNode()
             if (!node) {
@@ -87,11 +87,13 @@ const challengeTemplate: AnyTemplateDefinition = {
     label: 'Challenge',
     implemented: true,
     schema: LegendInTheMistChallengeSchema,
-    createBlank: blankChallenge,
-    createExample: getSampleChallenge,
-    createInitialView: () => cloneValue(defaultChallengeView),
-    createInitialSheet: () => cloneValue(defaultChallengeSheetState),
-    getTabTitle: (doc: Challenge) => doc.name.trim() || 'Challenge',
+    createBlank: blankLegendInTheMistChallenge,
+    createExample: getSampleLegendInTheMistChallenge,
+    createInitialView: () => cloneValue(defaultLegendInTheMistChallengeView),
+    createInitialSheet: () =>
+        cloneValue(defaultLegendInTheMistChallengeSheetState),
+    getTabTitle: (doc: LegendInTheMistChallenge) =>
+        doc.name.trim() || 'Challenge',
     sections: challengeSections,
     landing: {
         description:
@@ -102,14 +104,16 @@ const challengeTemplate: AnyTemplateDefinition = {
     },
     io: {
         importToml: (tomlText: string) => {
-            const { challenge, warnings } = importFromTOMLWithWarnings(tomlText)
+            const { legendInTheMistChallenge, warnings } =
+                importFromTOMLWithWarnings(tomlText)
             return {
-                doc: challenge,
+                doc: legendInTheMistChallenge,
                 warnings,
-                previewName: challenge.name || 'Imported Challenge',
+                previewName:
+                    legendInTheMistChallenge.name || 'Imported Challenge',
             }
         },
-        exportToml: (doc: Challenge) => exportToTOML(doc),
+        exportToml: (doc: LegendInTheMistChallenge) => exportToTOML(doc),
     },
     preview: {
         getRootSelector: (tabId: string) => `[data-preview-root="${tabId}"]`,
@@ -120,8 +124,8 @@ const challengeTemplate: AnyTemplateDefinition = {
         renderPanel: () => <ChallengeEditorPanel />,
     },
     appearance: {
-        getPreviewWidth: (view: ChallengeViewState) =>
-            getChallengePreviewWidth(view),
+        getPreviewWidth: (view: LegendInTheMistChallengeViewState) =>
+            getLegendInTheMistChallengePreviewWidth(view),
         renderPanel: () => <ChallengeAppearancePanel />,
     },
     export: {
@@ -131,7 +135,13 @@ const challengeTemplate: AnyTemplateDefinition = {
                 label: 'TOML',
                 buttonLabel: 'Export TOML',
                 description: 'Export the current challenge data as TOML.',
-                run: ({ doc, fileStem }: { doc: Challenge; fileStem: string }) => {
+                run: ({
+                    doc,
+                    fileStem,
+                }: {
+                    doc: LegendInTheMistChallenge
+                    fileStem: string
+                }) => {
                     try {
                         const toml = exportToTOML(doc)
                         const blob = new Blob([toml], {

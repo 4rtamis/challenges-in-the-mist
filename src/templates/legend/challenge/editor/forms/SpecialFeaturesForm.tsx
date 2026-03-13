@@ -1,5 +1,5 @@
 import { renderLitmMarkdown } from '@/utils/markdown'
-import { useChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeStore } from '../../hooks'
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -31,12 +31,12 @@ export default function SpecialFeaturesForm({
     focusIndex?: number
 }) {
     const {
-        challenge,
+        legendInTheMistChallenge,
         addSpecialFeature,
         updateSpecialFeatureAt,
         removeSpecialFeatureAt,
         moveSpecialFeature,
-    } = useChallengeStore()
+    } = useLegendInTheMistChallengeStore()
 
     // One inline editor at a time
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -48,7 +48,7 @@ export default function SpecialFeaturesForm({
     useEffect(() => {
         if (
             typeof focusIndex === 'number' &&
-            challenge.special_features[focusIndex]
+            legendInTheMistChallenge.special_features[focusIndex]
         ) {
             startEdit(focusIndex)
         }
@@ -66,10 +66,10 @@ export default function SpecialFeaturesForm({
     // Stable IDs for current render (index::name)
     const itemIds = useMemo(
         () =>
-            challenge.special_features.map(
+            legendInTheMistChallenge.special_features.map(
                 (sf, i) => `${i}::${sf.name || 'feature'}`
             ),
-        [challenge.special_features]
+        [legendInTheMistChallenge.special_features]
     )
 
     function handleDragEnd(e: DragEndEvent) {
@@ -86,7 +86,7 @@ export default function SpecialFeaturesForm({
     function uniquePlaceholderName(): string {
         const base = 'New Feature'
         const used = new Set(
-            challenge.special_features.map((sf) =>
+            legendInTheMistChallenge.special_features.map((sf) =>
                 (sf.name || '').toLowerCase()
             )
         )
@@ -101,7 +101,7 @@ export default function SpecialFeaturesForm({
             name: uniquePlaceholderName(),
             description: 'Describe when this feature triggers and what it does.',
         }
-        const newIndex = challenge.special_features.length
+        const newIndex = legendInTheMistChallenge.special_features.length
         addSpecialFeature(placeholder)
         // open inline editor for the new item
         setEditingIndex(newIndex)
@@ -111,7 +111,7 @@ export default function SpecialFeaturesForm({
     }
 
     function startEdit(i: number) {
-        const sf = challenge.special_features[i]
+        const sf = legendInTheMistChallenge.special_features[i]
         if (!sf) return
         setEditingIndex(i)
         setEName(sf.name || '')
@@ -149,7 +149,7 @@ export default function SpecialFeaturesForm({
                     strategy={verticalListSortingStrategy}
                 >
                     <ul className="space-y-3">
-                        {challenge.special_features.map((sf, i) => (
+                        {legendInTheMistChallenge.special_features.map((sf, i) => (
                             <SortableFeatureItem
                                 key={itemIds[i]}
                                 id={itemIds[i]}

@@ -1,14 +1,14 @@
 import { rolesList } from '@/utils/constants'
 import { parseToken } from '@/utils/tags'
-import type { Challenge } from './model'
+import type { LegendInTheMistChallenge } from './model'
 
 export function computeLegendInTheMistChallengeWarnings(
-    challenge: Challenge
+    legendInTheMistChallenge: LegendInTheMistChallenge
 ): string[] {
     const warnings: string[] = []
 
     const knownRoles = new Set(rolesList.map((role) => role.toLowerCase()))
-    const unknownRoles = (challenge.roles ?? []).filter(
+    const unknownRoles = (legendInTheMistChallenge.roles ?? []).filter(
         (role) => !knownRoles.has(role.toLowerCase())
     )
     if (unknownRoles.length > 0) {
@@ -17,7 +17,7 @@ export function computeLegendInTheMistChallengeWarnings(
 
     const invalidTokens: string[] = []
     const limitsFound: string[] = []
-    for (const token of challenge.tags_and_statuses ?? []) {
+    for (const token of legendInTheMistChallenge.tags_and_statuses ?? []) {
         const parsed = parseToken(token)
         if (!parsed) {
             invalidTokens.push(token)
@@ -41,7 +41,7 @@ export function computeLegendInTheMistChallengeWarnings(
         )
     }
 
-    const emptyOnMax = (challenge.limits ?? []).filter(
+    const emptyOnMax = (legendInTheMistChallenge.limits ?? []).filter(
         (limit) => limit.is_progress && !limit.on_max
     )
     if (emptyOnMax.length > 0) {

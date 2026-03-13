@@ -1,14 +1,14 @@
-import { useChallengeSheetStore, useChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeSheetStore, useLegendInTheMistChallengeStore } from '../../hooks'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import '../challengeTheme.css'
 import { ClickableSection } from '../components/Clickable'
 import { SectionGate } from '../components/SectionGate'
 
 export default function BasicBlock() {
-    const { challenge } = useChallengeStore()
-    const { openSheet } = useChallengeSheetStore()
+    const { legendInTheMistChallenge } = useLegendInTheMistChallengeStore()
+    const { openSheet } = useLegendInTheMistChallengeSheetStore()
 
-    const rating = Math.max(1, Math.min(5, Math.floor(challenge.rating || 1)))
+    const rating = Math.max(1, Math.min(5, Math.floor(legendInTheMistChallenge.rating || 1)))
 
     return (
         <>
@@ -18,7 +18,7 @@ export default function BasicBlock() {
                 ariaLabel="Edit basic info"
             >
                 <h2 className="challenge-name uppercase text-center">
-                    <span>{challenge.name || 'Untitled Challenge'}</span>
+                    <span>{legendInTheMistChallenge.name || 'Untitled Challenge'}</span>
                     <span className="challenge-rating align-middle ml-[7pt]">
                         {Array.from({ length: rating }).map((_, i) => (
                             <span
@@ -38,8 +38,8 @@ export default function BasicBlock() {
                     ariaLabel="Edit roles"
                 >
                     <div className="text-center challenge-roles">
-                        {challenge.roles.length ? (
-                            challenge.roles.join(', ')
+                        {legendInTheMistChallenge.roles.length ? (
+                            legendInTheMistChallenge.roles.join(', ')
                         ) : (
                             <span className="underline decoration-dotted cursor-pointer">
                                 add roles
@@ -56,11 +56,11 @@ export default function BasicBlock() {
                             className="challenge-desc text-center"
                             style={{ width: '77%' }}
                         >
-                            {challenge.description ? (
+                            {legendInTheMistChallenge.description ? (
                                 <div
                                     dangerouslySetInnerHTML={{
                                         __html: renderLitmMarkdown(
-                                            challenge.description
+                                            legendInTheMistChallenge.description
                                         ),
                                     }}
                                 />

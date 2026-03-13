@@ -4,20 +4,21 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { rolesList } from '@/utils/constants'
-import { useChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeStore } from '../../hooks'
 
 export default function BasicForm() {
-    const { challenge, setChallenge } = useChallengeStore()
+    const { legendInTheMistChallenge, setLegendInTheMistChallenge } =
+        useLegendInTheMistChallengeStore()
 
     const clampRating = (n: number) =>
         Math.max(1, Math.min(5, Math.floor(n || 1)))
 
     const toggleRole = (role: string) => {
-        const has = challenge.roles.includes(role)
-        setChallenge({
+        const has = legendInTheMistChallenge.roles.includes(role)
+        setLegendInTheMistChallenge({
             roles: has
-                ? challenge.roles.filter((r) => r !== role)
-                : [...challenge.roles, role],
+                ? legendInTheMistChallenge.roles.filter((r) => r !== role)
+                : [...legendInTheMistChallenge.roles, role],
         })
     }
 
@@ -31,9 +32,9 @@ export default function BasicForm() {
                         id="challenge-name"
                         className="h-8 px-2 text-sm"
                         placeholder="e.g., The Heap Thing"
-                        value={challenge.name}
+                        value={legendInTheMistChallenge.name}
                         onChange={(e) =>
-                            setChallenge({
+                            setLegendInTheMistChallenge({
                                 name: e.target.value || 'Untitled Challenge',
                             })
                         }
@@ -48,9 +49,9 @@ export default function BasicForm() {
                         type="number"
                         min={1}
                         max={5}
-                        value={challenge.rating ?? 1}
+                        value={legendInTheMistChallenge.rating ?? 1}
                         onChange={(e) =>
-                            setChallenge({
+                            setLegendInTheMistChallenge({
                                 rating: clampRating(+e.target.value),
                             })
                         }
@@ -63,7 +64,7 @@ export default function BasicForm() {
                 <Label>Roles</Label>
                 <div className="flex flex-wrap gap-1.5">
                     {rolesList.map((role) => {
-                        const active = challenge.roles.includes(role)
+                        const active = legendInTheMistChallenge.roles.includes(role)
                         return (
                             <Button
                                 key={role}
@@ -93,9 +94,11 @@ export default function BasicForm() {
                     rows={4}
                     className="px-2 py-1 text-sm"
                     placeholder="Write a short summary of the challenge here..."
-                    value={challenge.description}
+                    value={legendInTheMistChallenge.description}
                     onChange={(e) =>
-                        setChallenge({ description: e.target.value })
+                        setLegendInTheMistChallenge({
+                            description: e.target.value,
+                        })
                     }
                 />
             </div>

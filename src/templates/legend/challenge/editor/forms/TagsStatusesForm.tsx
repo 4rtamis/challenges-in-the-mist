@@ -1,5 +1,5 @@
 import { renderLitmMarkdown } from '@/utils/markdown'
-import { useChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeStore } from '../../hooks'
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -29,8 +29,8 @@ export default function TagsStatusesForm({
 }: {
     focusIndex?: number
 }) {
-    const { challenge, addToken, removeTokenAt, replaceTokenAt, moveToken } =
-        useChallengeStore()
+    const { legendInTheMistChallenge, addToken, removeTokenAt, replaceTokenAt, moveToken } =
+        useLegendInTheMistChallengeStore()
 
     // One inline editor at a time
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -41,7 +41,7 @@ export default function TagsStatusesForm({
     useEffect(() => {
         if (
             typeof focusIndex === 'number' &&
-            challenge.tags_and_statuses[focusIndex] != null
+            legendInTheMistChallenge.tags_and_statuses[focusIndex] != null
         ) {
             startEdit(focusIndex)
         }
@@ -58,8 +58,8 @@ export default function TagsStatusesForm({
 
     // IDs must be unique even if values repeat. Use "index::value" snapshot IDs.
     const itemIds = useMemo(
-        () => challenge.tags_and_statuses.map((v, i) => `${i}::${v}`),
-        [challenge.tags_and_statuses]
+        () => legendInTheMistChallenge.tags_and_statuses.map((v, i) => `${i}::${v}`),
+        [legendInTheMistChallenge.tags_and_statuses]
     )
 
     function handleDragEnd(e: DragEndEvent) {
@@ -83,7 +83,7 @@ export default function TagsStatusesForm({
             '{sword}, {mace} or {dagger}',
         ]
         const sample = samples[Math.floor(Math.random() * samples.length)]
-        const newIndex = challenge.tags_and_statuses.length
+        const newIndex = legendInTheMistChallenge.tags_and_statuses.length
         addToken(sample)
         // open editor for the newly added one
         setEditingIndex(newIndex)
@@ -92,7 +92,7 @@ export default function TagsStatusesForm({
     }
 
     function startEdit(idx: number) {
-        const v = challenge.tags_and_statuses[idx]
+        const v = legendInTheMistChallenge.tags_and_statuses[idx]
         if (v == null) return
         setEditingIndex(idx)
         setRaw(v)
@@ -129,7 +129,7 @@ export default function TagsStatusesForm({
                     strategy={verticalListSortingStrategy}
                 >
                     <ul className="space-y-2">
-                        {challenge.tags_and_statuses.map((value, idx) => (
+                        {legendInTheMistChallenge.tags_and_statuses.map((value, idx) => (
                             <SortableTokenItem
                                 key={itemIds[idx]}
                                 id={itemIds[idx]}

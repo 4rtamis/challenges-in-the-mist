@@ -1,6 +1,6 @@
 // src/editor/ThreatsForm.tsx
 import { renderLitmMarkdown } from '@/utils/markdown'
-import { useChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeStore } from '../../hooks'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -54,7 +54,7 @@ const DEFAULT_CONSEQUENCE = 'Describe a consequence.'
 
 export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
     const {
-        challenge,
+        legendInTheMistChallenge,
         addThreat,
         updateThreatAt,
         removeThreatAt,
@@ -67,7 +67,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
         updateGeneralConsequence,
         removeGeneralConsequence,
         moveGeneralConsequence,
-    } = useChallengeStore()
+    } = useLegendInTheMistChallengeStore()
 
     // Which view is shown
     const [panel, setPanel] = useState<Panel>({ kind: 'threats' })
@@ -89,7 +89,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
 
     // Deep-link from preview to a given threat
     useEffect(() => {
-        if (typeof focusIndex === 'number' && challenge.threats[focusIndex]) {
+        if (typeof focusIndex === 'number' && legendInTheMistChallenge.threats[focusIndex]) {
             startEditThreat(focusIndex)
             setPanel({ kind: 'threats' })
         }
@@ -111,20 +111,20 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
         editingGeneralCons !== null
 
     const threatIds = useMemo(
-        () => challenge.threats.map((t, i) => `t:${i}:${t.name || 'threat'}`),
-        [challenge.threats]
+        () => legendInTheMistChallenge.threats.map((t, i) => `t:${i}:${t.name || 'threat'}`),
+        [legendInTheMistChallenge.threats]
     )
 
     const currentThreatIndex = panel.kind === 'cons' ? panel.tIdx : null
     const consIds = useMemo(() => {
         if (currentThreatIndex == null) return []
-        const t = challenge.threats[currentThreatIndex]
+        const t = legendInTheMistChallenge.threats[currentThreatIndex]
         return t ? t.consequences.map((_, i) => `c:${i}`) : []
-    }, [challenge.threats, currentThreatIndex])
+    }, [legendInTheMistChallenge.threats, currentThreatIndex])
 
     const generalIds = useMemo(
-        () => challenge.general_consequences.map((_, i) => `gc:${i}`),
-        [challenge.general_consequences]
+        () => legendInTheMistChallenge.general_consequences.map((_, i) => `gc:${i}`),
+        [legendInTheMistChallenge.general_consequences]
     )
 
     function onDragEnd(e: DragEndEvent) {
@@ -181,7 +181,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
     function uniqueThreatName() {
         const base = 'New Threat'
         const used = new Set(
-            challenge.threats.map((t) => (t.name || '').toLowerCase())
+            legendInTheMistChallenge.threats.map((t) => (t.name || '').toLowerCase())
         )
         if (!used.has(base.toLowerCase())) return base
         let n = 2
@@ -191,7 +191,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
 
     function addThreatPlaceholder() {
         const name = uniqueThreatName()
-        const idx = challenge.threats.length
+        const idx = legendInTheMistChallenge.threats.length
         addThreat({
             name,
             description: DEFAULT_THREAT_DESCRIPTION,
@@ -204,7 +204,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
     }
 
     function startEditThreat(idx: number) {
-        const t = challenge.threats[idx]
+        const t = legendInTheMistChallenge.threats[idx]
         if (!t) return
         setEditingThreat(idx)
         setTName(t.name || '')
@@ -254,7 +254,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
     function addConsequencePlaceholder() {
         if (currentThreatIndex == null) return
         addConsequence(currentThreatIndex, DEFAULT_CONSEQUENCE)
-        const idx = challenge.threats[currentThreatIndex].consequences.length // end
+        const idx = legendInTheMistChallenge.threats[currentThreatIndex].consequences.length // end
         setEditingCons(idx)
         setConsDraft(DEFAULT_CONSEQUENCE)
     }
@@ -279,7 +279,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
 
     function addGeneralPlaceholder() {
         addGeneralConsequence('New consequence')
-        const idx = challenge.general_consequences.length // end
+        const idx = legendInTheMistChallenge.general_consequences.length // end
         setEditingGeneralCons(idx)
         setGeneralDraft('New consequence')
     }
@@ -318,7 +318,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                             strategy={verticalListSortingStrategy}
                         >
                             <ul className="space-y-2">
-                                {challenge.threats.map((t, tIdx) => {
+                                {legendInTheMistChallenge.threats.map((t, tIdx) => {
                                     const id = threatIds[tIdx]
                                     const isEditing = editingThreat === tIdx
 
@@ -481,20 +481,20 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                     <div className="font-semibold">
                                         Consequences for:{' '}
                                         {
-                                            challenge.threats[
+                                            legendInTheMistChallenge.threats[
                                                 currentThreatIndex
                                             ]?.name
                                         }
                                     </div>
                                 </div>
 
-                                {challenge.threats[currentThreatIndex]
+                                {legendInTheMistChallenge.threats[currentThreatIndex]
                                     ?.description ? (
                                     <div
                                         className="text-sm text-foreground/80 prose-sm max-w-none"
                                         dangerouslySetInnerHTML={{
                                             __html: renderLitmMarkdown(
-                                                challenge.threats[
+                                                legendInTheMistChallenge.threats[
                                                     currentThreatIndex
                                                 ]?.description || ''
                                             ),
@@ -508,7 +508,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                     strategy={verticalListSortingStrategy}
                                 >
                                     <ul className="space-y-1.5">
-                                        {challenge.threats[
+                                        {legendInTheMistChallenge.threats[
                                             currentThreatIndex
                                         ]?.consequences.map((text, cIdx) => {
                                             const isEditing =
@@ -527,7 +527,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                                         )
                                                     }
                                                     onRemove={() =>
-                                                        challenge.threats[
+                                                        legendInTheMistChallenge.threats[
                                                             currentThreatIndex
                                                         ]?.consequences
                                                             .length <= 1
@@ -601,7 +601,7 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                     strategy={verticalListSortingStrategy}
                                 >
                                     <ul className="space-y-1.5">
-                                        {challenge.general_consequences.map(
+                                        {legendInTheMistChallenge.general_consequences.map(
                                             (text, idx) => {
                                                 const isEditing =
                                                     editingGeneralCons === idx

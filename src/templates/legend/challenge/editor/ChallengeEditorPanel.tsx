@@ -5,10 +5,10 @@ import MightForm from './forms/MightForm'
 import SpecialFeaturesForm from './forms/SpecialFeaturesForm'
 import TagsStatusesForm from './forms/TagsStatusesForm'
 import ThreatsForm from './forms/ThreatsForm'
-import { useChallengeSheetStore } from '../hooks'
+import { useLegendInTheMistChallengeSheetStore } from '../hooks'
 
 export function ChallengeEditorPanel() {
-    const { open, target } = useChallengeSheetStore()
+    const { open, target } = useLegendInTheMistChallengeSheetStore()
 
     if (!open || !target) {
         return (

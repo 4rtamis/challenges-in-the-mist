@@ -2,10 +2,10 @@ import type { WorkspaceTab } from '@/core/workspace/types'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import type {
-    Challenge,
     ChallengeMeta,
-    ChallengeSheetState,
-    ChallengeViewState,
+    LegendInTheMistChallenge,
+    LegendInTheMistChallengeSheetState,
+    LegendInTheMistChallengeViewState,
     Limit,
     Might,
     SpecialFeature,
@@ -14,17 +14,21 @@ import type {
     SectionId,
 } from './model'
 import {
-    blankChallenge,
-    defaultChallengeSheetState,
-    defaultChallengeView,
+    blankLegendInTheMistChallenge,
+    defaultLegendInTheMistChallengeSheetState,
+    defaultLegendInTheMistChallengeView,
     defaultHidden,
 } from './model'
 
-type ChallengeTab = WorkspaceTab<Challenge, ChallengeViewState, ChallengeSheetState>
+type LegendInTheMistChallengeTab = WorkspaceTab<
+    LegendInTheMistChallenge,
+    LegendInTheMistChallengeViewState,
+    LegendInTheMistChallengeSheetState
+>
 
 const TEMPLATE_ID = 'legend.challenge'
-const fallbackChallenge = blankChallenge()
-const fallbackView = cloneValue(defaultChallengeView)
+const fallbackLegendInTheMistChallenge = blankLegendInTheMistChallenge()
+const fallbackView = cloneValue(defaultLegendInTheMistChallengeView)
 
 function clamp(n: number, lo: number, hi: number) {
     const x = Math.floor(Number(n) || 0)
@@ -57,25 +61,29 @@ function cloneValue<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
 
-function useLegendChallengeTab() {
-    return useActiveTemplateTab<Challenge, ChallengeViewState, ChallengeSheetState>(
-        TEMPLATE_ID
-    )
+function useLegendInTheMistChallengeTab() {
+    return useActiveTemplateTab<
+        LegendInTheMistChallenge,
+        LegendInTheMistChallengeViewState,
+        LegendInTheMistChallengeSheetState
+    >(TEMPLATE_ID)
 }
 
-function getLegendChallengeTab(): ChallengeTab | null {
+function getLegendInTheMistChallengeTab():
+    | LegendInTheMistChallengeTab
+    | null {
     const workspace = useWorkspaceStore.getState()
     const active = getActiveTab(workspace)
     if (!active || active.templateId !== TEMPLATE_ID) return null
 
-    return active as ChallengeTab
+    return active as LegendInTheMistChallengeTab
 }
 
 export type {
-    Challenge,
     ChallengeMeta,
-    ChallengeSheetState,
-    ChallengeViewState,
+    LegendInTheMistChallenge,
+    LegendInTheMistChallengeSheetState,
+    LegendInTheMistChallengeViewState,
     Limit,
     Might,
     MightLevel,
@@ -88,35 +96,44 @@ export type {
 
 // These template-scoped hooks replace the legacy global stores while keeping
 // the editor and preview API familiar for the challenge module.
-export function useChallengeStore() {
-    const tab = useLegendChallengeTab()
+export function useLegendInTheMistChallengeStore() {
+    const tab = useLegendInTheMistChallengeTab()
     const replaceTabDoc = useWorkspaceStore((state) => state.replaceTabDoc)
     const updateTabDoc = useWorkspaceStore((state) => state.updateTabDoc)
 
-    const challenge = tab?.doc ?? fallbackChallenge
+    const legendInTheMistChallenge =
+        tab?.doc ?? fallbackLegendInTheMistChallenge
 
-    const apply = (producer: (current: Challenge) => Challenge) => {
+    const apply = (
+        producer: (
+            current: LegendInTheMistChallenge
+        ) => LegendInTheMistChallenge
+    ) => {
         if (!tab) return
 
         updateTabDoc(tab.id, (currentDoc) =>
-            producer(cloneValue(currentDoc as Challenge))
+            producer(cloneValue(currentDoc as LegendInTheMistChallenge))
         )
     }
 
     return {
-        challenge,
-        setChallenge: (update: Partial<Challenge>) =>
+        legendInTheMistChallenge,
+        setLegendInTheMistChallenge: (
+            update: Partial<LegendInTheMistChallenge>
+        ) =>
             apply((current) => ({
                 ...current,
                 ...update,
             })),
-        replaceChallenge: (next: Challenge) => {
+        replaceLegendInTheMistChallenge: (
+            next: LegendInTheMistChallenge
+        ) => {
             if (!tab) return
             replaceTabDoc(tab.id, cloneValue(next))
         },
-        resetChallenge: () => {
+        resetLegendInTheMistChallenge: () => {
             if (!tab) return
-            replaceTabDoc(tab.id, blankChallenge())
+            replaceTabDoc(tab.id, blankLegendInTheMistChallenge())
         },
         addToken: (token: string) =>
             apply((current) => ({
@@ -456,12 +473,12 @@ export function useChallengeStore() {
     }
 }
 
-export function useChallengeViewStore() {
-    const tab = useLegendChallengeTab()
+export function useLegendInTheMistChallengeViewStore() {
+    const tab = useLegendInTheMistChallengeTab()
     const patchTabView = useWorkspaceStore((state) => state.patchTabView)
     const view = tab?.view ?? fallbackView
 
-    const patchView = (patch: Partial<ChallengeViewState>) => {
+    const patchView = (patch: Partial<LegendInTheMistChallengeViewState>) => {
         if (!tab) return
         patchTabView(tab.id, cloneValue(patch) as Record<string, unknown>)
     }
@@ -476,7 +493,9 @@ export function useChallengeViewStore() {
             patchView({
                 previewWidth,
             }),
-        setBackground: (background: ChallengeViewState['background']) =>
+        setBackground: (
+            background: LegendInTheMistChallengeViewState['background']
+        ) =>
             patchView({ background }),
         toggleHidden: (id: SectionId) =>
             patchView({
@@ -494,7 +513,9 @@ export function useChallengeViewStore() {
             }),
         setAutoHideEmpty: (autoHideEmpty: boolean) =>
             patchView({ autoHideEmpty }),
-        setExportPrefs: (partial: Partial<ChallengeViewState['exportPrefs']>) =>
+        setExportPrefs: (
+            partial: Partial<LegendInTheMistChallengeViewState['exportPrefs']>
+        ) =>
             patchView({
                 exportPrefs: {
                     ...view.exportPrefs,
@@ -503,16 +524,16 @@ export function useChallengeViewStore() {
             }),
         resetViewPrefs: () =>
             patchView({
-                ...cloneValue(defaultChallengeView),
+                ...cloneValue(defaultLegendInTheMistChallengeView),
                 hidden: cloneValue(defaultHidden),
             }),
     }
 }
 
-export function useChallengeSheetStore() {
-    const tab = useLegendChallengeTab()
+export function useLegendInTheMistChallengeSheetStore() {
+    const tab = useLegendInTheMistChallengeTab()
     const setTabSheet = useWorkspaceStore((state) => state.setTabSheet)
-    const sheet = tab?.sheet ?? defaultChallengeSheetState
+    const sheet = tab?.sheet ?? defaultLegendInTheMistChallengeSheetState
 
     return {
         ...sheet,
@@ -527,29 +548,38 @@ export function useChallengeSheetStore() {
         closeSheet: () => {
             if (!tab) return
 
-            setTabSheet(tab.id, cloneValue(defaultChallengeSheetState))
+            setTabSheet(
+                tab.id,
+                cloneValue(defaultLegendInTheMistChallengeSheetState)
+            )
         },
     }
 }
 
-export function isEmptySection(challenge: Challenge, id: SectionId) {
+export function isEmptySection(
+    legendInTheMistChallenge: LegendInTheMistChallenge,
+    id: SectionId
+) {
     switch (id) {
         case 'rolesDesc':
-            return !(challenge.roles?.length || challenge.description?.trim())
+            return !(
+                legendInTheMistChallenge.roles?.length ||
+                legendInTheMistChallenge.description?.trim()
+            )
         case 'limits':
-            return !challenge.limits.length
+            return !legendInTheMistChallenge.limits.length
         case 'tagsStatuses':
-            return !challenge.tags_and_statuses.length
+            return !legendInTheMistChallenge.tags_and_statuses.length
         case 'might':
-            return !challenge.mights.length
+            return !legendInTheMistChallenge.mights.length
         case 'specialFeatures':
-            return !challenge.special_features.length
+            return !legendInTheMistChallenge.special_features.length
         case 'threats':
-            return !challenge.threats.length
+            return !legendInTheMistChallenge.threats.length
         case 'generalConsequences':
-            return !challenge.general_consequences.length
+            return !legendInTheMistChallenge.general_consequences.length
         case 'meta': {
-            const meta = challenge.meta
+            const meta = legendInTheMistChallenge.meta
             if (!meta) return true
 
             const hasMeta =
@@ -565,27 +595,36 @@ export function isEmptySection(challenge: Challenge, id: SectionId) {
 }
 
 export function shouldShow(
-    challenge: Challenge,
+    legendInTheMistChallenge: LegendInTheMistChallenge,
     id: SectionId,
-    view: ChallengeViewState
+    view: LegendInTheMistChallengeViewState
 ) {
     if (view.hidden[id]) return false
-    if (view.autoHideEmpty && isEmptySection(challenge, id)) return false
+    if (
+        view.autoHideEmpty &&
+        isEmptySection(legendInTheMistChallenge, id)
+    ) {
+        return false
+    }
     return true
 }
 
 export function groupShouldShow(
-    challenge: Challenge,
+    legendInTheMistChallenge: LegendInTheMistChallenge,
     sectionIds: SectionId[],
-    view: ChallengeViewState
+    view: LegendInTheMistChallengeViewState
 ) {
-    return sectionIds.some((sectionId) => shouldShow(challenge, sectionId, view))
+    return sectionIds.some((sectionId) =>
+        shouldShow(legendInTheMistChallenge, sectionId, view)
+    )
 }
 
-export function getChallengePreviewWidth(view: ChallengeViewState) {
+export function getLegendInTheMistChallengePreviewWidth(
+    view: LegendInTheMistChallengeViewState
+) {
     return view.previewWidth
 }
 
-export function getLiveLegendChallengeTab() {
-    return getLegendChallengeTab()
+export function getLiveLegendInTheMistChallengeTab() {
+    return getLegendInTheMistChallengeTab()
 }

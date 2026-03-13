@@ -1,6 +1,6 @@
 import { templateById } from '@/core/templates/registry'
 import { LegendInTheMistChallengeSchema } from '@/templates/legend/challenge/schema'
-import { toChallengeDocument } from '@/templates/legend/challenge/model'
+import { toLegendInTheMistChallengeDocument } from '@/templates/legend/challenge/model'
 import { create } from 'zustand'
 import type { TemplateMode } from '../templates/types'
 import type { AnyWorkspaceTab, WorkspaceSnapshot, WorkspaceTab } from './types'
@@ -118,7 +118,9 @@ function migrateLegacyChallenge(): WorkspaceSnapshot | null {
 
         const now = Date.now()
         const tabId = createTabId()
-        const doc = cloneValue(toChallengeDocument(validated.data))
+        const doc = cloneValue(
+            toLegendInTheMistChallengeDocument(validated.data)
+        )
 
         const migratedTab: AnyWorkspaceTab = {
             id: tabId,

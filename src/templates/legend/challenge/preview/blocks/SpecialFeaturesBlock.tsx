@@ -1,12 +1,12 @@
 // src/preview/blocks/SpecialFeaturesBlock.tsx
-import { useChallengeSheetStore, useChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeSheetStore, useLegendInTheMistChallengeStore } from '../../hooks'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { ClickableSection } from '../components/Clickable'
 import { SectionHeader } from '../components/SectionHeader'
 
 export default function SpecialFeaturesBlock() {
-    const { challenge } = useChallengeStore()
-    const { openSheet } = useChallengeSheetStore()
+    const { legendInTheMistChallenge } = useLegendInTheMistChallengeStore()
+    const { openSheet } = useLegendInTheMistChallengeSheetStore()
 
     return (
         <div className="space-y-0.5">
@@ -15,8 +15,8 @@ export default function SpecialFeaturesBlock() {
                 onClick={() => openSheet({ kind: 'special', mode: 'create' })}
             />
             <div className="flex flex-col items-center gap-1">
-                {challenge.special_features.length ? (
-                    challenge.special_features.map((sf, i) => (
+                {legendInTheMistChallenge.special_features.length ? (
+                    legendInTheMistChallenge.special_features.map((sf, i) => (
                         <ClickableSection
                             key={`${sf.name}-${i}`}
                             onClick={() =>

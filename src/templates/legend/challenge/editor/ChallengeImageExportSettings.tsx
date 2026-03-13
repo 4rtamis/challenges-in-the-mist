@@ -1,10 +1,11 @@
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
-import { useChallengeViewStore } from '../hooks'
+import { useLegendInTheMistChallengeViewStore } from '../hooks'
 
 export function ChallengeImageExportSettings() {
-    const { exportPrefs, setExportPrefs } = useChallengeViewStore()
+    const { exportPrefs, setExportPrefs } =
+        useLegendInTheMistChallengeViewStore()
 
     return (
         <div className="space-y-4">

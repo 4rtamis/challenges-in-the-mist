@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { useChallengeViewStore } from '../hooks'
+import { useLegendInTheMistChallengeViewStore } from '../hooks'
 import BasicBlock from './blocks/BasicBlock'
 import LimitsBlock from './blocks/LimitsBlock'
 import MetaFooterBlock from './blocks/MetaFooterBlock'
@@ -10,7 +10,7 @@ import './challengeTheme.css'
 import { SectionGate, SectionGroupGate } from './components/SectionGate'
 
 export function ChallengePreview() {
-    const ui = useChallengeViewStore()
+    const ui = useLegendInTheMistChallengeViewStore()
     const zoom = ui.zoom
     const bg = ui.background
 

@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { type Might, type MightLevel, useChallengeStore } from '../../hooks'
+import { type Might, type MightLevel, useLegendInTheMistChallengeStore } from '../../hooks'
 
 import {
     DndContext,
@@ -32,8 +32,8 @@ const ICON_BY_LEVEL: Record<MightLevel, string> = {
 }
 
 export default function MightForm({ focusIndex }: { focusIndex?: number }) {
-    const { challenge, addMight, updateMightAt, removeMightAt, moveMight } =
-        useChallengeStore()
+    const { legendInTheMistChallenge, addMight, updateMightAt, removeMightAt, moveMight } =
+        useLegendInTheMistChallengeStore()
 
     // One inline editor at a time
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -45,7 +45,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
 
     // Deep-link open
     useEffect(() => {
-        if (typeof focusIndex === 'number' && challenge.mights[focusIndex]) {
+        if (typeof focusIndex === 'number' && legendInTheMistChallenge.mights[focusIndex]) {
             startEdit(focusIndex)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,8 +61,8 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
 
     // Stable-ish IDs for current render (index::name::level)
     const itemIds = useMemo(
-        () => challenge.mights.map((m, i) => `${i}::${m.name}::${m.level}`),
-        [challenge.mights]
+        () => legendInTheMistChallenge.mights.map((m, i) => `${i}::${m.name}::${m.level}`),
+        [legendInTheMistChallenge.mights]
     )
 
     function handleDragEnd(e: DragEndEvent) {
@@ -77,7 +77,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
 
     // Helpers
     function isDuplicate(candidate: Might, exceptIndex?: number) {
-        return challenge.mights.some((m, i) => {
+        return legendInTheMistChallenge.mights.some((m, i) => {
             if (i === exceptIndex) return false
             return (
                 m.name.trim().toLowerCase() ===
@@ -89,7 +89,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
 
     function uniquePlaceholderName(): string {
         const base = 'New Might'
-        const used = new Set(challenge.mights.map((m) => m.name.toLowerCase()))
+        const used = new Set(legendInTheMistChallenge.mights.map((m) => m.name.toLowerCase()))
         if (!used.has(base.toLowerCase())) return base
         let n = 2
         while (used.has(`${base} ${n}`.toLowerCase())) n++
@@ -102,7 +102,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
             level: 'adventure',
             vulnerability: null,
         }
-        const newIndex = challenge.mights.length
+        const newIndex = legendInTheMistChallenge.mights.length
         addMight(placeholder)
         // Open inline editor for it
         setEditingIndex(newIndex)
@@ -114,7 +114,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
     }
 
     function startEdit(idx: number) {
-        const m = challenge.mights[idx]
+        const m = legendInTheMistChallenge.mights[idx]
         if (!m) return
         setEditingIndex(idx)
         setEName(m.name)
@@ -160,7 +160,7 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
                     strategy={verticalListSortingStrategy}
                 >
                     <ul className="space-y-1.5">
-                        {challenge.mights.map((m, idx) => (
+                        {legendInTheMistChallenge.mights.map((m, idx) => (
                             <SortableMightItem
                                 key={itemIds[idx]}
                                 id={itemIds[idx]}

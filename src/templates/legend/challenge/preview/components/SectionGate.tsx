@@ -1,8 +1,8 @@
 import {
     groupShouldShow,
     shouldShow,
-    useChallengeStore,
-    useChallengeViewStore,
+    useLegendInTheMistChallengeStore,
+    useLegendInTheMistChallengeViewStore,
     type SectionId,
 } from '../../hooks'
 
@@ -13,9 +13,9 @@ export function SectionGate({
     id: SectionId
     children: React.ReactNode
 }) {
-    const { challenge } = useChallengeStore()
-    const view = useChallengeViewStore()
-    if (!shouldShow(challenge, id, view)) return null
+    const { legendInTheMistChallenge } = useLegendInTheMistChallengeStore()
+    const view = useLegendInTheMistChallengeViewStore()
+    if (!shouldShow(legendInTheMistChallenge, id, view)) return null
     return <>{children}</>
 }
 
@@ -26,8 +26,8 @@ export function SectionGroupGate({
     ids: SectionId[]
     children: React.ReactNode
 }) {
-    const { challenge } = useChallengeStore()
-    const view = useChallengeViewStore()
-    if (!groupShouldShow(challenge, ids, view)) return null
+    const { legendInTheMistChallenge } = useLegendInTheMistChallengeStore()
+    const view = useLegendInTheMistChallengeViewStore()
+    if (!groupShouldShow(legendInTheMistChallenge, ids, view)) return null
     return <>{children}</>
 }

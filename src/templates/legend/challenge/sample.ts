@@ -1,7 +1,7 @@
-import type { Challenge } from './model'
+import type { LegendInTheMistChallenge } from './model'
 
 // A rich sample that exercises almost every editor/preview feature.
-export function getSampleChallenge(): Challenge {
+export function getSampleLegendInTheMistChallenge(): LegendInTheMistChallenge {
     return {
         name: 'Lantern-Warden of the Wilds',
         description:

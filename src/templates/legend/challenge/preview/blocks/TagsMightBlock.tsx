@@ -1,13 +1,13 @@
 // src/preview/blocks/TagsMightBlock.tsx
-import { useChallengeSheetStore, useChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeSheetStore, useLegendInTheMistChallengeStore } from '../../hooks'
 import { renderLitmInline } from '@/utils/markdown'
 import { ClickableSection } from '../components/Clickable'
 import { SectionGate } from '../components/SectionGate'
 import { SectionHeader } from '../components/SectionHeader'
 
 export default function TagsMightBlock() {
-    const { challenge } = useChallengeStore()
-    const { openSheet } = useChallengeSheetStore()
+    const { legendInTheMistChallenge } = useLegendInTheMistChallengeStore()
+    const { openSheet } = useLegendInTheMistChallengeSheetStore()
 
     return (
         <div className="space-y-0.5">
@@ -20,9 +20,9 @@ export default function TagsMightBlock() {
                 {/* Tags / Statuses */}
                 <SectionGate id="tagsStatuses">
                     <div className="tags-line text-center">
-                        {challenge.tags_and_statuses.length ? (
+                        {legendInTheMistChallenge.tags_and_statuses.length ? (
                             <div className="flex flex-col flex-wrap justify-center">
-                                {challenge.tags_and_statuses.map((t, i) => (
+                                {legendInTheMistChallenge.tags_and_statuses.map((t, i) => (
                                     <ClickableSection
                                         key={`${t}-${i}`}
                                         onClick={() =>
@@ -60,8 +60,8 @@ export default function TagsMightBlock() {
                 {/* Might */}
                 <SectionGate id="might">
                     <div className="space-y-0.5 text-center">
-                        {challenge.mights.length ? (
-                            challenge.mights.map((m, idx) => (
+                        {legendInTheMistChallenge.mights.length ? (
+                            legendInTheMistChallenge.mights.map((m, idx) => (
                                 <ClickableSection
                                     key={`${m.name}-${idx}`}
                                     onClick={() =>

@@ -4,7 +4,7 @@ import {
     type CatalogItem,
 } from '@/utils/catalog'
 import { useMemo, useState } from 'react'
-import { type PublicationType, useChallengeStore } from '../../hooks'
+import { type PublicationType, useLegendInTheMistChallengeStore } from '../../hooks'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -181,8 +181,8 @@ function TypeSegment({
 
 /* ---------- Main MetaForm ---------- */
 export default function MetaForm() {
-    const { challenge, updateMeta } = useChallengeStore()
-    const m = challenge.meta
+    const { legendInTheMistChallenge, updateMeta } = useLegendInTheMistChallengeStore()
+    const m = legendInTheMistChallenge.meta
 
     const type = m?.publication_type as PublicationType | undefined
 
