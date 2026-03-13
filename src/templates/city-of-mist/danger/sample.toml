@@ -1,0 +1,46 @@
+name = "Raphaël Marceau"
+description = "A compassionate literature teacher and Rift of the Fates who refuses to let his students be trapped by prophecy, class, or expectation. Raphaël reads the threads of destiny like lines on a chalkboard: he can reveal likely futures, snip a doomed path before it manifests, or knot two lives together so that one student's courage changes another's fate. He rarely acts with cruelty, but when someone threatens his pupils' freedom, he becomes a relentless guardian who manipulates chance, timing, and consequence to steer the scene toward a different ending."
+rating = 4
+soft_moves = [
+  "Read the threads of destiny in the scene and hint at someone's next move.",
+  "Foresee the grade of a student's next test if they choose to play video games instead of studying.",
+  "Moving one meter on the left right before a metallic object falls from a crane as if he knew it was coming.",
+]
+hard_moves = [
+  "Sever a beneficial thread of destiny, burning a tag related to luck, preparation, or support.",
+  "Tie a target to an unwanted outcome, giving them a status such as {doomed-3}, {hesitant-2}, or {misdirected-3}.",
+  "Reveal the one terrible future a target fears most and give them {shaken-3}.",
+  "Get away using a twist of fate (**Deny them Something They Want**).",
+]
+
+[[spectrums]]
+name = "hurt"
+maximum = 3
+is_immune = true
+
+[[spectrums]]
+name = "outsmart"
+maximum = 4
+is_immune = true
+
+[[spectrums]]
+name = "Overwhelm"
+maximum = 5
+is_immune = true
+
+[[custom_moves]]
+name = "Nobody can cheat Fate"
+description = "When Raphaël enters the scene, he is immune on his {hurt-} and {outsmart-} spectrums. The players first need to max-out his {overwhelm:5} spectrum so that he cannot acts fast enough to take all the destiny's threads into account. Once they do, the spectrums become {hurt-3} and {outsmart-4}."
+
+[[custom_moves]]
+name = "Cut the Inevitable"
+description = "When Raphaël acts to prevent a foretold event before it fully occurs, he may reduce a developing status, interrupt a countdown, or burn a tag representing certainty, momentum, or preparation."
+
+[[custom_moves]]
+name = "Borrowed Tomorrow"
+description = "When Raphaël wishes to protect someone from immediate danger by shifting fate, he may give this person a positive story tag such as {not today} or {meant for more}. The first time this person would be harmed, they can burn the tag to avoid the harm (as part of a **Face Danger** move for instance)."
+
+[meta]
+publication_type = "homebrew"
+source = "Lantern in the Mist - Sample Dangers"
+authors = [ "4rtamis" ]

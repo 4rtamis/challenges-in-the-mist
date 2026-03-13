@@ -1,6 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+
+import '@fontsource/bebas-neue/400.css'
+import '@fontsource/fira-sans-extra-condensed/900.css'
+import '@fontsource/pt-serif/400-italic.css'
+import '@fontsource/pt-serif/400.css'
+import '@fontsource/pt-serif/700-italic.css'
+import '@fontsource/pt-serif/700.css'
+
 import './index.css'
 
 import App from './App.tsx'
