@@ -1,4 +1,4 @@
-import challengeTemplate from '@/templates/legend/challenge/definition'
+import challengeTemplate from '@/templates/legend-in-the-mist/challenge/definition'
 import {
     DEFAULT_TEMPLATE_PREVIEW_WIDTH,
     type AnyTemplateDefinition,
@@ -111,12 +111,16 @@ export const templatesByGame = [
     {
         gameId: 'city',
         gameLabel: 'City of Mist',
-        templates: templateRegistry.filter((template) => template.gameId === 'city'),
+        templates: templateRegistry.filter(
+            (template) => template.gameId === 'city'
+        ),
     },
     {
         gameId: 'legend',
         gameLabel: 'Legend in the Mist',
-        templates: templateRegistry.filter((template) => template.gameId === 'legend'),
+        templates: templateRegistry.filter(
+            (template) => template.gameId === 'legend'
+        ),
     },
     {
         gameId: 'otherscape',

@@ -1,6 +1,6 @@
 import { templateById } from '@/core/templates/registry'
-import { LegendInTheMistChallengeSchema } from '@/templates/legend/challenge/schema'
-import { toLegendInTheMistChallengeDocument } from '@/templates/legend/challenge/model'
+import { toLegendInTheMistChallengeDocument } from '@/templates/legend-in-the-mist/challenge/model'
+import { LegendInTheMistChallengeSchema } from '@/templates/legend-in-the-mist/challenge/schema'
 import { create } from 'zustand'
 import type { TemplateMode } from '../templates/types'
 import type { AnyWorkspaceTab, WorkspaceSnapshot, WorkspaceTab } from './types'
@@ -32,7 +32,10 @@ type WorkspaceState = {
 }
 
 function createTabId() {
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    if (
+        typeof crypto !== 'undefined' &&
+        typeof crypto.randomUUID === 'function'
+    ) {
         return crypto.randomUUID()
     }
 
@@ -47,7 +50,9 @@ function cloneValue<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
 
-function toSnapshot(state: Pick<WorkspaceState, 'tabs' | 'tabOrder' | 'activeTabId'>): WorkspaceSnapshot {
+function toSnapshot(
+    state: Pick<WorkspaceState, 'tabs' | 'tabOrder' | 'activeTabId'>
+): WorkspaceSnapshot {
     return {
         version: 1,
         tabs: state.tabs,
@@ -89,7 +94,10 @@ function withTouched(
     }
 }
 
-function withDerivedTitle(tab: AnyWorkspaceTab, nextDoc: unknown): AnyWorkspaceTab {
+function withDerivedTitle(
+    tab: AnyWorkspaceTab,
+    nextDoc: unknown
+): AnyWorkspaceTab {
     const template = templateById.get(tab.templateId)
     const getTitle = template?.getTabTitle
 
@@ -108,7 +116,10 @@ function migrateLegacyChallenge(): WorkspaceSnapshot | null {
         const rawLegacy = window.localStorage.getItem(LEGACY_CHALLENGE_KEY)
         if (!rawLegacy) return null
 
-        const parsed = JSON.parse(rawLegacy) as { version?: number; data?: unknown }
+        const parsed = JSON.parse(rawLegacy) as {
+            version?: number
+            data?: unknown
+        }
         const legacyData = parsed?.data
         const validated = LegendInTheMistChallengeSchema.safeParse(legacyData)
         if (!validated.success) return null
@@ -249,7 +260,10 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
                     nextActive = state.activeTabId
                 } else {
                     const preferredIndex = Math.max(index, 0)
-                    nextActive = nextOrder[preferredIndex] ?? nextOrder[preferredIndex - 1] ?? null
+                    nextActive =
+                        nextOrder[preferredIndex] ??
+                        nextOrder[preferredIndex - 1] ??
+                        null
                 }
 
                 return {
@@ -317,7 +331,9 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
         setTabSheet: (tabId, sheet) => {
             setAndPersist((state) => ({
                 tabs: state.tabs.map((tab) =>
-                    tab.id === tabId ? withTouched(tab, { sheet: cloneValue(sheet) }) : tab
+                    tab.id === tabId
+                        ? withTouched(tab, { sheet: cloneValue(sheet) })
+                        : tab
                 ),
             }))
         },
@@ -358,11 +374,16 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
     }
 })
 
-export function findTabById(state: Pick<WorkspaceState, 'tabs'>, tabId: string) {
+export function findTabById(
+    state: Pick<WorkspaceState, 'tabs'>,
+    tabId: string
+) {
     return state.tabs.find((tab) => tab.id === tabId)
 }
 
-export function getActiveTab(state: Pick<WorkspaceState, 'tabs' | 'activeTabId'>) {
+export function getActiveTab(
+    state: Pick<WorkspaceState, 'tabs' | 'activeTabId'>
+) {
     if (!state.activeTabId) return null
     return state.tabs.find((tab) => tab.id === state.activeTabId) ?? null
 }
