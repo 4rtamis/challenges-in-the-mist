@@ -75,7 +75,7 @@ export default function AppTopBar() {
 
             <div className="min-w-0 flex-1">
                 {orderedTabs.length > 0 ? (
-                    <div className="flex items-center gap-1 overflow-x-auto pb-0.5">
+                    <div className="flex items-center gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                         {orderedTabs.map((tab) => (
                             <div
                                 key={tab.id}

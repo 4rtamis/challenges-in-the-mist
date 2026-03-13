@@ -684,93 +684,94 @@ function ThreatRow({
                 isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
             }`}
         >
-            <div className="flex items-start justify-between gap-2">
-                {/* Left: drag + content */}
-                <div className="flex items-center gap-2 min-w-0">
-                    <button
-                        className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
+            <div className="flex items-center gap-2">
+                <button
+                    className={`inline-flex h-7 w-7 shrink-0 items-center justify-center self-center rounded hover:bg-slate-50
               ${dragDisabled ? 'opacity-40 cursor-not-allowed hover:bg-transparent' : 'cursor-grab active:cursor-grabbing'}`}
-                        aria-label="Drag to reorder threat"
-                        title={
-                            dragDisabled
-                                ? 'Finish editing to reorder'
-                                : 'Drag to reorder'
-                        }
-                        disabled={dragDisabled}
-                        {...(!dragDisabled ? attributes : {})}
-                        {...(!dragDisabled ? listeners : {})}
-                    >
-                        <GripVertical className="h-3.5 w-3.5 text-slate-500" />
-                    </button>
+                    aria-label="Drag to reorder threat"
+                    title={
+                        dragDisabled
+                            ? 'Finish editing to reorder'
+                            : 'Drag to reorder'
+                    }
+                    disabled={dragDisabled}
+                    {...(!dragDisabled ? attributes : {})}
+                    {...(!dragDisabled ? listeners : {})}
+                >
+                    <GripVertical className="h-3.5 w-3.5 text-slate-500" />
+                </button>
 
+                <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2 gap-y-1.5">
+                    {/* Header left: threat name */}
                     <div className="min-w-0">
-                        <div className="font-semibold threat-pill !text-xs">
+                        <div className="font-semibold threat-pill !text-[10px] !h-auto !min-h-[1.6em] !w-fit !max-w-full !px-1.5 !py-1 leading-tight whitespace-normal break-words">
                             {name}
                         </div>
-                        {description ? (
-                            <div
-                                className="text-sm prose-sm max-w-none font-(family-name:--font-ch-threat-desc)"
-                                dangerouslySetInnerHTML={{
-                                    __html: renderLitmMarkdown(description),
-                                }}
-                            />
-                        ) : (
-                            <div className="text-sm text-muted-foreground">
-                                No description
-                            </div>
-                        )}
                     </div>
-                </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-1">
-                    {/* Consequences icon button with count */}
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 shrink-0">
+                        {/* Consequences icon button with count */}
 
-                    <div className="relative">
+                        <div className="relative">
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                className="h-7 w-7"
+                                onClick={onOpenConsequences}
+                                aria-label="Edit consequences"
+                                title="Consequences"
+                            >
+                                <img
+                                    src="/assets/images/consequence.svg"
+                                    alt=""
+                                    className="h-5 w-5"
+                                />
+                            </Button>
+
+                            {/* tiny count badge (optional) */}
+                            {typeof count === 'number' && count > 0 && (
+                                <span className="pointer-events-none absolute -right-1 -top-1 inline-flex h-3.5 min-w-[0.9rem] items-center justify-center rounded-full border border-zinc-400 bg-secondary px-1 text-[10px] leading-none text-secondary-foreground">
+                                    <span className="-translate-y-0.5">
+                                        {count}
+                                    </span>
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Edit / Remove keep the same */}
                         <Button
                             variant="ghost"
                             size="icon-sm"
                             className="h-7 w-7"
-                            onClick={onOpenConsequences}
-                            aria-label="Edit consequences"
-                            title="Consequences"
+                            title="Edit"
+                            onClick={onEdit}
                         >
-                            <img
-                                src="/assets/images/consequence.svg"
-                                alt=""
-                                className="h-5 w-5"
-                            />
+                            <Pencil className="h-3.5 w-3.5" />
                         </Button>
-
-                        {/* tiny count badge (optional) */}
-                        {typeof count === 'number' && count > 0 && (
-                            <span className="pointer-events-none absolute -right-1 -top-1 inline-flex h-3.5 min-w-[0.9rem] items-center justify-center rounded-full border border-zinc-400 bg-secondary px-1 text-[10px] leading-none text-secondary-foreground">
-                                <span className="-translate-y-0.5">
-                                    {count}
-                                </span>
-                            </span>
-                        )}
+                        <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            className="h-7 w-7 text-destructive"
+                            title="Remove"
+                            onClick={onRemove}
+                        >
+                            <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
                     </div>
 
-                    {/* Edit / Remove keep the same */}
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="h-7 w-7"
-                        title="Edit"
-                        onClick={onEdit}
-                    >
-                        <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="h-7 w-7 text-destructive"
-                        title="Remove"
-                        onClick={onRemove}
-                    >
-                        <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                    {description ? (
+                        <div
+                            className="col-span-2 min-w-0 text-sm prose-sm max-w-none font-(family-name:--font-ch-threat-desc)"
+                            dangerouslySetInnerHTML={{
+                                __html: renderLitmMarkdown(description),
+                            }}
+                        />
+                    ) : (
+                        <div className="col-span-2 text-sm text-muted-foreground">
+                            No description
+                        </div>
+                    )}
                 </div>
             </div>
 

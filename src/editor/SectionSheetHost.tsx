@@ -1,4 +1,9 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
@@ -16,10 +21,10 @@ import TagsStatusesForm from '@/editor/TagsStatusesForm'
 import ThreatsForm from '@/editor/ThreatsForm'
 import { useSheetStore } from '@/store/sheetStore'
 import {
-    type Background,
     PREVIEW_WIDTH_MAX,
     PREVIEW_WIDTH_MIN,
     useUIStore,
+    type Background,
     type SectionId,
 } from '@/store/uiStore'
 import { slugify } from '@/utils/strings'
@@ -194,7 +199,9 @@ function GeneralAppearanceSection() {
                     <Label htmlFor="preview-width" className="text-xs">
                         Preview width
                     </Label>
-                    <span className="text-xs font-medium">{previewWidth}px</span>
+                    <span className="text-xs font-medium">
+                        {previewWidth}px
+                    </span>
                 </div>
                 <input
                     id="preview-width"
@@ -357,7 +364,10 @@ function ExportSection() {
                     canExportImage ? (
                         <>
                             <div className="flex items-center justify-between gap-4">
-                                <Label htmlFor="export-transparent" className="text-xs">
+                                <Label
+                                    htmlFor="export-transparent"
+                                    className="text-xs"
+                                >
                                     Transparent background
                                 </Label>
                                 <Switch
@@ -376,20 +386,31 @@ function ExportSection() {
                                 <RadioGroup
                                     value={String(exportPrefs.scale)}
                                     onValueChange={(value) =>
-                                        setExportPrefs({ scale: Number(value) as 1 | 2 | 3 })
+                                        setExportPrefs({
+                                            scale: Number(value) as 1 | 2 | 3,
+                                        })
                                     }
                                     className="flex items-center gap-3"
                                 >
                                     <label className="flex cursor-pointer items-center gap-1.5">
-                                        <RadioGroupItem value="1" id="export-scale-1" />
+                                        <RadioGroupItem
+                                            value="1"
+                                            id="export-scale-1"
+                                        />
                                         <span className="text-xs">1x</span>
                                     </label>
                                     <label className="flex cursor-pointer items-center gap-1.5">
-                                        <RadioGroupItem value="2" id="export-scale-2" />
+                                        <RadioGroupItem
+                                            value="2"
+                                            id="export-scale-2"
+                                        />
                                         <span className="text-xs">2x</span>
                                     </label>
                                     <label className="flex cursor-pointer items-center gap-1.5">
-                                        <RadioGroupItem value="3" id="export-scale-3" />
+                                        <RadioGroupItem
+                                            value="3"
+                                            id="export-scale-3"
+                                        />
                                         <span className="text-xs">3x</span>
                                     </label>
                                 </RadioGroup>
@@ -411,7 +432,9 @@ function ExportSection() {
                 type="button"
                 size="sm"
                 className="h-8 w-full text-xs"
-                onClick={exportTab === 'toml' ? handleExportTOML : handleExportPNG}
+                onClick={
+                    exportTab === 'toml' ? handleExportTOML : handleExportPNG
+                }
                 disabled={
                     busy !== null ||
                     !activeTab ||
@@ -426,10 +449,8 @@ function ExportSection() {
 
 export default function SectionSheetHost() {
     return (
-        <div className="flex min-h-0 max-h-[calc(100svh-4.5rem)] flex-col overflow-hidden">
-            <SidebarContent
-                className="min-h-0 flex-1 px-3 py-2 [scrollbar-width:thin] [scrollbar-color:rgba(100,116,139,0.28)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border/35 hover:[&::-webkit-scrollbar-thumb]:bg-border/50"
-            >
+        <div className="flex min-h-0 max-h-[calc(100svh-6rem)] flex-col overflow-hidden rounded-2xl">
+            <SidebarContent className="min-h-0 flex-1 px-3 py-2 [scrollbar-width:thin] [scrollbar-color:rgba(100,116,139,0.28)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border/35 hover:[&::-webkit-scrollbar-thumb]:bg-border/50">
                 <Accordion
                     type="multiple"
                     defaultValue={['editor']}
@@ -449,11 +470,7 @@ export default function SectionSheetHost() {
             </SidebarContent>
 
             <div className="shrink-0 border-t bg-background/95 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-                <Accordion
-                    type="multiple"
-                    defaultValue={[]}
-                    className="w-full"
-                >
+                <Accordion type="multiple" defaultValue={[]} className="w-full">
                     <AccordionItem value="appearance">
                         <AccordionTrigger className="py-2 text-sm">
                             General Appearance
@@ -466,7 +483,11 @@ export default function SectionSheetHost() {
             </div>
 
             <SidebarFooter className="shrink-0 border-t bg-background/95 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-                <Accordion type="multiple" defaultValue={['export']} className="w-full">
+                <Accordion
+                    type="multiple"
+                    defaultValue={['export']}
+                    className="w-full"
+                >
                     <AccordionItem value="export">
                         <AccordionTrigger className="py-2 text-sm">
                             Export

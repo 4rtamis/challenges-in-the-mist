@@ -1,6 +1,6 @@
 import { AppSidebar } from '@/components/sidebar/app-sidebar'
 import { Button } from '@/components/ui/button'
-import { Sidebar, SidebarProvider } from '@/components/ui/sidebar'
+import { Sidebar, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
 import { templateById } from '@/core/templates/registry'
 import { useWorkspaceStore } from '@/core/workspace/store'
@@ -243,27 +243,18 @@ export default function App() {
                     keyboardShortcut={null}
                     className="contents"
                 >
-                    <div className="fixed top-14 right-4 z-40 hidden md:block">
-                        <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                                setDesktopInspectorOpen((open) => !open)
-                            }
-                        >
-                            {desktopInspectorOpen
-                                ? 'Hide editor sidebar'
-                                : 'Show editor sidebar'}
-                        </Button>
-                    </div>
+                    <SidebarTrigger
+                        className="fixed top-14 right-4 z-40 hidden rounded-md border bg-background shadow-sm md:inline-flex"
+                        aria-label="Toggle editor sidebar"
+                        title="Toggle editor sidebar"
+                    />
 
                     <Sidebar
                         side="right"
                         variant="floating"
                         collapsible="offcanvas"
                         withGap={false}
-                        className="z-30 hidden !top-16 !right-2 !bottom-auto !h-auto !max-h-[calc(100svh-4.5rem)] md:flex [--sidebar-width:22rem]"
+                        className="z-30 hidden !top-16 !bottom-auto !h-auto !max-h-[calc(100svh-8rem)] md:flex [--sidebar-width:22rem]"
                     >
                         {activeTemplate?.renderSheetHost()}
                     </Sidebar>
