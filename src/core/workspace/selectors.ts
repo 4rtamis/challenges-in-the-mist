@@ -1,4 +1,5 @@
 import { templateById } from '@/core/templates/registry'
+import type { WorkspaceTab } from './types'
 import { useWorkspaceStore } from './store'
 
 export function useActiveTab() {
@@ -12,4 +13,16 @@ export function useActiveTemplate() {
     const activeTab = useActiveTab()
     if (!activeTab) return null
     return templateById.get(activeTab.templateId) ?? null
+}
+
+export function useActiveTemplateTab<
+    TDoc = unknown,
+    TView = unknown,
+    TSheet = unknown,
+>(templateId: string): WorkspaceTab<TDoc, TView, TSheet> | null {
+    // Templates opt into typed access on demand, but workspace persistence stays generic.
+    const activeTab = useActiveTab()
+    if (!activeTab || activeTab.templateId !== templateId) return null
+
+    return activeTab as WorkspaceTab<TDoc, TView, TSheet>
 }

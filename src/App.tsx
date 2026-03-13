@@ -3,10 +3,12 @@ import { Button } from '@/components/ui/button'
 import { Sidebar, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
 import { templateById } from '@/core/templates/registry'
+import { TemplateInspector } from '@/core/templates/shell/TemplateInspector'
+import { TemplateLanding } from '@/core/templates/shell/TemplateLanding'
+import { DEFAULT_TEMPLATE_PREVIEW_WIDTH } from '@/core/templates/types'
 import { useWorkspaceStore } from '@/core/workspace/store'
 import { useWorkspaceHydration } from '@/core/workspace/useWorkspaceHydration'
 import { cn } from '@/lib/utils'
-import { PREVIEW_WIDTH_DEFAULT, useUIStore } from '@/store/uiStore'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import AppTopBar from './ui/AppTopBar'
@@ -24,7 +26,6 @@ export default function App() {
     const replaceTabDoc = useWorkspaceStore((s) => s.replaceTabDoc)
     const setTabSheet = useWorkspaceStore((s) => s.setTabSheet)
 
-    const previewWidth = useUIStore((s) => s.previewWidth)
     const [importOpen, setImportOpen] = useState(false)
     const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false)
     const [desktopInspectorOpen, setDesktopInspectorOpen] = useState(true)
@@ -66,7 +67,7 @@ export default function App() {
         : null
 
     const templatePreview = activeTemplate?.implemented
-        ? activeTemplate.renderPreview()
+        ? activeTemplate.preview.render()
         : null
 
     const showDesktopInspector = Boolean(
@@ -77,13 +78,13 @@ export default function App() {
     )
 
     const maxWidth = activeTemplate?.implemented
-        ? previewWidth
-        : PREVIEW_WIDTH_DEFAULT
+        ? activeTemplate.appearance.getPreviewWidth(activeTab?.view as never)
+        : DEFAULT_TEMPLATE_PREVIEW_WIDTH
 
-    function startEditingWithSample() {
+    function startEditingWithExample() {
         if (!activeTab || !activeTemplate) return
 
-        replaceTabDoc(activeTab.id, activeTemplate.createSample())
+        replaceTabDoc(activeTab.id, activeTemplate.createExample())
         setTabSheet(activeTab.id, activeTemplate.createInitialSheet())
         setTabMode(activeTab.id, 'editing')
     }
@@ -144,37 +145,12 @@ export default function App() {
                         activeTemplate.implemented &&
                         activeTab.mode === 'landing' && (
                             <div className="space-y-5">
-                                <div className="rounded-lg border bg-muted/20 p-4">
-                                    <h2 className="text-lg font-semibold">
-                                        New {activeTemplate.label}
-                                    </h2>
-                                    <p className="mt-1 text-sm text-muted-foreground">
-                                        Choose how to start this template:
-                                        sample, blank, or import from TOML.
-                                    </p>
-                                    <div className="mt-4 flex flex-wrap gap-2">
-                                        <Button
-                                            onClick={startEditingWithSample}
-                                        >
-                                            Start with template
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            onClick={startEditingBlank}
-                                        >
-                                            Start blank
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            onClick={() => setImportOpen(true)}
-                                            disabled={
-                                                !activeTemplate.io.importToml
-                                            }
-                                        >
-                                            Import existing
-                                        </Button>
-                                    </div>
-                                </div>
+                                <TemplateLanding
+                                    template={activeTemplate}
+                                    onStartExample={startEditingWithExample}
+                                    onStartBlank={startEditingBlank}
+                                    onImport={() => setImportOpen(true)}
+                                />
 
                                 <div data-preview-root={activeTab.id}>
                                     {templatePreview}
@@ -218,7 +194,7 @@ export default function App() {
                                             'max-h-[75vh] overflow-hidden rounded-lg border bg-background'
                                         )}
                                     >
-                                        {activeTemplate.renderSheetHost()}
+                                        <TemplateInspector />
                                     </div>
                                 </div>
                             </div>
@@ -256,7 +232,7 @@ export default function App() {
                         withGap={false}
                         className="z-30 hidden !top-16 !bottom-auto !h-auto !max-h-[calc(100svh-8rem)] md:flex [--sidebar-width:22rem]"
                     >
-                        {activeTemplate?.renderSheetHost()}
+                        <TemplateInspector />
                     </Sidebar>
                 </SidebarProvider>
             )}

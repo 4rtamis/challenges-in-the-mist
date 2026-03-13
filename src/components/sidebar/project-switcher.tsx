@@ -27,7 +27,7 @@ export function ProjectSwitcher({
     }[]
 }) {
     const { isMobile } = useSidebar()
-    const [activeProject, setActiveProject] = React.useState(projects[0])
+    const [activeProject] = React.useState(projects[0])
 
     if (!activeProject) {
         return null

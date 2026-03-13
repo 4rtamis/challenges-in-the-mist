@@ -37,7 +37,7 @@ const litmInlineExt = {
         let m: RegExpExecArray | null
 
         // 1) {!name}  (weakness)
-        if ((m = /^\{\!([^{}]+)\}/.exec(src))) {
+        if ((m = /^\{!([^{}]+)\}/.exec(src))) {
             return {
                 type: 'litm',
                 raw: m[0],

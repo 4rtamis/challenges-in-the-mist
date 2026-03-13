@@ -11,7 +11,7 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
-import { templatesByGame } from '@/core/templates/seeds'
+import { templatesByGame } from '@/core/templates/registry'
 import { useWorkspaceStore } from '@/core/workspace/store'
 
 import {

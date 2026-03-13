@@ -1,8 +1,8 @@
-import { ChallengeSchema } from '@/schema/challengeSchema'
+import { templateById } from '@/core/templates/registry'
+import { ChallengeSchema } from '@/templates/legend/challenge/schema'
 import { create } from 'zustand'
-import { templateSeedById } from '../templates/seeds'
 import type { TemplateMode } from '../templates/types'
-import type { WorkspaceSnapshot, WorkspaceTab } from './types'
+import type { AnyWorkspaceTab, WorkspaceSnapshot, WorkspaceTab } from './types'
 
 const WORKSPACE_STORAGE_KEY = 'mist:workspace:v1'
 const LEGACY_CHALLENGE_KEY = 'litm:challenge:v2'
@@ -68,7 +68,7 @@ function persistSnapshot(
     }
 }
 
-function applyOrder(tabs: WorkspaceTab[], tabOrder: string[]) {
+function applyOrder(tabs: AnyWorkspaceTab[], tabOrder: string[]) {
     const ordered = tabOrder.filter((id) => tabs.some((tab) => tab.id === id))
     const missing = tabs
         .map((tab) => tab.id)
@@ -77,7 +77,10 @@ function applyOrder(tabs: WorkspaceTab[], tabOrder: string[]) {
     return [...ordered, ...missing]
 }
 
-function withTouched(tab: WorkspaceTab, patch: Partial<WorkspaceTab>): WorkspaceTab {
+function withTouched(
+    tab: AnyWorkspaceTab,
+    patch: Partial<AnyWorkspaceTab>
+): AnyWorkspaceTab {
     return {
         ...tab,
         ...patch,
@@ -85,15 +88,15 @@ function withTouched(tab: WorkspaceTab, patch: Partial<WorkspaceTab>): Workspace
     }
 }
 
-function withDerivedTitle(tab: WorkspaceTab, nextDoc: unknown): WorkspaceTab {
-    const seed = templateSeedById.get(tab.templateId)
-    const getTitle = seed?.getTabTitle
+function withDerivedTitle(tab: AnyWorkspaceTab, nextDoc: unknown): AnyWorkspaceTab {
+    const template = templateById.get(tab.templateId)
+    const getTitle = template?.getTabTitle
 
     if (!getTitle) {
         return withTouched(tab, { doc: nextDoc })
     }
 
-    const title = getTitle(nextDoc as never)
+    const title = getTitle(nextDoc as any)
     return withTouched(tab, { doc: nextDoc, title })
 }
 
@@ -109,23 +112,23 @@ function migrateLegacyChallenge(): WorkspaceSnapshot | null {
         const validated = ChallengeSchema.safeParse(legacyData)
         if (!validated.success) return null
 
-        const seed = templateSeedById.get('legend.challenge')
-        if (!seed) return null
+        const template = templateById.get('legend.challenge')
+        if (!template) return null
 
         const now = Date.now()
         const tabId = createTabId()
         const doc = cloneValue(validated.data)
 
-        const migratedTab: WorkspaceTab = {
+        const migratedTab: AnyWorkspaceTab = {
             id: tabId,
-            templateId: seed.id,
-            title: seed.getTabTitle(doc),
+            templateId: template.id,
+            title: template.getTabTitle(doc),
             mode: 'editing',
             createdAt: now,
             updatedAt: now,
             doc,
-            view: cloneValue(seed.defaultView),
-            sheet: cloneValue(seed.createInitialSheet()),
+            view: cloneValue(template.createInitialView()),
+            sheet: cloneValue(template.createInitialSheet()),
         }
 
         window.localStorage.removeItem(LEGACY_CHALLENGE_KEY)
@@ -155,7 +158,7 @@ function readWorkspaceSnapshot(): WorkspaceSnapshot | null {
         if (!Array.isArray(parsed.tabOrder)) return null
 
         const tabs = parsed.tabs.filter(
-            (tab): tab is WorkspaceTab =>
+            (tab): tab is AnyWorkspaceTab =>
                 typeof tab?.id === 'string' &&
                 typeof tab?.templateId === 'string' &&
                 typeof tab?.title === 'string' &&
@@ -202,23 +205,23 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => {
         hydrated: false,
 
         createTab: (templateId) => {
-            const seed = templateSeedById.get(templateId)
-            if (!seed || !seed.implemented) return null
+            const template = templateById.get(templateId)
+            if (!template || !template.implemented) return null
 
             const tabId = createTabId()
             const now = Date.now()
-            const doc = cloneValue(seed.createSample())
+            const doc = cloneValue(template.createExample())
 
-            const tab: WorkspaceTab = {
+            const tab: AnyWorkspaceTab = {
                 id: tabId,
-                templateId: seed.id,
-                title: seed.getTabTitle(doc),
+                templateId: template.id,
+                title: template.getTabTitle(doc),
                 mode: 'landing',
                 createdAt: now,
                 updatedAt: now,
                 doc,
-                view: cloneValue(seed.defaultView),
-                sheet: cloneValue(seed.createInitialSheet()),
+                view: cloneValue(template.createInitialView()),
+                sheet: cloneValue(template.createInitialSheet()),
             }
 
             setAndPersist((state) => ({
