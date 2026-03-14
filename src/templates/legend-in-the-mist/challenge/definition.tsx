@@ -26,7 +26,7 @@ function cloneValue<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
 
-function createImageExportAction(format: 'png' | 'svg') {
+function createImageExportAction(format: 'png') {
     return {
         id: format,
         label: format.toUpperCase(),
@@ -60,10 +60,7 @@ function createImageExportAction(format: 'png' | 'svg') {
                 })
 
                 await snap.download({
-                    filename:
-                        format === 'png'
-                            ? `${fileStem}@${pixelRatio}x`
-                            : `${fileStem}@${pixelRatio}x.svg`,
+                    filename: `${fileStem}@${pixelRatio}x`,
                     format,
                 })
 
@@ -164,7 +161,6 @@ const challengeTemplate: AnyTemplateDefinition = {
                 },
             },
             createImageExportAction('png'),
-            createImageExportAction('svg'),
         ],
     },
 }
