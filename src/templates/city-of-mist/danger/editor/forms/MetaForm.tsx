@@ -1,8 +1,3 @@
-import {
-    OFFICIAL_SOURCES,
-    THIRD_PARTY_SOURCES,
-    type CatalogItem,
-} from '@/utils/catalog'
 import { Button } from '@/components/ui/button'
 import {
     Command,
@@ -19,9 +14,10 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { useMemo, useState } from 'react'
+import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
-import { type PublicationType, useCityOfMistDangerStore } from '../../hooks'
+import { useMemo, useState } from 'react'
+import { useCityOfMistDangerStore, type PublicationType } from '../../hooks'
 
 const TYPES: { value: PublicationType; label: string }[] = [
     { value: 'official', label: 'Official' },
@@ -49,12 +45,12 @@ function AuthorsInput({
     }
 
     return (
-        <div className="rounded-md border px-2 py-1.5">
+        <div className="rounded-md border px-2 py-1">
             <div className="flex flex-wrap gap-1">
                 {value.map((author) => (
                     <span
                         key={author}
-                        className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-sm"
+                        className="inline-flex items-center gap-1 rounded bg-muted px-2 py-0.5 text-xs"
                     >
                         {author}
                         <button
@@ -62,7 +58,9 @@ function AuthorsInput({
                             className="opacity-70 hover:opacity-100"
                             aria-label={`Remove ${author}`}
                             onClick={() =>
-                                onChange(value.filter((item) => item !== author))
+                                onChange(
+                                    value.filter((item) => item !== author)
+                                )
                             }
                         >
                             <X className="h-3.5 w-3.5" />
@@ -78,7 +76,11 @@ function AuthorsInput({
                             event.preventDefault()
                             commitDraft()
                         }
-                        if (event.key === 'Backspace' && !draft && value.length) {
+                        if (
+                            event.key === 'Backspace' &&
+                            !draft &&
+                            value.length
+                        ) {
                             onChange(value.slice(0, -1))
                         }
                     }}
@@ -110,7 +112,7 @@ function SourceCombobox({
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between"
+                    className="h-8 w-full justify-between px-2 text-sm"
                 >
                     {current ? current.title : placeholder}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-60" />
@@ -156,14 +158,14 @@ function TypeSegment({
     onChange: (value: PublicationType) => void
 }) {
     return (
-        <div className="inline-grid grid-cols-4 overflow-hidden rounded-md border">
+        <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:inline-grid sm:grid-cols-4">
             {TYPES.map((type) => (
                 <Button
                     key={type.value}
                     type="button"
                     variant={value === type.value ? 'default' : 'ghost'}
                     className={cn(
-                        'rounded-md border-none',
+                        'h-8 rounded-none border-none px-2 text-xs',
                         value === type.value ? '' : 'bg-background'
                     )}
                     onClick={() => onChange(type.value)}
@@ -180,6 +182,10 @@ export default function MetaForm() {
     const meta = cityOfMistDanger.meta
     const type = meta?.publication_type as PublicationType | undefined
     const authors = useMemo(() => meta?.authors ?? [], [meta?.authors])
+    const sourceOptions =
+        type === 'official' || type === 'third_party'
+            ? getCatalogSources('city-of-mist', type)
+            : []
 
     function setType(next: PublicationType) {
         updateMeta({
@@ -197,21 +203,17 @@ export default function MetaForm() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             <div className="grid gap-1">
                 <Label>Publication type</Label>
                 <TypeSegment value={type} onChange={setType} />
             </div>
 
-            {type === 'official' || type === 'third_party' ? (
+            {sourceOptions.length > 0 ? (
                 <div className="grid gap-1">
                     <Label>Source</Label>
                     <SourceCombobox
-                        items={
-                            type === 'official'
-                                ? OFFICIAL_SOURCES
-                                : THIRD_PARTY_SOURCES
-                        }
+                        items={sourceOptions}
                         value={meta?.source}
                         onSelect={pickFromCatalog}
                         placeholder={
@@ -221,34 +223,67 @@ export default function MetaForm() {
                         }
                     />
                     <div className="text-xs text-muted-foreground">
-                        Selecting a source auto-fills authors. You can still edit them below.
+                        Selecting a source auto-fills authors. You can still
+                        edit them below.
                     </div>
                 </div>
             ) : null}
 
-            <div className="grid gap-1">
-                <Label htmlFor="danger-meta-source">
-                    {type === 'cauldron'
-                        ? 'Cauldron product title'
-                        : type === 'homebrew'
-                          ? 'Homebrew title / location'
-                          : 'Source title'}{' '}
-                    <span className="text-muted-foreground">(optional)</span>
-                </Label>
-                <Input
-                    id="danger-meta-source"
-                    value={meta?.source ?? ''}
-                    onChange={(event) =>
-                        updateMeta({ source: event.target.value })
-                    }
-                    placeholder={
-                        type === 'cauldron'
-                            ? 'e.g., Cauldron: Shadows in Brine'
+            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_110px] sm:items-end">
+                <div className="grid gap-1">
+                    <Label htmlFor="danger-meta-source">
+                        {type === 'cauldron'
+                            ? 'Cauldron product title'
                             : type === 'homebrew'
-                              ? 'e.g., Personal campaign notes'
-                              : 'Override selected source title'
-                    }
-                />
+                              ? 'Homebrew title / location'
+                              : 'Source title'}{' '}
+                        <span className="text-muted-foreground">
+                            (optional)
+                        </span>
+                    </Label>
+                    <Input
+                        id="danger-meta-source"
+                        className="h-8 px-2 text-sm"
+                        value={meta?.source ?? ''}
+                        onChange={(event) =>
+                            updateMeta({ source: event.target.value })
+                        }
+                        placeholder={
+                            type === 'cauldron'
+                                ? 'e.g., Cauldron: Shadows in Brine'
+                                : type === 'homebrew'
+                                  ? 'e.g., Personal campaign notes'
+                                  : 'Override selected source title'
+                        }
+                    />
+                </div>
+
+                <div className="grid gap-1">
+                    <Label htmlFor="danger-meta-page">
+                        Page{' '}
+                        <span className="text-muted-foreground">
+                            (optional)
+                        </span>
+                    </Label>
+                    <Input
+                        id="danger-meta-page"
+                        className="h-8 px-2 text-sm"
+                        type="number"
+                        min={1}
+                        value={meta?.page ?? ''}
+                        onChange={(event) =>
+                            updateMeta({
+                                page: event.target.value
+                                    ? Math.max(
+                                          1,
+                                          Math.floor(+event.target.value)
+                                      )
+                                    : undefined,
+                            })
+                        }
+                        placeholder="142"
+                    />
+                </div>
             </div>
 
             <div className="grid gap-1">
@@ -260,28 +295,9 @@ export default function MetaForm() {
                 />
             </div>
 
-            <div className="grid gap-1 sm:max-w-[220px]">
-                <Label htmlFor="danger-meta-page">
-                    Page <span className="text-muted-foreground">(optional)</span>
-                </Label>
-                <Input
-                    id="danger-meta-page"
-                    type="number"
-                    min={1}
-                    value={meta?.page ?? ''}
-                    onChange={(event) =>
-                        updateMeta({
-                            page: event.target.value
-                                ? Math.max(1, Math.floor(+event.target.value))
-                                : undefined,
-                        })
-                    }
-                    placeholder="e.g., 142"
-                />
-            </div>
-
             <div className="text-xs text-muted-foreground">
-                Meta is preserved on import/export and rendered as a small footer in the preview.
+                Meta is preserved on import/export and rendered as a small
+                footer in the preview.
             </div>
         </div>
     )

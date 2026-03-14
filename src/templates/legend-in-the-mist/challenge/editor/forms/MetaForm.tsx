@@ -1,10 +1,8 @@
-import {
-    OFFICIAL_SOURCES,
-    THIRD_PARTY_SOURCES,
-    type CatalogItem,
-} from '@/utils/catalog'
 import { useMemo, useState } from 'react'
-import { type PublicationType, useLegendInTheMistChallengeStore } from '../../hooks'
+import {
+    useLegendInTheMistChallengeStore,
+    type PublicationType,
+} from '../../hooks'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -22,6 +20,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
+import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
 const TYPES: { value: PublicationType; label: string }[] = [
@@ -51,12 +50,12 @@ function AuthorsInput({
     }
 
     return (
-        <div className="rounded-md border px-2 py-1.5">
+        <div className="rounded-md border px-2 py-1">
             <div className="flex flex-wrap gap-1">
                 {value.map((a) => (
                     <span
                         key={a}
-                        className="inline-flex items-center gap-1 rounded bg-muted px-2 py-1 text-sm"
+                        className="inline-flex items-center gap-1 rounded bg-muted px-2 py-0.5 text-xs"
                     >
                         {a}
                         <button
@@ -72,7 +71,7 @@ function AuthorsInput({
                     </span>
                 ))}
                 <input
-                    className="min-w-[10ch] flex-1 bg-transparent outline-none text-sm py-0.5 px-1"
+                    className="min-w-[10ch] flex-1 bg-transparent px-1 py-0.5 text-sm outline-none"
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
                     onKeyDown={(e) => {
@@ -113,7 +112,7 @@ function SourceCombobox({
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between"
+                    className="h-8 w-full justify-between px-2 text-sm"
                 >
                     {current ? current.title : placeholder}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-60" />
@@ -160,14 +159,14 @@ function TypeSegment({
     onChange: (v: PublicationType) => void
 }) {
     return (
-        <div className="inline-grid grid-cols-4 rounded-md border overflow-hidden">
+        <div className="grid grid-cols-2 overflow-hidden rounded-md border sm:inline-grid sm:grid-cols-4">
             {TYPES.map((t) => (
                 <Button
                     key={t.value}
                     type="button"
                     variant={value === t.value ? 'default' : 'ghost'}
                     className={cn(
-                        'rounded-md border-none',
+                        'h-8 rounded-none border-none px-2 text-xs',
                         value === t.value ? '' : 'bg-background'
                     )}
                     onClick={() => onChange(t.value)}
@@ -181,16 +180,18 @@ function TypeSegment({
 
 /* ---------- Main MetaForm ---------- */
 export default function MetaForm() {
-    const { legendInTheMistChallenge, updateMeta } = useLegendInTheMistChallengeStore()
+    const { legendInTheMistChallenge, updateMeta } =
+        useLegendInTheMistChallengeStore()
     const m = legendInTheMistChallenge.meta
 
     const type = m?.publication_type as PublicationType | undefined
-
-    // Ensure arrays exist in UI
     const authors = useMemo(() => m?.authors ?? [], [m?.authors])
+    const sourceOptions =
+        type === 'official' || type === 'third_party'
+            ? getCatalogSources('legend-in-the-mist', type)
+            : []
 
     function setType(next: PublicationType) {
-        // reset source fields when switching types (keeps page)
         updateMeta({
             publication_type: next,
             source: '',
@@ -206,23 +207,17 @@ export default function MetaForm() {
     }
 
     return (
-        <div className="space-y-6">
-            {/* Type */}
+        <div className="space-y-4">
             <div className="grid gap-1">
                 <Label>Publication type</Label>
                 <TypeSegment value={type} onChange={setType} />
             </div>
 
-            {/* Source select / input */}
-            {type === 'official' || type === 'third_party' ? (
+            {sourceOptions.length > 0 ? (
                 <div className="grid gap-1">
                     <Label>Source</Label>
                     <SourceCombobox
-                        items={
-                            type === 'official'
-                                ? OFFICIAL_SOURCES
-                                : THIRD_PARTY_SOURCES
-                        }
+                        items={sourceOptions}
                         value={m?.source}
                         onSelect={pickFromCatalog}
                         placeholder={
@@ -238,59 +233,64 @@ export default function MetaForm() {
                 </div>
             ) : null}
 
-            {/* Manual source for Cauldron/Homebrew (or to override combobox) */}
-            <div className="grid gap-1">
-                <Label htmlFor="meta-source">
-                    {type === 'cauldron'
-                        ? 'Cauldron product title'
-                        : type === 'homebrew'
-                          ? 'Homebrew title / location'
-                          : 'Source title'}{' '}
-                    <span className="text-muted-foreground">(optional)</span>
-                </Label>
-                <Input
-                    id="meta-source"
-                    value={m?.source ?? ''}
-                    onChange={(e) => updateMeta({ source: e.target.value })}
-                    placeholder={
-                        type === 'cauldron'
-                            ? 'e.g., Cauldron: Shadows in Brine'
+            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_110px] sm:items-end">
+                <div className="grid gap-1">
+                    <Label htmlFor="meta-source">
+                        {type === 'cauldron'
+                            ? 'Cauldron product title'
                             : type === 'homebrew'
-                              ? 'e.g., Personal blog, campaign doc…'
-                              : 'Override selected source title'
-                    }
-                />
+                              ? 'Homebrew title / location'
+                              : 'Source title'}{' '}
+                        <span className="text-muted-foreground">
+                            (optional)
+                        </span>
+                    </Label>
+                    <Input
+                        id="meta-source"
+                        className="h-8 px-2 text-sm"
+                        value={m?.source ?? ''}
+                        onChange={(e) => updateMeta({ source: e.target.value })}
+                        placeholder={
+                            type === 'cauldron'
+                                ? 'e.g., Cauldron: Shadows in Brine'
+                                : type === 'homebrew'
+                                  ? 'e.g., Personal blog, campaign doc...'
+                                  : 'Override selected source title'
+                        }
+                    />
+                </div>
+
+                <div className="grid gap-1">
+                    <Label htmlFor="meta-page">
+                        Page{' '}
+                        <span className="text-muted-foreground">
+                            (optional)
+                        </span>
+                    </Label>
+                    <Input
+                        id="meta-page"
+                        className="h-8 px-2 text-sm"
+                        type="number"
+                        min={1}
+                        value={m?.page ?? ''}
+                        onChange={(e) =>
+                            updateMeta({
+                                page: e.target.value
+                                    ? Math.max(1, Math.floor(+e.target.value))
+                                    : undefined,
+                            })
+                        }
+                        placeholder="142"
+                    />
+                </div>
             </div>
 
-            {/* Authors chips */}
             <div className="grid gap-1">
                 <Label>Authors</Label>
                 <AuthorsInput
                     value={authors}
                     onChange={(next) => updateMeta({ authors: next })}
-                    placeholder="Add author…"
-                />
-            </div>
-
-            {/* Page */}
-            <div className="grid gap-1 sm:max-w-[220px]">
-                <Label htmlFor="meta-page">
-                    Page{' '}
-                    <span className="text-muted-foreground">(optional)</span>
-                </Label>
-                <Input
-                    id="meta-page"
-                    type="number"
-                    min={1}
-                    value={m?.page ?? ''}
-                    onChange={(e) =>
-                        updateMeta({
-                            page: e.target.value
-                                ? Math.max(1, Math.floor(+e.target.value))
-                                : undefined,
-                        })
-                    }
-                    placeholder="e.g., 142"
+                    placeholder="Add author..."
                 />
             </div>
 
