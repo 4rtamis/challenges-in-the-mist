@@ -36,6 +36,7 @@ export function toCityOfMistDangerDocument(
 
 export type SectionId =
     | 'basic'
+    | 'description'
     | 'spectrums'
     | 'customMoves'
     | 'hardMoves'
@@ -64,6 +65,8 @@ export type CityOfMistDangerViewState = {
     zoom: number
     previewWidth: number
     background: Background
+    autoHideEmpty: boolean
+    hidden: Record<SectionId, boolean>
     columnCount: ColumnCount
     titlePlacement: TitlePlacement
     columnHeight: number
@@ -92,10 +95,22 @@ export const COLUMN_HEIGHT_MIN = 360
 export const COLUMN_HEIGHT_MAX = 1400
 export const COLUMN_HEIGHT_DEFAULT = 620
 
+export const defaultHidden: Record<SectionId, boolean> = {
+    basic: false,
+    description: false,
+    spectrums: false,
+    customMoves: false,
+    hardMoves: false,
+    softMoves: false,
+    meta: false,
+}
+
 export const defaultCityOfMistDangerView: CityOfMistDangerViewState = {
     zoom: 1,
     previewWidth: PREVIEW_WIDTH_DEFAULT,
     background: 'bg0',
+    autoHideEmpty: true,
+    hidden: defaultHidden,
     columnCount: 1,
     titlePlacement: 'outside',
     columnHeight: COLUMN_HEIGHT_DEFAULT,

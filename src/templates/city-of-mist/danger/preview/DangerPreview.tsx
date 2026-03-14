@@ -1,4 +1,5 @@
 import {
+    shouldShow,
     useCityOfMistDangerSheetStore,
     useCityOfMistDangerStore,
     useCityOfMistDangerViewStore,
@@ -14,6 +15,7 @@ import './dangerTheme.css'
 export function DangerPreview() {
     const { cityOfMistDanger } = useCityOfMistDangerStore()
     const { openSheet } = useCityOfMistDangerSheetStore()
+    const view = useCityOfMistDangerViewStore()
     const {
         zoom,
         background,
@@ -21,13 +23,18 @@ export function DangerPreview() {
         titlePlacement,
         columnHeight,
         showSeparators,
-    } = useCityOfMistDangerViewStore()
+    } = view
 
     const isTwoColumns = columnCount === 2
     const titleOutside = isTwoColumns && titlePlacement === 'outside'
-    const hasCustomMoves = cityOfMistDanger.custom_moves.length > 0
-    const hasHardMoves = cityOfMistDanger.hard_moves.length > 0
-    const hasSoftMoves = cityOfMistDanger.soft_moves.length > 0
+    const showBasic = shouldShow(cityOfMistDanger, 'basic', view)
+    const showDescription = shouldShow(cityOfMistDanger, 'description', view)
+    const showSpectrums = shouldShow(cityOfMistDanger, 'spectrums', view)
+    const showCustomMoves = shouldShow(cityOfMistDanger, 'customMoves', view)
+    const showHardMoves = shouldShow(cityOfMistDanger, 'hardMoves', view)
+    const showSoftMoves = shouldShow(cityOfMistDanger, 'softMoves', view)
+    const showMeta = shouldShow(cityOfMistDanger, 'meta', view)
+
     return (
         <div className="city-danger-preview-root">
             <div
@@ -46,7 +53,7 @@ export function DangerPreview() {
                         } as React.CSSProperties
                     }
                 >
-                    {titleOutside ? (
+                    {titleOutside && showBasic ? (
                         <BasicBlock
                             onClick={() =>
                                 openSheet({ kind: 'basic', mode: 'edit' })
@@ -61,7 +68,7 @@ export function DangerPreview() {
                                 : 'city-danger-flow'
                         }
                     >
-                        {!titleOutside ? (
+                        {!titleOutside && showBasic ? (
                             <BasicBlock
                                 onClick={() =>
                                     openSheet({ kind: 'basic', mode: 'edit' })
@@ -69,60 +76,81 @@ export function DangerPreview() {
                             />
                         ) : null}
 
-                        <DescriptionBlock
-                            onClick={() =>
-                                openSheet({ kind: 'basic', mode: 'edit' })
-                            }
-                        />
+                        {showDescription ? (
+                            <DescriptionBlock
+                                onClick={() =>
+                                    openSheet({ kind: 'basic', mode: 'edit' })
+                                }
+                            />
+                        ) : null}
 
-                        <SpectrumsBlock
-                            onClick={() =>
-                                openSheet({ kind: 'spectrums', mode: 'create' })
-                            }
-                        />
+                        {showSpectrums ? (
+                            <SpectrumsBlock
+                                onClick={() =>
+                                    openSheet({
+                                        kind: 'spectrums',
+                                        mode: 'create',
+                                    })
+                                }
+                            />
+                        ) : null}
 
-                        <CustomMovesBlock
-                            onClick={() =>
-                                openSheet({
-                                    kind: 'customMoves',
-                                    mode: 'create',
-                                })
-                            }
-                        />
+                        {showCustomMoves ? (
+                            <CustomMovesBlock
+                                onClick={() =>
+                                    openSheet({
+                                        kind: 'customMoves',
+                                        mode: 'create',
+                                    })
+                                }
+                            />
+                        ) : null}
 
                         {showSeparators &&
-                        hasCustomMoves &&
-                        (hasHardMoves || hasSoftMoves) ? (
+                        showCustomMoves &&
+                        (showHardMoves || showSoftMoves) ? (
                             <DangerSeparator />
                         ) : null}
 
-                        <MoveListBlock
-                            values={cityOfMistDanger.hard_moves}
-                            emptyLabel="add hard moves"
-                            ariaLabel="Edit hard moves"
-                            onClick={() =>
-                                openSheet({ kind: 'hardMoves', mode: 'create' })
-                            }
-                        />
+                        {showHardMoves ? (
+                            <MoveListBlock
+                                values={cityOfMistDanger.hard_moves}
+                                emptyLabel="add hard moves"
+                                ariaLabel="Edit hard moves"
+                                onClick={() =>
+                                    openSheet({
+                                        kind: 'hardMoves',
+                                        mode: 'create',
+                                    })
+                                }
+                            />
+                        ) : null}
 
-                        {showSeparators && hasHardMoves && hasSoftMoves ? (
+                        {showSeparators && showHardMoves && showSoftMoves ? (
                             <DangerSeparator />
                         ) : null}
 
-                        <MoveListBlock
-                            values={cityOfMistDanger.soft_moves}
-                            emptyLabel="add soft moves"
-                            ariaLabel="Edit soft moves"
-                            onClick={() =>
-                                openSheet({ kind: 'softMoves', mode: 'create' })
-                            }
-                        />
+                        {showSoftMoves ? (
+                            <MoveListBlock
+                                values={cityOfMistDanger.soft_moves}
+                                emptyLabel="add soft moves"
+                                ariaLabel="Edit soft moves"
+                                onClick={() =>
+                                    openSheet({
+                                        kind: 'softMoves',
+                                        mode: 'create',
+                                    })
+                                }
+                            />
+                        ) : null}
                     </div>
                 </div>
 
-                <MetaFooterBlock
-                    onClick={() => openSheet({ kind: 'meta', mode: 'edit' })}
-                />
+                {showMeta ? (
+                    <MetaFooterBlock
+                        onClick={() => openSheet({ kind: 'meta', mode: 'edit' })}
+                    />
+                ) : null}
             </div>
         </div>
     )

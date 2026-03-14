@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
-import { dangerBackgroundOptions } from '../metadata'
+import { dangerBackgroundOptions, dangerSections } from '../metadata'
 import {
     COLUMN_HEIGHT_MAX,
     COLUMN_HEIGHT_MIN,
@@ -13,6 +14,10 @@ import { useCityOfMistDangerViewStore } from '../hooks'
 
 export function DangerAppearancePanel() {
     const {
+        hidden,
+        toggleHidden,
+        autoHideEmpty,
+        setAutoHideEmpty,
         previewWidth,
         setPreviewWidth,
         background,
@@ -30,6 +35,48 @@ export function DangerAppearancePanel() {
 
     return (
         <div className="space-y-4">
+            <div className="flex items-center justify-between gap-4">
+                <Label htmlFor="danger-auto-hide-empty" className="text-xs">
+                    Auto-hide empty sections
+                </Label>
+                <Switch
+                    id="danger-auto-hide-empty"
+                    checked={autoHideEmpty}
+                    onCheckedChange={(value) => setAutoHideEmpty(!!value)}
+                />
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+                <Label htmlFor="danger-separators" className="text-xs">
+                    Show separators
+                </Label>
+                <Switch
+                    id="danger-separators"
+                    checked={showSeparators}
+                    onCheckedChange={(value) => setShowSeparators(!!value)}
+                />
+            </div>
+
+            <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Sections
+                </p>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+                    {dangerSections.map((section) => (
+                        <label
+                            key={section.id}
+                            className="flex cursor-pointer items-center gap-2"
+                        >
+                            <Checkbox
+                                checked={!hidden[section.id]}
+                                onCheckedChange={() => toggleHidden(section.id)}
+                            />
+                            <span className="text-xs">{section.label}</span>
+                        </label>
+                    ))}
+                </div>
+            </div>
+
             <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2">
                     <Label htmlFor="danger-preview-width" className="text-xs">
@@ -81,100 +128,114 @@ export function DangerAppearancePanel() {
             </div>
 
             <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Layout
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                    <Button
-                        type="button"
-                        size="sm"
-                        variant={columnCount === 1 ? 'default' : 'outline'}
-                        onClick={() => setColumnCount(1)}
-                    >
-                        One column
-                    </Button>
-                    <Button
-                        type="button"
-                        size="sm"
-                        variant={columnCount === 2 ? 'default' : 'outline'}
-                        onClick={() => setColumnCount(2)}
-                    >
-                        Two columns
-                    </Button>
-                </div>
-            </div>
-
-            {columnCount === 2 ? (
-                <>
+                <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="space-y-2">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Layout
+                        </p>
+                        <div className="inline-flex rounded-lg border border-border bg-muted/30 p-1">
+                            <button
+                                type="button"
+                                className={cn(
+                                    'h-7 rounded-md px-2.5 text-[11px] font-medium transition-colors',
+                                    columnCount === 1
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                )}
+                                onClick={() => setColumnCount(1)}
+                                aria-pressed={columnCount === 1}
+                            >
+                                1 column
+                            </button>
+                            <button
+                                type="button"
+                                className={cn(
+                                    'h-7 rounded-md px-2.5 text-[11px] font-medium transition-colors',
+                                    columnCount === 2
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                )}
+                                onClick={() => setColumnCount(2)}
+                                aria-pressed={columnCount === 2}
+                            >
+                                2 columns
+                            </button>
+                        </div>
+                    </div>
+
+                    <div
+                        className={cn(
+                            'space-y-2 transition-opacity',
+                            columnCount === 2 ? 'opacity-100' : 'opacity-45'
+                        )}
+                    >
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             Title placement
                         </p>
-                        <div className="grid grid-cols-2 gap-2">
-                            <Button
+                        <div className="inline-flex rounded-lg border border-border bg-muted/30 p-1">
+                            <button
                                 type="button"
-                                size="sm"
-                                variant={
+                                disabled={columnCount !== 2}
+                                className={cn(
+                                    'h-7 rounded-md px-2.5 text-[11px] font-medium transition-colors disabled:pointer-events-none',
                                     titlePlacement === 'outside'
-                                        ? 'default'
-                                        : 'outline'
-                                }
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                )}
                                 onClick={() => setTitlePlacement('outside')}
+                                aria-pressed={titlePlacement === 'outside'}
                             >
-                                Outside columns
-                            </Button>
-                            <Button
+                                Outside
+                            </button>
+                            <button
                                 type="button"
-                                size="sm"
-                                variant={
+                                disabled={columnCount !== 2}
+                                className={cn(
+                                    'h-7 rounded-md px-2.5 text-[11px] font-medium transition-colors disabled:pointer-events-none',
                                     titlePlacement === 'inside'
-                                        ? 'default'
-                                        : 'outline'
-                                }
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground'
+                                )}
                                 onClick={() => setTitlePlacement('inside')}
+                                aria-pressed={titlePlacement === 'inside'}
                             >
-                                Inside columns
-                            </Button>
+                                Inside
+                            </button>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between gap-2">
-                            <Label htmlFor="danger-column-height" className="text-xs">
-                                Block height
-                            </Label>
-                            <span className="text-xs font-medium">{columnHeight}px</span>
-                        </div>
-                        <input
-                            id="danger-column-height"
-                            type="range"
-                            min={COLUMN_HEIGHT_MIN}
-                            max={COLUMN_HEIGHT_MAX}
-                            step={10}
-                            value={columnHeight}
-                            onChange={(event) =>
-                                setColumnHeight(Number(event.target.value))
-                            }
-                            className="w-full accent-primary"
-                            aria-label="Block height"
-                        />
-                        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                            <span>{COLUMN_HEIGHT_MIN}px</span>
-                            <span>{COLUMN_HEIGHT_MAX}px</span>
-                        </div>
-                    </div>
-                </>
-            ) : null}
-
-            <div className="flex items-center justify-between gap-4">
-                <Label htmlFor="danger-separators" className="text-xs">
-                    Show separators
-                </Label>
-                <Switch
-                    id="danger-separators"
-                    checked={showSeparators}
-                    onCheckedChange={(value) => setShowSeparators(!!value)}
+            <div
+                className={cn(
+                    'space-y-2 transition-opacity',
+                    columnCount === 2 ? 'opacity-100' : 'opacity-45'
+                )}
+            >
+                <div className="flex items-center justify-between gap-2">
+                    <Label htmlFor="danger-column-height" className="text-xs">
+                        Block height
+                    </Label>
+                    <span className="text-xs font-medium">{columnHeight}px</span>
+                </div>
+                <input
+                    id="danger-column-height"
+                    type="range"
+                    min={COLUMN_HEIGHT_MIN}
+                    max={COLUMN_HEIGHT_MAX}
+                    step={10}
+                    value={columnHeight}
+                    onChange={(event) =>
+                        setColumnHeight(Number(event.target.value))
+                    }
+                    className="w-full accent-primary disabled:cursor-not-allowed"
+                    aria-label="Block height"
+                    disabled={columnCount !== 2}
                 />
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                    <span>{COLUMN_HEIGHT_MIN}px</span>
+                    <span>{COLUMN_HEIGHT_MAX}px</span>
+                </div>
             </div>
 
             <Button

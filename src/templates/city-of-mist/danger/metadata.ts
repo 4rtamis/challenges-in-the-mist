@@ -1,7 +1,7 @@
 import type { Background, SectionId } from './model'
 
 export const dangerSections: Array<{ id: SectionId; label: string }> = [
-    { id: 'basic', label: 'Basic Info' },
+    { id: 'description', label: 'Description' },
     { id: 'spectrums', label: 'Spectrums' },
     { id: 'customMoves', label: 'Custom Moves' },
     { id: 'hardMoves', label: 'Hard Moves' },

@@ -2,6 +2,7 @@ import type { WorkspaceTab } from '@/core/workspace/types'
 import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
 import type {
+    SectionId,
     CityOfMistDanger,
     CityOfMistDangerSheetState,
     CityOfMistDangerViewState,
@@ -18,6 +19,7 @@ import {
     COLUMN_HEIGHT_MIN,
     defaultCityOfMistDangerSheetState,
     defaultCityOfMistDangerView,
+    defaultHidden,
     PREVIEW_WIDTH_MAX,
     PREVIEW_WIDTH_MIN,
 } from './model'
@@ -288,7 +290,19 @@ export function useCityOfMistDangerStore() {
 export function useCityOfMistDangerViewStore() {
     const tab = useCityOfMistDangerTab()
     const patchTabView = useWorkspaceStore((state) => state.patchTabView)
-    const view = tab?.view ?? fallbackView
+    const tabView = tab?.view
+    const view: CityOfMistDangerViewState = {
+        ...fallbackView,
+        ...tabView,
+        hidden: {
+            ...fallbackView.hidden,
+            ...(tabView?.hidden ?? {}),
+        },
+        exportPrefs: {
+            ...fallbackView.exportPrefs,
+            ...(tabView?.exportPrefs ?? {}),
+        },
+    }
 
     const patchView = (patch: Partial<CityOfMistDangerViewState>) => {
         if (!tab) return
@@ -307,6 +321,22 @@ export function useCityOfMistDangerViewStore() {
             }),
         setBackground: (background: CityOfMistDangerViewState['background']) =>
             patchView({ background }),
+        toggleHidden: (id: SectionId) =>
+            patchView({
+                hidden: {
+                    ...view.hidden,
+                    [id]: !view.hidden[id],
+                },
+            }),
+        setHidden: (id: SectionId, value: boolean) =>
+            patchView({
+                hidden: {
+                    ...view.hidden,
+                    [id]: value,
+                },
+            }),
+        setAutoHideEmpty: (autoHideEmpty: boolean) =>
+            patchView({ autoHideEmpty }),
         setColumnCount: (columnCount: ColumnCount) =>
             patchView({ columnCount }),
         setTitlePlacement: (titlePlacement: TitlePlacement) =>
@@ -331,7 +361,10 @@ export function useCityOfMistDangerViewStore() {
                 },
             }),
         resetViewPrefs: () =>
-            patchView(cloneValue(defaultCityOfMistDangerView)),
+            patchView({
+                ...cloneValue(defaultCityOfMistDangerView),
+                hidden: cloneValue(defaultHidden),
+            }),
     }
 }
 
@@ -362,6 +395,62 @@ export function getCityOfMistDangerPreviewWidth(
     view: CityOfMistDangerViewState
 ) {
     return view.previewWidth
+}
+
+export function isEmptySection(
+    cityOfMistDanger: CityOfMistDanger,
+    id: SectionId
+) {
+    switch (id) {
+        case 'basic':
+            return false
+        case 'description':
+            return !cityOfMistDanger.description?.trim()
+        case 'spectrums':
+            return !cityOfMistDanger.spectrums.length
+        case 'customMoves':
+            return !cityOfMistDanger.custom_moves.length
+        case 'hardMoves':
+            return !cityOfMistDanger.hard_moves.length
+        case 'softMoves':
+            return !cityOfMistDanger.soft_moves.length
+        case 'meta': {
+            const meta = cityOfMistDanger.meta
+            if (!meta) return true
+
+            const hasMeta =
+                !!meta.publication_type ||
+                !!(meta.source && String(meta.source).trim()) ||
+                (Array.isArray(meta.authors) && meta.authors.length > 0) ||
+                meta.page != null
+            return !hasMeta
+        }
+        default:
+            return true
+    }
+}
+
+export function shouldShow(
+    cityOfMistDanger: CityOfMistDanger,
+    id: SectionId,
+    view: CityOfMistDangerViewState
+) {
+    if (id === 'basic') return true
+    if (view.hidden[id]) return false
+    if (view.autoHideEmpty && isEmptySection(cityOfMistDanger, id)) {
+        return false
+    }
+    return true
+}
+
+export function groupShouldShow(
+    cityOfMistDanger: CityOfMistDanger,
+    sectionIds: SectionId[],
+    view: CityOfMistDangerViewState
+) {
+    return sectionIds.some((sectionId) =>
+        shouldShow(cityOfMistDanger, sectionId, view)
+    )
 }
 
 export function getLiveCityOfMistDangerTab() {
