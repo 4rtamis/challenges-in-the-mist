@@ -115,7 +115,7 @@ export default function MoveListForm({
     }
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -125,7 +125,7 @@ export default function MoveListForm({
                     items={itemIds}
                     strategy={verticalListSortingStrategy}
                 >
-                    <ul className="space-y-2">
+                    <ul className="space-y-1.5">
                         {values.map((value, index) => (
                             <SortableMoveRow
                                 key={itemIds[index]}
@@ -136,19 +136,23 @@ export default function MoveListForm({
                                 onRemove={() => removeValue(index)}
                             >
                                 {editingIndex === index ? (
-                                    <div className="mt-2 space-y-3 rounded-md border bg-muted/30 p-3">
+                                    <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
                                         {error ? (
                                             <p className="text-sm text-destructive">
                                                 {error}
                                             </p>
                                         ) : null}
-                                        <div className="grid gap-2">
-                                            <Label htmlFor={`${fieldLabel}-${index}`}>
+                                        <div className="grid gap-1">
+                                            <Label
+                                                htmlFor={`${fieldLabel}-${index}`}
+                                                className="text-xs"
+                                            >
                                                 {fieldLabel}
                                             </Label>
                                             <Textarea
                                                 id={`${fieldLabel}-${index}`}
                                                 rows={4}
+                                                className="min-h-16 px-2 py-1 text-sm"
                                                 value={draft}
                                                 onChange={(event) =>
                                                     setDraft(event.target.value)
@@ -157,13 +161,18 @@ export default function MoveListForm({
                                             />
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Button type="button" onClick={confirmEdit}>
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                className="h-7 px-2.5 text-xs"
+                                                onClick={confirmEdit}
+                                            >
                                                 Save
                                             </Button>
                                             <Button
                                                 type="button"
                                                 variant="link"
-                                                className="h-8 p-0"
+                                                className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
                                                 Cancel
@@ -178,10 +187,11 @@ export default function MoveListForm({
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="mt-1 w-full justify-center gap-2 border-dashed"
+                                size="sm"
+                                className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-4 w-4" />
+                                <Plus className="h-3.5 w-3.5" />
                                 {addLabel}
                             </Button>
                         </li>
@@ -223,7 +233,7 @@ function SortableMoveRow({
                 transform: CSS.Transform.toString(transform),
                 transition,
             }}
-            className={`rounded-md border bg-white px-3 py-2 max-w-full ${
+            className={`max-w-full rounded-md border bg-white px-2.5 py-1.5 ${
                 isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
             }`}
         >
@@ -231,7 +241,7 @@ function SortableMoveRow({
                 <div className="flex min-w-0 items-start gap-2">
                     <button
                         type="button"
-                        className={`inline-flex h-8 w-8 items-center justify-center rounded hover:bg-slate-50 ${
+                        className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50 ${
                             dragDisabled
                                 ? 'cursor-not-allowed opacity-40 hover:bg-transparent'
                                 : 'cursor-grab active:cursor-grabbing'
@@ -246,10 +256,10 @@ function SortableMoveRow({
                         {...(!dragDisabled ? attributes : {})}
                         {...(!dragDisabled ? listeners : {})}
                     >
-                        <GripVertical className="h-4 w-4 text-slate-500" />
+                        <GripVertical className="h-3.5 w-3.5 text-slate-500" />
                     </button>
 
-                    <div className="min-w-0 city-danger-token-scope font-['PT_Serif'] text-sm leading-6">
+                    <div className="min-w-0 city-danger-token-scope text-sm leading-6">
                         <span
                             className="block"
                             dangerouslySetInnerHTML={{
@@ -263,22 +273,20 @@ function SortableMoveRow({
                     <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
+                        className="h-7 w-7"
                         onClick={onEdit}
                         title="Edit"
                     >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive"
+                        className="h-7 w-7 text-destructive"
                         onClick={onRemove}
                         title="Remove"
                     >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                 </div>
             </div>

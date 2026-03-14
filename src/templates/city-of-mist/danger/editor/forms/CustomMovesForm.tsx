@@ -2,10 +2,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { renderDangerMarkdownInline } from '../../markdown'
-import { useCityOfMistDangerStore } from '../../hooks'
-import { useEffect, useMemo, useState } from 'react'
-import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import {
     DndContext,
     KeyboardSensor,
@@ -22,6 +18,10 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useCityOfMistDangerStore } from '../../hooks'
+import { renderDangerMarkdownInline } from '../../markdown'
 
 const DEFAULT_CUSTOM_MOVE = {
     name: 'Custom Move',
@@ -43,7 +43,9 @@ export default function CustomMovesForm({
 
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
     const [name, setName] = useState(DEFAULT_CUSTOM_MOVE.name)
-    const [description, setDescription] = useState(DEFAULT_CUSTOM_MOVE.description)
+    const [description, setDescription] = useState(
+        DEFAULT_CUSTOM_MOVE.description
+    )
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
@@ -128,7 +130,7 @@ export default function CustomMovesForm({
     }
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -138,76 +140,96 @@ export default function CustomMovesForm({
                     items={itemIds}
                     strategy={verticalListSortingStrategy}
                 >
-                    <ul className="space-y-2">
-                        {cityOfMistDanger.custom_moves.map((customMove, index) => (
-                            <SortableCustomMoveRow
-                                key={itemIds[index]}
-                                id={itemIds[index]}
-                                name={customMove.name}
-                                description={customMove.description}
-                                dragDisabled={editingIndex !== null}
-                                onEdit={() => startEdit(index)}
-                                onRemove={() => removeCustomMoveAt(index)}
-                            >
-                                {editingIndex === index ? (
-                                    <div className="mt-2 space-y-3 rounded-md border bg-muted/30 p-3">
-                                        {error ? (
-                                            <p className="text-sm text-destructive">
-                                                {error}
-                                            </p>
-                                        ) : null}
-                                        <div className="grid gap-2">
-                                            <Label htmlFor={`custom-move-name-${index}`}>
-                                                Name
-                                            </Label>
-                                            <Input
-                                                id={`custom-move-name-${index}`}
-                                                value={name}
-                                                onChange={(event) =>
-                                                    setName(event.target.value)
-                                                }
-                                                placeholder="Custom Move"
-                                            />
+                    <ul className="space-y-1.5">
+                        {cityOfMistDanger.custom_moves.map(
+                            (customMove, index) => (
+                                <SortableCustomMoveRow
+                                    key={itemIds[index]}
+                                    id={itemIds[index]}
+                                    name={customMove.name}
+                                    description={customMove.description}
+                                    dragDisabled={editingIndex !== null}
+                                    onEdit={() => startEdit(index)}
+                                    onRemove={() => removeCustomMoveAt(index)}
+                                >
+                                    {editingIndex === index ? (
+                                        <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
+                                            {error ? (
+                                                <p className="text-sm text-destructive">
+                                                    {error}
+                                                </p>
+                                            ) : null}
+                                            <div className="grid gap-1">
+                                                <Label
+                                                    htmlFor={`custom-move-name-${index}`}
+                                                    className="text-xs"
+                                                >
+                                                    Name
+                                                </Label>
+                                                <Input
+                                                    id={`custom-move-name-${index}`}
+                                                    className="h-8 px-2 text-sm"
+                                                    value={name}
+                                                    onChange={(event) =>
+                                                        setName(
+                                                            event.target.value
+                                                        )
+                                                    }
+                                                    placeholder="Custom Move"
+                                                />
+                                            </div>
+                                            <div className="grid gap-1">
+                                                <Label
+                                                    htmlFor={`custom-move-description-${index}`}
+                                                    className="text-xs"
+                                                >
+                                                    Description
+                                                </Label>
+                                                <Textarea
+                                                    id={`custom-move-description-${index}`}
+                                                    rows={5}
+                                                    className="min-h-20 px-2 py-1 text-sm"
+                                                    value={description}
+                                                    onChange={(event) =>
+                                                        setDescription(
+                                                            event.target.value
+                                                        )
+                                                    }
+                                                    placeholder="Describe the custom move."
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    className="h-7 px-2.5 text-xs"
+                                                    onClick={confirmEdit}
+                                                >
+                                                    Save
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="link"
+                                                    className="h-7 px-0 text-xs"
+                                                    onClick={cancelEdit}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </div>
                                         </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor={`custom-move-description-${index}`}>
-                                                Description
-                                            </Label>
-                                            <Textarea
-                                                id={`custom-move-description-${index}`}
-                                                rows={5}
-                                                value={description}
-                                                onChange={(event) =>
-                                                    setDescription(event.target.value)
-                                                }
-                                                placeholder="Describe the custom move."
-                                            />
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Button type="button" onClick={confirmEdit}>
-                                                Save
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="link"
-                                                className="h-8 p-0"
-                                                onClick={cancelEdit}
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ) : null}
-                            </SortableCustomMoveRow>
-                        ))}
+                                    ) : null}
+                                </SortableCustomMoveRow>
+                            )
+                        )}
                         <li className="flex">
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="mt-1 w-full justify-center gap-2 border-dashed"
+                                size="sm"
+                                className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-4 w-4" />
+                                <Plus className="h-3.5 w-3.5" />
                                 Add custom move
                             </Button>
                         </li>
@@ -251,12 +273,12 @@ function SortableCustomMoveRow({
                 transform: CSS.Transform.toString(transform),
                 transition,
             }}
-            className={`rounded-md border bg-white px-3 py-2 max-w-full ${
+            className={`max-w-full rounded-md border bg-white px-3 py-3 ${
                 isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
             }`}
         >
             <div className="flex items-start justify-between gap-3">
-                <div className="flex min-w-0 items-start gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                     <button
                         type="button"
                         className={`inline-flex h-8 w-8 items-center justify-center rounded hover:bg-slate-50 ${
@@ -276,20 +298,14 @@ function SortableCustomMoveRow({
                     >
                         <GripVertical className="h-4 w-4 text-slate-500" />
                     </button>
-                    <div className="min-w-0 city-danger-token-scope font-['PT_Serif'] text-sm leading-6">
-                        <div className="font-bold">{name}</div>
-                        <div
-                            dangerouslySetInnerHTML={{
-                                __html: renderDangerMarkdownInline(description),
-                            }}
-                        />
+                    <div className="min-w-0 city-danger-token-scope">
+                        <div className="truncate font-medium">{name}</div>
                     </div>
                 </div>
                 <div className="flex items-center gap-1">
                     <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
                         className="h-8 w-8"
                         onClick={onEdit}
                         title="Edit"
@@ -299,7 +315,6 @@ function SortableCustomMoveRow({
                     <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
                         className="h-8 w-8 text-destructive"
                         onClick={onRemove}
                         title="Remove"
@@ -308,6 +323,12 @@ function SortableCustomMoveRow({
                     </Button>
                 </div>
             </div>
+            <div
+                className="text-sm leading-6 text-foreground/80"
+                dangerouslySetInnerHTML={{
+                    __html: renderDangerMarkdownInline(description),
+                }}
+            />
             {children}
         </li>
     )

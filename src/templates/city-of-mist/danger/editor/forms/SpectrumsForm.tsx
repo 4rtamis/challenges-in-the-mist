@@ -129,7 +129,7 @@ export default function SpectrumsForm({
     }
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -139,7 +139,7 @@ export default function SpectrumsForm({
                     items={itemIds}
                     strategy={verticalListSortingStrategy}
                 >
-                    <ul className="space-y-2">
+                    <ul className="space-y-1.5">
                         {cityOfMistDanger.spectrums.map((spectrum, index) => (
                             <SortableSpectrumRow
                                 key={itemIds[index]}
@@ -150,56 +150,65 @@ export default function SpectrumsForm({
                                 onRemove={() => removeSpectrumAt(index)}
                             >
                                 {editingIndex === index ? (
-                                    <div className="mt-2 space-y-3 rounded-md border bg-muted/30 p-3">
+                                    <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
                                         {error ? (
                                             <p className="text-sm text-destructive">
                                                 {error}
                                             </p>
                                         ) : null}
-                                        <div className="grid gap-2">
-                                            <Label htmlFor={`spectrum-name-${index}`}>
-                                                Spectrum name
-                                            </Label>
-                                            <Input
-                                                id={`spectrum-name-${index}`}
-                                                value={name}
-                                                onChange={(event) =>
-                                                    setName(event.target.value)
-                                                }
-                                                placeholder="hurt"
-                                            />
-                                        </div>
-                                        <div className="grid gap-2 sm:max-w-[180px]">
-                                            <Label htmlFor={`spectrum-maximum-${index}`}>
-                                                Maximum
-                                            </Label>
-                                            <Input
-                                                id={`spectrum-maximum-${index}`}
-                                                type="number"
-                                                min={1}
-                                                max={6}
-                                                value={maximum}
-                                                onChange={(event) =>
-                                                    setMaximum(
-                                                        Math.max(
-                                                            1,
-                                                            Math.min(
-                                                                6,
-                                                                Math.floor(
-                                                                    Number(
-                                                                        event.target.value
-                                                                    ) || 1
+                                        <div className="grid gap-2 md:grid-cols-[1fr_5.5rem] md:items-end">
+                                            <div className="grid gap-1">
+                                                <Label
+                                                    htmlFor={`spectrum-name-${index}`}
+                                                    className="text-xs"
+                                                >
+                                                    Spectrum name
+                                                </Label>
+                                                <Input
+                                                    id={`spectrum-name-${index}`}
+                                                    className="h-8 px-2 text-sm"
+                                                    value={name}
+                                                    onChange={(event) =>
+                                                        setName(event.target.value)
+                                                    }
+                                                    placeholder="hurt"
+                                                />
+                                            </div>
+                                            <div className="grid gap-1">
+                                                <Label
+                                                    htmlFor={`spectrum-maximum-${index}`}
+                                                    className="text-xs"
+                                                >
+                                                    Maximum
+                                                </Label>
+                                                <Input
+                                                    id={`spectrum-maximum-${index}`}
+                                                    className="h-8 px-2 text-sm"
+                                                    type="number"
+                                                    min={1}
+                                                    max={6}
+                                                    value={maximum}
+                                                    onChange={(event) =>
+                                                        setMaximum(
+                                                            Math.max(
+                                                                1,
+                                                                Math.min(
+                                                                    6,
+                                                                    Math.floor(
+                                                                        Number(
+                                                                            event
+                                                                                .target
+                                                                                .value
+                                                                        ) || 1
+                                                                    )
                                                                 )
                                                             )
                                                         )
-                                                    )
-                                                }
-                                            />
+                                                    }
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="flex items-center justify-between gap-4 rounded-md border bg-white px-3 py-2">
-                                            <Label htmlFor={`spectrum-immune-${index}`}>
-                                                Immune
-                                            </Label>
+                                        <div className="flex items-center gap-2">
                                             <Switch
                                                 id={`spectrum-immune-${index}`}
                                                 checked={isImmune}
@@ -207,15 +216,26 @@ export default function SpectrumsForm({
                                                     setIsImmune(!!value)
                                                 }
                                             />
+                                            <Label
+                                                htmlFor={`spectrum-immune-${index}`}
+                                                className="text-xs"
+                                            >
+                                                Immune
+                                            </Label>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Button type="button" onClick={confirmEdit}>
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                className="h-7 px-2.5 text-xs"
+                                                onClick={confirmEdit}
+                                            >
                                                 Save
                                             </Button>
                                             <Button
                                                 type="button"
                                                 variant="link"
-                                                className="h-8 p-0"
+                                                className="h-7 px-0 text-xs"
                                                 onClick={cancelEdit}
                                             >
                                                 Cancel
@@ -229,10 +249,11 @@ export default function SpectrumsForm({
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="mt-1 w-full justify-center gap-2 border-dashed"
+                                size="sm"
+                                className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-4 w-4" />
+                                <Plus className="h-3.5 w-3.5" />
                                 Add spectrum
                             </Button>
                         </li>
@@ -274,7 +295,7 @@ function SortableSpectrumRow({
                 transform: CSS.Transform.toString(transform),
                 transition,
             }}
-            className={`rounded-md border bg-white px-3 py-2 max-w-full ${
+            className={`max-w-full rounded-md border bg-white px-2.5 py-1.5 ${
                 isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
             }`}
         >
@@ -282,7 +303,7 @@ function SortableSpectrumRow({
                 <div className="flex min-w-0 items-center gap-2">
                     <button
                         type="button"
-                        className={`inline-flex h-8 w-8 items-center justify-center rounded hover:bg-slate-50 ${
+                        className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50 ${
                             dragDisabled
                                 ? 'cursor-not-allowed opacity-40 hover:bg-transparent'
                                 : 'cursor-grab active:cursor-grabbing'
@@ -297,7 +318,7 @@ function SortableSpectrumRow({
                         {...(!dragDisabled ? attributes : {})}
                         {...(!dragDisabled ? listeners : {})}
                     >
-                        <GripVertical className="h-4 w-4 text-slate-500" />
+                        <GripVertical className="h-3.5 w-3.5 text-slate-500" />
                     </button>
                     <span className="truncate font-['Bebas_Neue'] text-xl uppercase tracking-wide">
                         {label}
@@ -307,22 +328,20 @@ function SortableSpectrumRow({
                     <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
+                        className="h-7 w-7"
                         onClick={onEdit}
                         title="Edit"
                     >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive"
+                        className="h-7 w-7 text-destructive"
                         onClick={onRemove}
                         title="Remove"
                     >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                 </div>
             </div>
