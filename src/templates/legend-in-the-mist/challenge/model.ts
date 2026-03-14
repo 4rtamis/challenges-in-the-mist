@@ -107,24 +107,24 @@ export const defaultHidden: Record<SectionId, boolean> = {
     meta: false,
 }
 
-export const defaultLegendInTheMistChallengeView:
-    LegendInTheMistChallengeViewState = {
-    zoom: 1,
-    previewWidth: PREVIEW_WIDTH_DEFAULT,
-    background: 'parchment',
-    autoHideEmpty: true,
-    hidden: defaultHidden,
-    exportPrefs: {
-        scale: 2,
-        transparent: false,
-    },
-}
+export const defaultLegendInTheMistChallengeView: LegendInTheMistChallengeViewState =
+    {
+        zoom: 1,
+        previewWidth: PREVIEW_WIDTH_DEFAULT,
+        background: 'parchment',
+        autoHideEmpty: false,
+        hidden: defaultHidden,
+        exportPrefs: {
+            scale: 2,
+            transparent: false,
+        },
+    }
 
-export const defaultLegendInTheMistChallengeSheetState:
-    LegendInTheMistChallengeSheetState = {
-    open: false,
-    target: null,
-}
+export const defaultLegendInTheMistChallengeSheetState: LegendInTheMistChallengeSheetState =
+    {
+        open: false,
+        target: null,
+    }
 
 export const blankLegendInTheMistChallenge = (): LegendInTheMistChallenge => ({
     name: 'Untitled Challenge',

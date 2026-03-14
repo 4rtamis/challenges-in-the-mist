@@ -89,7 +89,7 @@ export type CityOfMistDangerSheetState = {
 
 export const PREVIEW_WIDTH_MIN = 360
 export const PREVIEW_WIDTH_MAX = 920
-export const PREVIEW_WIDTH_DEFAULT = 460
+export const PREVIEW_WIDTH_DEFAULT = 600
 
 export const COLUMN_HEIGHT_MIN = 360
 export const COLUMN_HEIGHT_MAX = 1400
@@ -109,7 +109,7 @@ export const defaultCityOfMistDangerView: CityOfMistDangerViewState = {
     zoom: 1,
     previewWidth: PREVIEW_WIDTH_DEFAULT,
     background: 'bg0',
-    autoHideEmpty: true,
+    autoHideEmpty: false,
     hidden: defaultHidden,
     columnCount: 1,
     titlePlacement: 'outside',
