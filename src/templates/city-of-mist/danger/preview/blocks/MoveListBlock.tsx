@@ -5,22 +5,31 @@ type Props = {
     values: string[]
     emptyLabel: string
     ariaLabel: string
-    onClick: () => void
+    itemAriaLabel: (index: number, value: string) => string
+    onAddClick: () => void
+    onItemClick: (index: number) => void
 }
 
 export default function MoveListBlock({
     values,
     emptyLabel,
     ariaLabel,
-    onClick,
+    itemAriaLabel,
+    onAddClick,
+    onItemClick,
 }: Props) {
     return (
         <div className="city-danger-section">
-            <ClickableSection onClick={onClick} ariaLabel={ariaLabel}>
-                {values.length ? (
-                    <ul className="city-danger-list">
-                        {values.map((value, index) => (
-                            <li key={`${value}-${index}`}>
+            {values.length ? (
+                <ul className="city-danger-list city-danger-list--interactive">
+                    {values.map((value, index) => (
+                        <li key={`${value}-${index}`}>
+                            <button
+                                type="button"
+                                className="city-danger-preview-item"
+                                onClick={() => onItemClick(index)}
+                                aria-label={itemAriaLabel(index, value)}
+                            >
                                 <span
                                     dangerouslySetInnerHTML={{
                                         __html: renderDangerMarkdownInline(
@@ -28,17 +37,19 @@ export default function MoveListBlock({
                                         ),
                                     }}
                                 />
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <ClickableSection onClick={onAddClick} ariaLabel={ariaLabel}>
                     <div className="city-danger-empty-row">
                         <span className="city-danger-placeholder">
                             {emptyLabel}
                         </span>
                     </div>
-                )}
-            </ClickableSection>
+                </ClickableSection>
+            )}
         </div>
     )
 }

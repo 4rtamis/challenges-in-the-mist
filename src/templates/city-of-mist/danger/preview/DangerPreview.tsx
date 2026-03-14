@@ -86,10 +86,17 @@ export function DangerPreview() {
 
                         {showSpectrums ? (
                             <SpectrumsBlock
-                                onClick={() =>
+                                onAddClick={() =>
                                     openSheet({
                                         kind: 'spectrums',
                                         mode: 'create',
+                                    })
+                                }
+                                onItemClick={(index) =>
+                                    openSheet({
+                                        kind: 'spectrums',
+                                        mode: 'edit',
+                                        index,
                                     })
                                 }
                             />
@@ -97,10 +104,17 @@ export function DangerPreview() {
 
                         {showCustomMoves ? (
                             <CustomMovesBlock
-                                onClick={() =>
+                                onAddClick={() =>
                                     openSheet({
                                         kind: 'customMoves',
                                         mode: 'create',
+                                    })
+                                }
+                                onItemClick={(index) =>
+                                    openSheet({
+                                        kind: 'customMoves',
+                                        mode: 'edit',
+                                        index,
                                     })
                                 }
                             />
@@ -117,10 +131,20 @@ export function DangerPreview() {
                                 values={cityOfMistDanger.hard_moves}
                                 emptyLabel="add hard moves"
                                 ariaLabel="Edit hard moves"
-                                onClick={() =>
+                                itemAriaLabel={(index) =>
+                                    `Edit hard move ${index + 1}`
+                                }
+                                onAddClick={() =>
                                     openSheet({
                                         kind: 'hardMoves',
                                         mode: 'create',
+                                    })
+                                }
+                                onItemClick={(index) =>
+                                    openSheet({
+                                        kind: 'hardMoves',
+                                        mode: 'edit',
+                                        index,
                                     })
                                 }
                             />
@@ -135,10 +159,20 @@ export function DangerPreview() {
                                 values={cityOfMistDanger.soft_moves}
                                 emptyLabel="add soft moves"
                                 ariaLabel="Edit soft moves"
-                                onClick={() =>
+                                itemAriaLabel={(index) =>
+                                    `Edit soft move ${index + 1}`
+                                }
+                                onAddClick={() =>
                                     openSheet({
                                         kind: 'softMoves',
                                         mode: 'create',
+                                    })
+                                }
+                                onItemClick={(index) =>
+                                    openSheet({
+                                        kind: 'softMoves',
+                                        mode: 'edit',
+                                        index,
                                     })
                                 }
                             />

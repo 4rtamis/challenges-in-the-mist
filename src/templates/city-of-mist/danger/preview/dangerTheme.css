@@ -130,6 +130,10 @@
     list-style: disc;
 }
 
+.city-danger-list--interactive li {
+    position: relative;
+}
+
 .city-danger-list li + li {
     margin-top: 0.3rem;
 }
@@ -137,6 +141,29 @@
 .city-danger-list p {
     display: inline;
     margin: 0;
+}
+
+.city-danger-preview-item {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.city-danger-preview-item:hover,
+.city-danger-preview-item:focus-visible {
+    background: rgb(0 0 0 / 0.05);
+    outline: none;
+}
+
+.city-danger-preview-item--inline {
+    display: inline;
+    width: auto;
 }
 
 .city-danger-separator {

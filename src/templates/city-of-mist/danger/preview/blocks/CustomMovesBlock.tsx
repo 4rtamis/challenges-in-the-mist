@@ -2,40 +2,54 @@ import { useCityOfMistDangerStore } from '../../hooks'
 import { renderDangerMarkdownInline } from '../../markdown'
 import { ClickableSection } from '../components/Clickable'
 
-export default function CustomMovesBlock({ onClick }: { onClick: () => void }) {
+export default function CustomMovesBlock({
+    onAddClick,
+    onItemClick,
+}: {
+    onAddClick: () => void
+    onItemClick: (index: number) => void
+}) {
     const { cityOfMistDanger } = useCityOfMistDangerStore()
 
     return (
         <div className="city-danger-section">
-            <ClickableSection onClick={onClick} ariaLabel="Edit custom moves">
-                {cityOfMistDanger.custom_moves.length ? (
-                    <ul className="city-danger-list">
-                        {cityOfMistDanger.custom_moves.map(
-                            (customMove, index) => (
-                                <li key={`${customMove.name}-${index}`}>
-                                    <span className="font-bold">
-                                        {customMove.name}
-                                    </span>
-                                    <span>: </span>
-                                    <span
-                                        dangerouslySetInnerHTML={{
-                                            __html: renderDangerMarkdownInline(
-                                                customMove.description
-                                            ),
-                                        }}
-                                    />
-                                </li>
-                            )
-                        )}
-                    </ul>
-                ) : (
+            {cityOfMistDanger.custom_moves.length ? (
+                <ul className="city-danger-list city-danger-list--interactive">
+                    {cityOfMistDanger.custom_moves.map((customMove, index) => (
+                        <li key={`${customMove.name}-${index}`}>
+                            <button
+                                type="button"
+                                className="city-danger-preview-item"
+                                onClick={() => onItemClick(index)}
+                                aria-label={`Edit custom move ${customMove.name}`}
+                            >
+                                <span className="font-bold">
+                                    {customMove.name}
+                                </span>
+                                <span>: </span>
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: renderDangerMarkdownInline(
+                                            customMove.description
+                                        ),
+                                    }}
+                                />
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <ClickableSection
+                    onClick={onAddClick}
+                    ariaLabel="Edit custom moves"
+                >
                     <div className="city-danger-empty-row">
                         <span className="city-danger-placeholder">
                             add custom moves
                         </span>
                     </div>
-                )}
-            </ClickableSection>
+                </ClickableSection>
+            )}
         </div>
     )
 }
