@@ -242,37 +242,37 @@
 }
 
 .litm-limit[data-limit-value='~']::before {
-    right: 0.43rem;
+    right: 0.35rem;
     transform: translateY(-45%);
 }
 
 .litm-limit[data-limit-value='1']::before {
-    right: 0.43rem;
+    right: 0.35rem;
     transform: translateY(-50%);
 }
 
 .litm-limit[data-limit-value='2']::before {
-    right: 0.38rem;
+    right: 0.3rem;
     transform: translateY(-50%);
 }
 
 .litm-limit[data-limit-value='3']::before {
-    right: 0.42rem;
+    right: 0.37rem;
     transform: translateY(-55%);
 }
 
 .litm-limit[data-limit-value='4']::before {
-    right: 0.35rem;
+    right: 0.3rem;
     transform: translateY(-57%);
 }
 
 .litm-limit[data-limit-value='5']::before {
-    right: 0.38rem;
+    right: 0.3rem;
     transform: translateY(-55%);
 }
 
 .litm-limit[data-limit-value='6']::before {
-    right: 0.42rem;
+    right: 0.34rem;
     transform: translateY(-38%);
 }
 

@@ -2,7 +2,7 @@ export type ParsedToken =
     | { kind: 'power'; name: string } // {name}
     | { kind: 'weakness'; name: string } // {!name}
     | { kind: 'status'; name: string; value: string } // {name-<digits or empty>}
-    | { kind: 'limit'; name: string; value: string } // {name:<digits or empty>}  (not allowed in tags section, but we detect it)
+    | { kind: 'limit'; name: string; value: string } // {name:<digits or empty|~|->}  (not allowed in tags section, but we detect it)
 
 const OUTER_BRACES = /^\{([\s\S]+)\}$/
 
@@ -13,6 +13,10 @@ export function normalizeWhitespace(s: string) {
 function stripOuterBraces(raw: string) {
     const m = OUTER_BRACES.exec(raw.trim())
     return m ? m[1] : raw.trim()
+}
+
+function normalizeLimitValue(value: string | undefined) {
+    return value === '-' ? '~' : (value ?? '')
 }
 
 /** Parse a single token according to your classifier. Accepts with or without outer braces. */
@@ -27,26 +31,26 @@ export function parseToken(raw: string): ParsedToken | null {
         return { kind: 'weakness', name }
     }
 
-    // 2) status: {name-<digits or empty>}
+    // 2) limit: {name:<digits or empty|~|->}
+    {
+        const m = /^(.*?):(\d*|~|-)$/.exec(inner)
+        if (m) {
+            const name = normalizeWhitespace(m[1])
+            const value = normalizeLimitValue(m[2])
+            if (!name) return null
+            return { kind: 'limit', name, value }
+        }
+    }
+
+    // 3) status: {name-<digits or empty>}
     {
         const m = /^(.*?)-(\d*)$/.exec(inner)
         if (m) {
             const name = normalizeWhitespace(m[1])
-            const value = m[2] ?? '' // may be ""
+            const value = m[2] ?? ''
             if (!name) return null
             // Allow any digits-or-empty (no min/max here; UI can advise typical 1–4)
             return { kind: 'status', name, value }
-        }
-    }
-
-    // 3) limit: {name:<digits or empty>}
-    {
-        const m = /^(.*?):(\d*)$/.exec(inner)
-        if (m) {
-            const name = normalizeWhitespace(m[1])
-            const value = m[2] ?? ''
-            if (!name) return null
-            return { kind: 'limit', name, value }
         }
     }
 

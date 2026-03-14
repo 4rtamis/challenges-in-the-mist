@@ -255,6 +255,14 @@
     color: inherit;
 }
 
+.city-danger-token-scope .litm-limit[data-limit-immune='true']::after {
+    content: ':-';
+}
+
+.city-danger-token-scope .litm-limit[data-limit-value='']::after {
+    content: '';
+}
+
 .city-danger-token-scope .litm-weakness::before {
     transform: translateY(-45%);
 }

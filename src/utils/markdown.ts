@@ -11,6 +11,9 @@ function escHtml(s: string) {
 function escAttr(s: string) {
     return escHtml(s).replace(/"/g, '&quot;')
 }
+function normalizeLimitValue(value: string | undefined) {
+    return value === '-' ? '~' : (value ?? '')
+}
 
 /**
  * LITM/Brumes inline extension
@@ -18,12 +21,13 @@ function escAttr(s: string) {
  * Order mirrors your classifier:
  *   1) weakness:  {!name}
  *   2) status:    {name-<digits or empty>}
- *   3) limit:     {name:<digits or empty>}
+ *   3) limit:     {name:<digits or empty|~|-}
  *   4) tag/power: {name}
  *
  * Notes:
  * - names may contain hyphens/spaces/etc. (anything except "}" really)
  * - status/limit value may be empty => data-* attribute is ""
+ * - {name:~} and {name:-} both mean an immune limit
  */
 const litmInlineExt = {
     name: 'litm',
@@ -46,24 +50,24 @@ const litmInlineExt = {
             }
         }
 
-        // 2) {name-<digits or empty>}  (status)
+        // 2) {name:<digits or empty|~|->}   (limit)
+        if ((m = /^\{([^{}]*?):(\d*|~|-)\}/.exec(src))) {
+            return {
+                type: 'litm',
+                raw: m[0],
+                variant: 'limit',
+                name: m[1].trim(),
+                value: normalizeLimitValue(m[2]),
+            }
+        }
+
+        // 3) {name-<digits or empty>}  (status)
         //    name can contain anything except "}" and we require a "-" before the closing "}"
         if ((m = /^\{([^{}]*?)-(\d*)\}/.exec(src))) {
             return {
                 type: 'litm',
                 raw: m[0],
                 variant: 'status',
-                name: m[1].trim(),
-                value: m[2], // may be ""
-            }
-        }
-
-        // 3) {name:<digits or empty>}   (limit)
-        if ((m = /^\{([^{}]*?):(\d*)\}/.exec(src))) {
-            return {
-                type: 'litm',
-                raw: m[0],
-                variant: 'limit',
                 name: m[1].trim(),
                 value: m[2], // may be ""
             }
@@ -97,8 +101,7 @@ const litmInlineExt = {
             }
 
             case 'limit':
-                // number shown via ::after from data-limit-value; if empty => nothing displayed
-                return `<span class="litm-limit brumes-limit" data-limit-name="${escAttr(token.name)}" data-limit-value="${escAttr(token.value ?? '')}">${escHtml(token.name)}</span>`
+                return `<span class="litm-limit brumes-limit" data-limit-name="${escAttr(token.name)}" data-limit-value="${escAttr(token.value ?? '')}" data-limit-immune="${token.value === '~' ? 'true' : 'false'}">${escHtml(token.name)}</span>`
 
             case 'tag':
             default:
