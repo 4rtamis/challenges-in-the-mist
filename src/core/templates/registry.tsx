@@ -1,3 +1,4 @@
+import dangerTemplate from '@/templates/city-of-mist/danger/definition'
 import challengeTemplate from '@/templates/legend-in-the-mist/challenge/definition'
 import {
     DEFAULT_TEMPLATE_PREVIEW_WIDTH,
@@ -46,12 +47,7 @@ function createComingSoonTemplate(config: {
 }
 
 export const templateRegistry: AnyTemplateDefinition[] = [
-    createComingSoonTemplate({
-        id: 'city.danger',
-        gameId: 'city',
-        gameLabel: 'City of Mist',
-        label: 'Danger',
-    }),
+    dangerTemplate,
     createComingSoonTemplate({
         id: 'city.customMove',
         gameId: 'city',

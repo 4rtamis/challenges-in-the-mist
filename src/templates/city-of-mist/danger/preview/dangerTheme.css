@@ -1,0 +1,236 @@
+.city-danger-preview-root {
+    width: 100%;
+}
+
+.city-danger-sheet {
+    --city-danger-scale: 0.9;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+    color: #111;
+}
+
+.city-danger-card {
+    --city-danger-scale: 0.9;
+    box-shadow: #00000033 0 0 8px 1px;
+    padding: 0.85rem 1rem;
+    width: 100%;
+}
+
+.city-danger-card.bg0 {
+    background-color: hsl(0 17% 82%);
+}
+
+.city-danger-card.bg1 {
+    background-color: hsl(42 38% 91%);
+}
+
+.city-danger-card.bg2 {
+    background-color: hsl(42 38% 95%);
+}
+
+.city-danger-card.bg3 {
+    background-color: hsl(43 38% 82%);
+}
+
+.city-danger-card.bg4 {
+    background-color: hsl(31 38% 88%);
+}
+
+.city-danger-card.bg5 {
+    background-color: hsl(57 38% 82%);
+}
+
+.city-danger-card.bg6 {
+    background-color: hsl(78 14% 85%);
+}
+
+.city-danger-card.bg7 {
+    background-color: hsl(26 15% 82%);
+}
+
+.city-danger-flow--columns {
+    column-gap: 1.25rem;
+    column-fill: auto;
+    column-count: 2;
+    height: var(--danger-column-height);
+}
+
+.city-danger-section,
+.city-danger-separator {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.city-danger-section + .city-danger-section {
+    margin-top: 0.45rem;
+}
+
+.city-danger-section--title {
+    margin-bottom: 0.3rem;
+}
+
+.city-danger-title-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: calc(0.45rem * var(--city-danger-scale));
+    border-bottom: 3px solid currentColor;
+    padding-bottom: 2px;
+    max-width: 100%;
+    line-height: 1;
+}
+
+.city-danger-title {
+    margin: 0;
+    font-weight: 900;
+    font-size: calc(2rem * var(--city-danger-scale));
+    line-height: 0.95;
+    font-family: 'Fira Sans Extra Condensed', sans-serif;
+    text-transform: uppercase;
+}
+
+.city-danger-stars {
+    display: inline-flex;
+    gap: 0.1rem;
+    padding-bottom: 0.08em;
+    font-size: calc(1.05rem * var(--city-danger-scale));
+    line-height: 1;
+}
+
+.city-danger-description,
+.city-danger-list,
+.city-danger-empty-row {
+    font-size: calc(0.98rem * var(--city-danger-scale));
+    line-height: 1.35;
+    font-family: 'PT Serif', serif;
+}
+
+.city-danger-description p {
+    margin: 0 0 0.45rem;
+}
+
+.city-danger-description p:last-child {
+    margin-bottom: 0;
+}
+
+.city-danger-spectrums {
+    font-size: calc(1.35rem * var(--city-danger-scale));
+    line-height: 1;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.city-danger-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    list-style: disc;
+}
+
+.city-danger-list li + li {
+    margin-top: 0.3rem;
+}
+
+.city-danger-list p {
+    display: inline;
+    margin: 0;
+}
+
+.city-danger-separator {
+    margin: 0.7rem 0;
+    border: 0;
+    border-top: 1px solid #111;
+}
+
+.city-danger-placeholder {
+    color: rgb(0 0 0 / 0.6);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 0.12em;
+}
+
+.city-danger-placeholder--meta {
+    font-size: calc(0.78rem * var(--city-danger-scale));
+}
+
+.city-danger-meta-wrap {
+    width: fit-content;
+    max-width: 100%;
+}
+
+.city-danger-meta {
+    min-height: 1.5rem;
+    color: rgb(0 0 0 / 0.75);
+    font-size: calc(0.78rem * var(--city-danger-scale));
+    line-height: 1.25;
+    font-family: 'PT Serif', serif;
+}
+
+.city-danger-meta__content {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.15rem 0.35rem;
+}
+
+.city-danger-meta__badge {
+    border: 1px solid rgb(0 0 0 / 0.18);
+    border-radius: 999px;
+    padding: 0.05rem 0.4rem;
+    font-weight: 600;
+    font-size: calc(0.7rem * var(--city-danger-scale));
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.city-danger-token-scope .litm-tag,
+.city-danger-token-scope .litm-status,
+.city-danger-token-scope .litm-limit,
+.city-danger-token-scope .litm-weakness {
+    color: #111;
+    font-style: italic;
+}
+
+.city-danger-token-scope .litm-tag {
+    --litm-token-background-color: #fff3a7;
+}
+
+.city-danger-token-scope .litm-status {
+    --litm-token-background-color: #e2eab1;
+}
+
+.city-danger-token-scope .litm-limit {
+    --litm-token-background-color: #fad0c3;
+}
+
+.city-danger-token-scope .litm-limit[data-limit-value] {
+    background-size: 100% 50%;
+}
+
+.city-danger-token-scope .litm-limit::before {
+    display: none;
+    content: none;
+}
+
+.city-danger-token-scope .litm-limit::after {
+    position: static;
+    transform: none;
+    margin-left: 0;
+    background: none;
+    width: auto;
+    height: auto;
+    content: ':' attr(data-limit-value);
+    color: inherit;
+}
+
+.city-danger-token-scope .litm-weakness::before {
+    transform: translateY(-45%);
+}
+
+.exporting .city-danger-card {
+    box-shadow: none;
+}
