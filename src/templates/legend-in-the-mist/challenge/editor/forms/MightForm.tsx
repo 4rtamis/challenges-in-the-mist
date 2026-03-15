@@ -399,11 +399,11 @@ function SortableMightItem({
 
                     {/* text */}
                     <div className="min-w-0 truncate text-wrap">
-                        <span className="text-sm font-medium truncate">
+                        <span className="text-sm font-medium truncate font-[Labrada]">
                             {m.name}
                         </span>
                         {m.vulnerability && (
-                            <span className="text-sm">
+                            <span className="text-sm font-[Labrada]">
                                 {' '}
                                 ({m.vulnerability})
                             </span>

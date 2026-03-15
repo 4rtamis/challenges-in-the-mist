@@ -140,7 +140,7 @@ export default function SpecialFeaturesForm({
     }
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -150,7 +150,7 @@ export default function SpecialFeaturesForm({
                     items={itemIds}
                     strategy={verticalListSortingStrategy}
                 >
-                    <ul className="space-y-3">
+                    <ul className="space-y-1.5">
                         {legendInTheMistChallenge.special_features.map(
                             (sf, i) => (
                                 <SortableFeatureItem
@@ -163,18 +163,22 @@ export default function SpecialFeaturesForm({
                                     onRemove={() => removeSpecialFeatureAt(i)}
                                 >
                                     {editingIndex === i && (
-                                        <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
+                                        <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
                                             {error && (
                                                 <p className="text-sm text-destructive">
                                                     {error}
                                                 </p>
                                             )}
                                             <div className="grid gap-1">
-                                                <Label htmlFor={`sf-name-${i}`}>
+                                                <Label
+                                                    htmlFor={`sf-name-${i}`}
+                                                    className="text-xs"
+                                                >
                                                     Name
                                                 </Label>
                                                 <Input
                                                     id={`sf-name-${i}`}
+                                                    className="h-8 px-2 text-sm"
                                                     value={eName}
                                                     onChange={(e) =>
                                                         setEName(e.target.value)
@@ -182,7 +186,10 @@ export default function SpecialFeaturesForm({
                                                 />
                                             </div>
                                             <div className="grid gap-1">
-                                                <Label htmlFor={`sf-desc-${i}`}>
+                                                <Label
+                                                    htmlFor={`sf-desc-${i}`}
+                                                    className="text-xs"
+                                                >
                                                     Description{' '}
                                                     <span className="text-muted-foreground">
                                                         (Markdown)
@@ -191,6 +198,7 @@ export default function SpecialFeaturesForm({
                                                 <Textarea
                                                     id={`sf-desc-${i}`}
                                                     rows={4}
+                                                    className="min-h-16 px-2 py-1 text-sm"
                                                     value={eDesc}
                                                     onChange={(e) =>
                                                         setEDesc(e.target.value)
@@ -199,12 +207,18 @@ export default function SpecialFeaturesForm({
                                                 />
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Button onClick={saveEdit}>
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    className="h-7 px-2.5 text-xs"
+                                                    onClick={saveEdit}
+                                                >
                                                     Save
                                                 </Button>
                                                 <Button
+                                                    type="button"
                                                     variant="link"
-                                                    className="h-8 p-0"
+                                                    className="h-7 px-0 text-xs"
                                                     onClick={cancelEdit}
                                                 >
                                                     Cancel
@@ -221,10 +235,11 @@ export default function SpecialFeaturesForm({
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="mt-1 w-full justify-center gap-2 border-dashed"
+                                size="sm"
+                                className="mt-1 h-8 w-full justify-center gap-1.5 border-dashed px-2.5 text-xs"
                                 onClick={addPlaceholder}
                             >
-                                <Plus className="h-4 w-4" /> Add feature
+                                <Plus className="h-3.5 w-3.5" /> Add feature
                             </Button>
                         </li>
                     </ul>
@@ -271,15 +286,15 @@ function SortableFeatureItem({
         <li
             ref={setNodeRef}
             style={style}
-            className={`rounded-md border bg-white px-3 py-3 ${
+            className={`max-w-full rounded-md border bg-white px-2.5 py-1.5 ${
                 isDragging ? 'shadow-lg ring-1 ring-slate-200' : ''
             }`}
         >
             <div className="flex items-start justify-between gap-3">
-                {/* Left: handle + content */}
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex min-w-0 items-center gap-2">
                     <button
-                        className={`h-8 w-8 inline-flex items-center justify-center rounded hover:bg-slate-50
+                        type="button"
+                        className={`inline-flex h-7 w-7 items-center justify-center rounded hover:bg-slate-50
               ${
                   dragDisabled
                       ? 'opacity-40 cursor-not-allowed hover:bg-transparent'
@@ -295,50 +310,55 @@ function SortableFeatureItem({
                         {...(!dragDisabled ? attributes : {})}
                         {...(!dragDisabled ? listeners : {})}
                     >
-                        <GripVertical className="h-4 w-4 text-slate-500" />
+                        <GripVertical className="h-3.5 w-3.5 text-slate-500" />
                     </button>
 
                     <SystemMarkdownScope className="min-w-0" as="div">
-                        <div className="font-medium truncate">{name}</div>
-                        {description ? (
-                            <div
-                                className="text-sm text-foreground/80 prose-sm max-w-none"
-                                dangerouslySetInnerHTML={{
-                                    __html: renderLitmMarkdown(description),
-                                }}
-                            />
-                        ) : (
-                            <div className="text-sm text-muted-foreground">
-                                No description
-                            </div>
-                        )}
+                        <div className="truncate font-[Labrada] text-sm font-bold uppercase tracking-wider">
+                            {name}
+                        </div>
                     </SystemMarkdownScope>
                 </div>
 
-                {/* Actions */}
                 <div className="flex items-center gap-1">
                     <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-7 w-7"
                         title="Edit"
                         onClick={onEdit}
                     >
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-3.5 w-3.5" />
                     </Button>
                     <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive"
+                        className="h-7 w-7 text-destructive"
                         title="Remove"
                         onClick={onRemove}
                     >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                 </div>
             </div>
 
-            {/* Inline editor content */}
+            <SystemMarkdownScope className="mt-1.5 pl-9" as="div">
+                {description ? (
+                    <div
+                        className="prose-sm max-w-none font-[Labrada] text-sm text-foreground/80"
+                        dangerouslySetInnerHTML={{
+                            __html: renderLitmMarkdown(description),
+                        }}
+                    />
+                ) : (
+                    <div className="text-sm text-muted-foreground">
+                        No description
+                    </div>
+                )}
+            </SystemMarkdownScope>
+
             {children}
         </li>
     )

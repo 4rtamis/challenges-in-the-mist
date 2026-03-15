@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { renderLitmMarkdown } from '@/utils/markdown'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useLegendInTheMistChallengeStore, type Limit } from '../../hooks'
@@ -433,9 +434,12 @@ function SortableLimitItem({
                         </div>
 
                         {l.is_progress && l.on_max && (
-                            <p className="text-xs text-slate-700 font-[Labrada]">
-                                {l.on_max}
-                            </p>
+                            <div
+                                className="max-w-none text-xs text-slate-700 font-[Labrada]"
+                                dangerouslySetInnerHTML={{
+                                    __html: renderLitmMarkdown(l.on_max),
+                                }}
+                            />
                         )}
                     </SystemMarkdownScope>
                 </div>
