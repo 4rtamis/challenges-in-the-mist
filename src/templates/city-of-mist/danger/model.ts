@@ -58,7 +58,6 @@ export type TitlePlacement = 'outside' | 'inside'
 
 export type ExportPrefs = {
     scale: 2 | 1 | 3
-    transparent: boolean
 }
 
 export type CityOfMistDangerViewState = {
@@ -117,7 +116,6 @@ export const defaultCityOfMistDangerView: CityOfMistDangerViewState = {
     showSeparators: true,
     exportPrefs: {
         scale: 2,
-        transparent: false,
     },
 }
 

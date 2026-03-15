@@ -37,7 +37,7 @@ export function ChallengeAppearancePanel() {
                 <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Sections
                 </p>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+                <div className="grid grid-cols-[1fr_0.8fr] gap-x-3 gap-y-1.5">
                     {challengeSections.map((section) => (
                         <label
                             key={section.id}

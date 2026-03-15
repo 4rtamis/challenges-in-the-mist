@@ -19,11 +19,7 @@ export function ChallengePreview() {
             <div
                 className={cn(
                     'challenge-sheet',
-                    bg === 'parchment'
-                        ? 'bg-parchment'
-                        : bg === 'plain'
-                          ? 'bg-plain'
-                          : 'bg-transparent'
+                    bg === 'parchment' ? 'bg-parchment' : 'bg-plain'
                 )}
                 style={{
                     transform: `scale(${zoom})`,

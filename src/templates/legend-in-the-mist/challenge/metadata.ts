@@ -16,5 +16,4 @@ export const challengeZoomOptions = [0.75, 1, 1.25, 1.5]
 export const challengeBackgroundOptions = [
     { value: 'parchment', label: 'Parchment' },
     { value: 'plain', label: 'Plain' },
-    { value: 'transparent', label: 'Transparent' },
 ] as const

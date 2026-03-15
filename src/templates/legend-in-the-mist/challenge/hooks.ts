@@ -64,6 +64,12 @@ function cloneValue<T>(value: T): T {
     return JSON.parse(JSON.stringify(value)) as T
 }
 
+function normalizeBackground(
+    background: LegendInTheMistChallengeViewState['background'] | undefined
+): LegendInTheMistChallengeViewState['background'] {
+    return background === 'plain' ? 'plain' : 'parchment'
+}
+
 function useLegendInTheMistChallengeTab() {
     return useActiveTemplateTab<
         LegendInTheMistChallenge,
@@ -512,7 +518,20 @@ export function useLegendInTheMistChallengeStore() {
 export function useLegendInTheMistChallengeViewStore() {
     const tab = useLegendInTheMistChallengeTab()
     const patchTabView = useWorkspaceStore((state) => state.patchTabView)
-    const view = tab?.view ?? fallbackView
+    const tabView = tab?.view
+    const view: LegendInTheMistChallengeViewState = {
+        ...fallbackView,
+        ...tabView,
+        background: normalizeBackground(tabView?.background),
+        hidden: {
+            ...fallbackView.hidden,
+            ...(tabView?.hidden ?? {}),
+        },
+        exportPrefs: {
+            ...fallbackView.exportPrefs,
+            ...(tabView?.exportPrefs ?? {}),
+        },
+    }
 
     const patchView = (patch: Partial<LegendInTheMistChallengeViewState>) => {
         if (!tab) return

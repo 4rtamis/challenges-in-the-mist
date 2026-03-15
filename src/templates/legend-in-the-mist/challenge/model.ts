@@ -62,11 +62,10 @@ export type SectionId =
     | 'generalConsequences'
     | 'meta'
 
-export type Background = 'parchment' | 'plain' | 'transparent'
+export type Background = 'parchment' | 'plain'
 
 export type ExportPrefs = {
     scale: 2 | 1 | 3
-    transparent: boolean
 }
 
 export type LegendInTheMistChallengeViewState = {
@@ -116,7 +115,6 @@ export const defaultLegendInTheMistChallengeView: LegendInTheMistChallengeViewSt
         hidden: defaultHidden,
         exportPrefs: {
             scale: 2,
-            transparent: false,
         },
     }
 

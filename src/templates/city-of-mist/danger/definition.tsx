@@ -56,12 +56,10 @@ function createImageExportAction() {
                 const snap: CaptureResult = await snapdom(node, {
                     scale: pixelRatio,
                     embedFonts: true,
-                    backgroundColor: view.exportPrefs.transparent
-                        ? 'transparent'
-                        : undefined,
                 })
 
                 await snap.download({
+                    type: 'png',
                     filename: `${fileStem}@${pixelRatio}x.png`,
                 })
 
