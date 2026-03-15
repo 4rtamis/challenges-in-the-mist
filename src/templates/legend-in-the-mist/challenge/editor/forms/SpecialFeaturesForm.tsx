@@ -1,3 +1,4 @@
+import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { renderLitmMarkdown } from '@/utils/markdown'
 import { useLegendInTheMistChallengeStore } from '../../hooks'
 import { useEffect, useMemo, useState } from 'react'
@@ -294,7 +295,7 @@ function SortableFeatureItem({
                         <GripVertical className="h-4 w-4 text-slate-500" />
                     </button>
 
-                    <div className="min-w-0">
+                    <SystemMarkdownScope className="min-w-0" as="div">
                         <div className="font-medium truncate">{name}</div>
                         {description ? (
                             <div
@@ -308,7 +309,7 @@ function SortableFeatureItem({
                                 No description
                             </div>
                         )}
-                    </div>
+                    </SystemMarkdownScope>
                 </div>
 
                 {/* Actions */}

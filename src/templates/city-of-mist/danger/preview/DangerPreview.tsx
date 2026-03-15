@@ -45,7 +45,7 @@ export function DangerPreview() {
                 }}
             >
                 <div
-                    className={`city-danger-card city-danger-token-scope ${background}`}
+                    className={`city-danger-card ${background}`}
                     data-columns={columnCount}
                     style={
                         {

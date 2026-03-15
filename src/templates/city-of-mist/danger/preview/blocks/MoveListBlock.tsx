@@ -1,4 +1,4 @@
-import { renderDangerMarkdownInline } from '../../markdown'
+import { renderSystemMarkdownInline } from '@/utils/markdown'
 import { ClickableSection } from '../components/Clickable'
 
 type Props = {
@@ -32,7 +32,7 @@ export default function MoveListBlock({
                             >
                                 <span
                                     dangerouslySetInnerHTML={{
-                                        __html: renderDangerMarkdownInline(
+                                        __html: renderSystemMarkdownInline(
                                             value
                                         ),
                                     }}

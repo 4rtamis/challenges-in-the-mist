@@ -1,5 +1,5 @@
 import { useCityOfMistDangerStore } from '../../hooks'
-import { renderDangerMarkdownInline } from '../../markdown'
+import { renderSystemMarkdownInline } from '@/utils/markdown'
 import { ClickableSection } from '../components/Clickable'
 
 export default function CustomMovesBlock({
@@ -29,7 +29,7 @@ export default function CustomMovesBlock({
                                 <span>: </span>
                                 <span
                                     dangerouslySetInnerHTML={{
-                                        __html: renderDangerMarkdownInline(
+                                        __html: renderSystemMarkdownInline(
                                             customMove.description
                                         ),
                                     }}

@@ -1,3 +1,4 @@
+import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -20,8 +21,8 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { renderSystemMarkdownInline } from '@/utils/markdown'
 import { useCityOfMistDangerStore } from '../../hooks'
-import { renderDangerMarkdownInline } from '../../markdown'
 
 const DEFAULT_CUSTOM_MOVE = {
     name: 'Custom Move',
@@ -298,9 +299,9 @@ function SortableCustomMoveRow({
                     >
                         <GripVertical className="h-4 w-4 text-slate-500" />
                     </button>
-                    <div className="min-w-0 city-danger-token-scope">
+                    <SystemMarkdownScope className="min-w-0" as="div">
                         <div className="truncate font-medium">{name}</div>
-                    </div>
+                    </SystemMarkdownScope>
                 </div>
                 <div className="flex items-center gap-1">
                     <Button
@@ -326,7 +327,7 @@ function SortableCustomMoveRow({
             <div
                 className="text-sm leading-6 text-foreground/80"
                 dangerouslySetInnerHTML={{
-                    __html: renderDangerMarkdownInline(description),
+                    __html: renderSystemMarkdownInline(description),
                 }}
             />
             {children}

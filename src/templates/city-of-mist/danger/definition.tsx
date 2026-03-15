@@ -60,8 +60,7 @@ function createImageExportAction() {
                 })
 
                 await snap.download({
-                    filename: `${fileStem}@${pixelRatio}x`,
-                    format: 'png',
+                    filename: `${fileStem}@${pixelRatio}x.png`,
                 })
 
                 toast.success('Exported PNG.')

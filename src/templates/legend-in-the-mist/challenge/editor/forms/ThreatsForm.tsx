@@ -1,8 +1,9 @@
 // src/editor/ThreatsForm.tsx
+import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { renderLitmMarkdown } from '@/utils/markdown'
-import { useLegendInTheMistChallengeStore } from '../../hooks'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { useLegendInTheMistChallengeStore } from '../../hooks'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -89,7 +90,10 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
 
     // Deep-link from preview to a given threat
     useEffect(() => {
-        if (typeof focusIndex === 'number' && legendInTheMistChallenge.threats[focusIndex]) {
+        if (
+            typeof focusIndex === 'number' &&
+            legendInTheMistChallenge.threats[focusIndex]
+        ) {
             startEditThreat(focusIndex)
             setPanel({ kind: 'threats' })
         }
@@ -111,7 +115,10 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
         editingGeneralCons !== null
 
     const threatIds = useMemo(
-        () => legendInTheMistChallenge.threats.map((t, i) => `t:${i}:${t.name || 'threat'}`),
+        () =>
+            legendInTheMistChallenge.threats.map(
+                (t, i) => `t:${i}:${t.name || 'threat'}`
+            ),
         [legendInTheMistChallenge.threats]
     )
 
@@ -123,7 +130,10 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
     }, [legendInTheMistChallenge.threats, currentThreatIndex])
 
     const generalIds = useMemo(
-        () => legendInTheMistChallenge.general_consequences.map((_, i) => `gc:${i}`),
+        () =>
+            legendInTheMistChallenge.general_consequences.map(
+                (_, i) => `gc:${i}`
+            ),
         [legendInTheMistChallenge.general_consequences]
     )
 
@@ -181,7 +191,9 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
     function uniqueThreatName() {
         const base = 'New Threat'
         const used = new Set(
-            legendInTheMistChallenge.threats.map((t) => (t.name || '').toLowerCase())
+            legendInTheMistChallenge.threats.map((t) =>
+                (t.name || '').toLowerCase()
+            )
         )
         if (!used.has(base.toLowerCase())) return base
         let n = 2
@@ -254,7 +266,9 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
     function addConsequencePlaceholder() {
         if (currentThreatIndex == null) return
         addConsequence(currentThreatIndex, DEFAULT_CONSEQUENCE)
-        const idx = legendInTheMistChallenge.threats[currentThreatIndex].consequences.length // end
+        const idx =
+            legendInTheMistChallenge.threats[currentThreatIndex].consequences
+                .length // end
         setEditingCons(idx)
         setConsDraft(DEFAULT_CONSEQUENCE)
     }
@@ -318,121 +332,132 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                             strategy={verticalListSortingStrategy}
                         >
                             <ul className="space-y-2">
-                                {legendInTheMistChallenge.threats.map((t, tIdx) => {
-                                    const id = threatIds[tIdx]
-                                    const isEditing = editingThreat === tIdx
+                                {legendInTheMistChallenge.threats.map(
+                                    (t, tIdx) => {
+                                        const id = threatIds[tIdx]
+                                        const isEditing = editingThreat === tIdx
 
-                                    return (
-                                        <ThreatRow
-                                            key={id}
-                                            id={id}
-                                            name={t.name}
-                                            description={t.description}
-                                            count={t.consequences.length}
-                                            dragDisabled={dragDisabled}
-                                            onEdit={() => startEditThreat(tIdx)}
-                                            onRemove={() => {
-                                                // If we were looking at its consequences, bounce back.
-                                                if (
-                                                    panel.kind === 'cons' &&
-                                                    panel.tIdx === tIdx
-                                                ) {
-                                                    backToThreats()
+                                        return (
+                                            <ThreatRow
+                                                key={id}
+                                                id={id}
+                                                name={t.name}
+                                                description={t.description}
+                                                count={t.consequences.length}
+                                                dragDisabled={dragDisabled}
+                                                onEdit={() =>
+                                                    startEditThreat(tIdx)
                                                 }
-                                                removeThreatAt(tIdx)
-                                            }}
-                                            onOpenConsequences={() =>
-                                                goConsFor(tIdx)
-                                            }
-                                        >
-                                            {isEditing && (
-                                                <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
-                                                    {tErr && (
-                                                        <p className="text-sm text-destructive">
-                                                            {tErr}
-                                                        </p>
-                                                    )}
-                                                    <div className="grid gap-1">
-                                                        <Label
-                                                            htmlFor={`t-name-${tIdx}`}
-                                                            className="text-xs"
-                                                        >
-                                                            Name
-                                                        </Label>
-                                                        <Input
-                                                            id={`t-name-${tIdx}`}
-                                                            className="h-8 px-2 text-sm"
-                                                            value={tName}
-                                                            onChange={(e) =>
-                                                                setTName(
-                                                                    e.target
-                                                                        .value
-                                                                )
-                                                            }
-                                                            autoFocus
-                                                        />
-                                                    </div>
-                                                    <div className="grid gap-1">
-                                                        <Label
-                                                            htmlFor={`t-desc-${tIdx}`}
-                                                            className="text-xs"
-                                                        >
-                                                            Short description{' '}
-                                                            <span className="text-muted-foreground">
-                                                                (Markdown +
-                                                                tokens)
-                                                            </span>
-                                                        </Label>
-                                                        <Textarea
-                                                            id={`t-desc-${tIdx}`}
-                                                            rows={2}
-                                                            className="min-h-16 px-2 py-1 text-sm"
-                                                            value={tDesc}
-                                                            onChange={(e) =>
-                                                                setTDesc(
-                                                                    e.target
-                                                                        .value
-                                                                )
-                                                            }
-                                                            placeholder="What the challenge starts to do…"
-                                                            maxLength={
-                                                                THREAT_DESCRIPTION_LIMIT
-                                                            }
-                                                        />
-                                                        <div className="text-[11px] text-muted-foreground">
-                                                            {tDesc.trim().length}/
-                                                            {
-                                                                THREAT_DESCRIPTION_LIMIT
-                                                            }{' '}
-                                                            characters
+                                                onRemove={() => {
+                                                    // If we were looking at its consequences, bounce back.
+                                                    if (
+                                                        panel.kind === 'cons' &&
+                                                        panel.tIdx === tIdx
+                                                    ) {
+                                                        backToThreats()
+                                                    }
+                                                    removeThreatAt(tIdx)
+                                                }}
+                                                onOpenConsequences={() =>
+                                                    goConsFor(tIdx)
+                                                }
+                                            >
+                                                {isEditing && (
+                                                    <div className="mt-2 space-y-2.5 rounded-md border bg-muted/30 p-2.5">
+                                                        {tErr && (
+                                                            <p className="text-sm text-destructive">
+                                                                {tErr}
+                                                            </p>
+                                                        )}
+                                                        <div className="grid gap-1">
+                                                            <Label
+                                                                htmlFor={`t-name-${tIdx}`}
+                                                                className="text-xs"
+                                                            >
+                                                                Name
+                                                            </Label>
+                                                            <Input
+                                                                id={`t-name-${tIdx}`}
+                                                                className="h-8 px-2 text-sm"
+                                                                value={tName}
+                                                                onChange={(e) =>
+                                                                    setTName(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                                autoFocus
+                                                            />
+                                                        </div>
+                                                        <div className="grid gap-1">
+                                                            <Label
+                                                                htmlFor={`t-desc-${tIdx}`}
+                                                                className="text-xs"
+                                                            >
+                                                                Short
+                                                                description{' '}
+                                                                <span className="text-muted-foreground">
+                                                                    (Markdown +
+                                                                    tokens)
+                                                                </span>
+                                                            </Label>
+                                                            <Textarea
+                                                                id={`t-desc-${tIdx}`}
+                                                                rows={2}
+                                                                className="min-h-16 px-2 py-1 text-sm"
+                                                                value={tDesc}
+                                                                onChange={(e) =>
+                                                                    setTDesc(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                                placeholder="What the challenge starts to do…"
+                                                                maxLength={
+                                                                    THREAT_DESCRIPTION_LIMIT
+                                                                }
+                                                            />
+                                                            <div className="text-[11px] text-muted-foreground">
+                                                                {
+                                                                    tDesc.trim()
+                                                                        .length
+                                                                }
+                                                                /
+                                                                {
+                                                                    THREAT_DESCRIPTION_LIMIT
+                                                                }{' '}
+                                                                characters
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Button
+                                                                size="sm"
+                                                                className="h-7 px-2.5 text-xs"
+                                                                onClick={
+                                                                    saveThreat
+                                                                }
+                                                            >
+                                                                <Check className="mr-1 h-3.5 w-3.5" />{' '}
+                                                                Save
+                                                            </Button>
+                                                            <Button
+                                                                variant="secondary"
+                                                                size="sm"
+                                                                className="h-7 px-2.5 text-xs"
+                                                                onClick={
+                                                                    cancelEditThreat
+                                                                }
+                                                            >
+                                                                <X className="mr-1 h-3.5 w-3.5" />{' '}
+                                                                Cancel
+                                                            </Button>
                                                         </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <Button
-                                                            size="sm"
-                                                            className="h-7 px-2.5 text-xs"
-                                                            onClick={saveThreat}
-                                                        >
-                                                            <Check className="mr-1 h-3.5 w-3.5" />{' '}
-                                                            Save
-                                                        </Button>
-                                                        <Button
-                                                            variant="secondary"
-                                                            size="sm"
-                                                            className="h-7 px-2.5 text-xs"
-                                                            onClick={
-                                                                cancelEditThreat
-                                                            }
-                                                        >
-                                                            <X className="mr-1 h-3.5 w-3.5" />{' '}
-                                                            Cancel
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </ThreatRow>
-                                    )
-                                })}
+                                                )}
+                                            </ThreatRow>
+                                        )
+                                    }
+                                )}
 
                                 {/* Add threat row */}
                                 <li className="flex">
@@ -488,18 +513,24 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                     </div>
                                 </div>
 
-                                {legendInTheMistChallenge.threats[currentThreatIndex]
-                                    ?.description ? (
-                                    <div
+                                {legendInTheMistChallenge.threats[
+                                    currentThreatIndex
+                                ]?.description ? (
+                                    <SystemMarkdownScope
                                         className="text-sm text-foreground/80 prose-sm max-w-none"
-                                        dangerouslySetInnerHTML={{
-                                            __html: renderLitmMarkdown(
-                                                legendInTheMistChallenge.threats[
-                                                    currentThreatIndex
-                                                ]?.description || ''
-                                            ),
-                                        }}
-                                    />
+                                        as="div"
+                                    >
+                                        <div
+                                            dangerouslySetInnerHTML={{
+                                                __html: renderLitmMarkdown(
+                                                    legendInTheMistChallenge
+                                                        .threats[
+                                                        currentThreatIndex
+                                                    ]?.description || ''
+                                                ),
+                                            }}
+                                        />
+                                    </SystemMarkdownScope>
                                 ) : null}
 
                                 {/* Consequences list */}
@@ -527,7 +558,8 @@ export default function ThreatsForm({ focusIndex }: { focusIndex?: number }) {
                                                         )
                                                     }
                                                     onRemove={() =>
-                                                        legendInTheMistChallenge.threats[
+                                                        legendInTheMistChallenge
+                                                            .threats[
                                                             currentThreatIndex
                                                         ]?.consequences
                                                             .length <= 1
@@ -775,9 +807,7 @@ function ThreatRow({
                             {/* tiny count badge (optional) */}
                             {typeof count === 'number' && count > 0 && (
                                 <span className="pointer-events-none absolute -right-1 -top-1 inline-flex h-3.5 min-w-[0.9rem] items-center justify-center rounded-full border border-zinc-400 bg-secondary px-1 text-[10px] leading-none text-secondary-foreground">
-                                    <span className="-translate-y-0.5">
-                                        {count}
-                                    </span>
+                                    <span>{count}</span>
                                 </span>
                             )}
                         </div>
@@ -804,12 +834,16 @@ function ThreatRow({
                     </div>
 
                     {description ? (
-                        <div
+                        <SystemMarkdownScope
                             className="col-span-2 min-w-0 text-sm prose-sm max-w-none font-(family-name:--font-ch-threat-desc)"
-                            dangerouslySetInnerHTML={{
-                                __html: renderLitmMarkdown(description),
-                            }}
-                        />
+                            as="div"
+                        >
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: renderLitmMarkdown(description),
+                                }}
+                            />
+                        </SystemMarkdownScope>
                     ) : (
                         <div className="col-span-2 text-sm text-muted-foreground">
                             No description
@@ -884,12 +918,16 @@ function ConsequenceRow({
                 {isEditing ? (
                     <div className="flex-1 min-w-0">{children}</div>
                 ) : (
-                    <div
-                        className="flex-1 prose-sm max-w-none text-foreground/90 min-w-0"
-                        dangerouslySetInnerHTML={{
-                            __html: renderLitmMarkdown(text),
-                        }}
-                    />
+                    <SystemMarkdownScope
+                        className="flex-1 font-[Labrada] prose-sm max-w-none text-foreground/90 min-w-0"
+                        as="div"
+                    >
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html: renderLitmMarkdown(text),
+                            }}
+                        />
+                    </SystemMarkdownScope>
                 )}
             </div>
 

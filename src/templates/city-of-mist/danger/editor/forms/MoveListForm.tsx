@@ -1,7 +1,8 @@
+import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { renderDangerMarkdownInline } from '../../markdown'
+import { renderSystemMarkdownInline } from '@/utils/markdown'
 import { useEffect, useMemo, useState } from 'react'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import {
@@ -259,14 +260,17 @@ function SortableMoveRow({
                         <GripVertical className="h-3.5 w-3.5 text-slate-500" />
                     </button>
 
-                    <div className="min-w-0 city-danger-token-scope text-sm leading-6">
+                    <SystemMarkdownScope
+                        className="min-w-0 text-sm leading-6"
+                        as="div"
+                    >
                         <span
                             className="block"
                             dangerouslySetInnerHTML={{
-                                __html: renderDangerMarkdownInline(value),
+                                __html: renderSystemMarkdownInline(value),
                             }}
                         />
-                    </div>
+                    </SystemMarkdownScope>
                 </div>
 
                 <div className="flex items-center gap-1">

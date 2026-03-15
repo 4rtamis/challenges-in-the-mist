@@ -1,3 +1,4 @@
+import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -388,10 +389,13 @@ function SortableLimitItem({
                         <GripVertical className="h-3.5 w-3.5 text-slate-500" />
                     </button>
 
-                    <div className="flex flex-col gap-1 min-w-0">
+                    <SystemMarkdownScope
+                        className="flex min-w-0 flex-col gap-1"
+                        as="div"
+                    >
                         <div className="flex items-end gap-1 flex-wrap">
                             <span
-                                className="text-md litm-limit lowercase truncate"
+                                className="text-md mist-limit lowercase truncate"
                                 title={l.name}
                                 data-limit-value={
                                     l.is_immune
@@ -421,7 +425,7 @@ function SortableLimitItem({
                         {l.is_progress && l.on_max && (
                             <p className="text-xs text-slate-700">{l.on_max}</p>
                         )}
-                    </div>
+                    </SystemMarkdownScope>
                 </div>
 
                 {/* Right: row actions */}

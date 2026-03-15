@@ -69,7 +69,7 @@ export default function AppTopBar() {
                 Lantern
                 <Badge variant="outline" className="ml-2">
                     <TagIcon />
-                    <span className="-translate-y-0.5">0.1.0</span>
+                    <span>0.1.0</span>
                 </Badge>
             </div>
 

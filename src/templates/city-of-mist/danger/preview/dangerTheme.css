@@ -215,58 +215,6 @@
     text-transform: uppercase;
 }
 
-.city-danger-token-scope .litm-tag,
-.city-danger-token-scope .litm-status,
-.city-danger-token-scope .litm-limit,
-.city-danger-token-scope .litm-weakness {
-    color: #111;
-    font-style: italic;
-}
-
-.city-danger-token-scope .litm-tag {
-    --litm-token-background-color: #fff3a7;
-}
-
-.city-danger-token-scope .litm-status {
-    --litm-token-background-color: #e2eab1;
-}
-
-.city-danger-token-scope .litm-limit {
-    --litm-token-background-color: #fad0c3;
-}
-
-.city-danger-token-scope .litm-limit[data-limit-value] {
-    background-size: 100% 50%;
-}
-
-.city-danger-token-scope .litm-limit::before {
-    display: none;
-    content: none;
-}
-
-.city-danger-token-scope .litm-limit::after {
-    position: static;
-    transform: none;
-    margin-left: 0;
-    background: none;
-    width: auto;
-    height: auto;
-    content: ':' attr(data-limit-value);
-    color: inherit;
-}
-
-.city-danger-token-scope .litm-limit[data-limit-immune='true']::after {
-    content: ':-';
-}
-
-.city-danger-token-scope .litm-limit[data-limit-value='']::after {
-    content: '';
-}
-
-.city-danger-token-scope .litm-weakness::before {
-    transform: translateY(-45%);
-}
-
 .exporting .city-danger-card {
     box-shadow: none;
 }

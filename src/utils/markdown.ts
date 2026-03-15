@@ -90,23 +90,23 @@ const litmInlineExt = {
         switch (token.variant) {
             case 'weakness':
                 // Both class systems for easy theming
-                return `<span class="litm-weakness brumes-weakness" data-tag-name="${escAttr(token.name)}">${escHtml(token.name)}</span>`
+                return `<span class="mist-weakness brumes-weakness" data-tag-name="${escAttr(token.name)}">${escHtml(token.name)}</span>`
 
             case 'status': {
                 const text =
                     token.value === ''
                         ? token.name
                         : `${token.name}-${token.value}`
-                return `<span class="litm-status brumes-status" data-status-name="${escAttr(token.name)}" data-status-value="${escAttr(token.value ?? '')}">${escHtml(text)}</span>`
+                return `<span class="mist-status brumes-status" data-status-name="${escAttr(token.name)}" data-status-value="${escAttr(token.value ?? '')}">${escHtml(text)}</span>`
             }
 
             case 'limit':
-                return `<span class="litm-limit brumes-limit" data-limit-name="${escAttr(token.name)}" data-limit-value="${escAttr(token.value ?? '')}" data-limit-immune="${token.value === '~' ? 'true' : 'false'}">${escHtml(token.name)}</span>`
+                return `<span class="mist-limit brumes-limit" data-limit-name="${escAttr(token.name)}" data-limit-value="${escAttr(token.value ?? '')}" data-limit-immune="${token.value === '~' ? 'true' : 'false'}">${escHtml(token.name)}</span>`
 
             case 'tag':
             default:
                 // generic tag == "power" in your classifier
-                return `<span class="litm-tag brumes-power" data-tag-name="${escAttr(token.name)}">${escHtml(token.name)}</span>`
+                return `<span class="mist-tag brumes-power" data-tag-name="${escAttr(token.name)}">${escHtml(token.name)}</span>`
         }
     },
 } as const
@@ -125,15 +125,27 @@ function ensureLitmRegistered() {
 }
 
 /** Block renderer (keeps paragraphs, lists, etc.) */
-export function renderLitmMarkdown(md: string) {
+export function renderSystemMarkdown(md: string) {
     ensureLitmRegistered()
     const html = marked.parse(md ?? '')
     return DOMPurify.sanitize(String(html))
 }
 
 /** Inline renderer (no <p> wrapper; perfect for single tokens/phrases). */
-export function renderLitmInline(text: string) {
+export function renderSystemInlineMarkdown(text: string) {
     ensureLitmRegistered()
     const html = marked.parseInline(text ?? '')
     return DOMPurify.sanitize(String(html))
 }
+
+export function unwrapSingleParagraph(html: string) {
+    const match = html.match(/^<p>([\s\S]*)<\/p>\s*$/)
+    return match ? match[1] : html
+}
+
+export function renderSystemMarkdownInline(text: string) {
+    return unwrapSingleParagraph(renderSystemMarkdown(text))
+}
+
+export const renderLitmMarkdown = renderSystemMarkdown
+export const renderLitmInline = renderSystemInlineMarkdown

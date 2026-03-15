@@ -2,6 +2,7 @@ import { AppSidebar } from '@/components/sidebar/app-sidebar'
 import { Button } from '@/components/ui/button'
 import { Sidebar, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
+import { getGameTheme } from '@/core/gameThemes'
 import { templateById } from '@/core/templates/registry'
 import { TemplateInspector } from '@/core/templates/shell/TemplateInspector'
 import { TemplateLanding } from '@/core/templates/shell/TemplateLanding'
@@ -65,6 +66,24 @@ export default function App() {
     const activeTemplate = activeTab
         ? (templateById.get(activeTab.templateId) ?? null)
         : null
+    const activeGameTheme = activeTemplate
+        ? getGameTheme(activeTemplate.gameId)
+        : null
+
+    useEffect(() => {
+        if (typeof document === 'undefined') return
+
+        const themeId = activeGameTheme?.id
+        if (themeId) {
+            document.body.dataset.gameTheme = themeId
+        } else {
+            delete document.body.dataset.gameTheme
+        }
+
+        return () => {
+            delete document.body.dataset.gameTheme
+        }
+    }, [activeGameTheme?.id])
 
     const templatePreview = activeTemplate?.implemented
         ? activeTemplate.preview.render()
@@ -98,13 +117,13 @@ export default function App() {
     }
 
     return (
-        <SidebarProvider>
+        <SidebarProvider data-game-theme={activeGameTheme?.id}>
             <AppSidebar />
             <div className="w-full">
                 <AppTopBar />
 
                 <main
-                    className="mx-auto w-full px-4 py-6 sm:px-6"
+                    className="mist-app-main mx-auto min-h-[calc(100svh-4rem)] w-full px-4 py-6 sm:px-6"
                     style={{ maxWidth: `${maxWidth}px` }}
                 >
                     {!hydrated && (
@@ -152,7 +171,10 @@ export default function App() {
                                     onImport={() => setImportOpen(true)}
                                 />
 
-                                <div data-preview-root={activeTab.id}>
+                                <div
+                                    data-preview-root={activeTab.id}
+                                    data-game-theme={activeGameTheme?.id}
+                                >
                                     {templatePreview}
                                 </div>
                             </div>
@@ -180,7 +202,10 @@ export default function App() {
                                     </Button>
                                 </div>
 
-                                <div data-preview-root={activeTab.id}>
+                                <div
+                                    data-preview-root={activeTab.id}
+                                    data-game-theme={activeGameTheme?.id}
+                                >
                                     {templatePreview}
                                 </div>
                                 <div

@@ -1,4 +1,5 @@
-import { renderLitmMarkdown } from '@/utils/markdown'
+import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
+import { renderSystemMarkdownInline } from '@/utils/markdown'
 import { useLegendInTheMistChallengeStore } from '../../hooks'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -227,13 +228,6 @@ function SortableTokenItem({
         transition,
     }
 
-    // Inline renderer helper (same as parent)
-    const inlineHTML = (s: string) => {
-        const html = renderLitmMarkdown(s)
-        const m = html.match(/^<p>([\s\S]*)<\/p>\s*$/)
-        return m ? m[1] : html
-    }
-
     return (
         <li
             ref={setNodeRef}
@@ -266,16 +260,15 @@ function SortableTokenItem({
                         <GripVertical className="h-4 w-4 text-slate-500" />
                     </button>
 
-                    <div className="min-w-0">
+                    <SystemMarkdownScope className="min-w-0" as="div">
                         <span
                             className="prose-sm text-wrap max-w-none block truncate font-(family-name:--font-ch-tags-statuses)"
-                            // the HTML is inline; keep a span
                             dangerouslySetInnerHTML={{
-                                __html: inlineHTML(value),
+                                __html: renderSystemMarkdownInline(value),
                             }}
                             title={value}
                         />
-                    </div>
+                    </SystemMarkdownScope>
                 </div>
 
                 {/* Actions */}

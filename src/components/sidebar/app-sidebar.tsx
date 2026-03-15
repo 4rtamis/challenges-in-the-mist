@@ -136,7 +136,7 @@ export function AppSidebar() {
                                                                 {template.label}
                                                             </span>
                                                             {!template.implemented && (
-                                                                <span className="text-[10px] opacity-65 uppercase tracking-wide">
+                                                                <span className="text-[8px] opacity-65 uppercase tracking-wide">
                                                                     {template.comingSoonLabel ||
                                                                         'Coming soon'}
                                                                 </span>

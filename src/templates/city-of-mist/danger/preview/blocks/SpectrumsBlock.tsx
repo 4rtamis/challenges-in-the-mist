@@ -1,5 +1,5 @@
+import { formatSpectrumLabel } from '../../formatting'
 import { useCityOfMistDangerStore } from '../../hooks'
-import { formatSpectrumLabel } from '../../markdown'
 import { ClickableSection } from '../components/Clickable'
 
 export default function SpectrumsBlock({
