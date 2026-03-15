@@ -66,7 +66,15 @@ export default function AppTopBar() {
             <SidebarTrigger />
 
             <div className="mr-1 border-x px-2 text-sm font-semibold uppercase md:pl-2.5 md:pr-3">
-                Lantern
+                <span
+                    className="cursor-pointer"
+                    onClick={() => {
+                        activateTab(null)
+                        navigate('/')
+                    }}
+                >
+                    Lantern
+                </span>
                 <Badge variant="outline" className="ml-2">
                     <TagIcon />
                     <span>{__APP_VERSION__}</span>
