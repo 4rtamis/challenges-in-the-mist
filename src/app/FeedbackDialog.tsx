@@ -135,7 +135,10 @@ export default function FeedbackDialog({ open, onOpenChange }: Props) {
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
+                    <Button
+                        variant="outline"
+                        onClick={() => onOpenChange(false)}
+                    >
                         Close
                     </Button>
                     <Button asChild>

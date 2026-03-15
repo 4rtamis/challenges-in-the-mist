@@ -68,9 +68,9 @@
 }
 
 .city-danger-section--title {
-    margin-bottom: 0.3rem;
     break-inside: avoid;
     page-break-inside: avoid;
+    margin-bottom: 0.3rem;
 }
 
 .city-danger-title-row {

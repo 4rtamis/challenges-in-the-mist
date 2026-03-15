@@ -32,9 +32,7 @@ export default function CustomMovesBlock({
                             tabIndex={0}
                             aria-label={`Edit custom move ${customMove.name}`}
                         >
-                            <span className="font-bold">
-                                {customMove.name}
-                            </span>
+                            <span className="font-bold">{customMove.name}</span>
                             <span>: </span>
                             <span
                                 dangerouslySetInnerHTML={{
