@@ -62,7 +62,7 @@ export default function AppTopBar() {
     }
 
     return (
-        <div className="sticky top-0 z-40 flex min-h-12 w-full items-center gap-2 border-b bg-background/85 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/65">
+        <div className="sticky top-0 z-40 flex min-h-12 w-full min-w-0 items-center gap-2 overflow-x-hidden border-b bg-background/85 px-3 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/65">
             <SidebarTrigger />
 
             <div className="mr-1 border-x px-2 text-sm font-semibold uppercase md:pl-2.5 md:pr-3">
@@ -83,11 +83,11 @@ export default function AppTopBar() {
 
             <div className="min-w-0 flex-1">
                 {orderedTabs.length > 0 ? (
-                    <div className="flex items-center gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                    <div className="flex min-w-0 items-center gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                         {orderedTabs.map((tab) => (
                             <div
                                 key={tab.id}
-                                className={`group inline-flex max-w-[220px] items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
+                                className={`group inline-flex max-w-[220px] shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
                                     tab.id === activeTabId
                                         ? 'border-primary/40 bg-primary/10 text-foreground'
                                         : 'border-transparent text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground'
@@ -95,7 +95,7 @@ export default function AppTopBar() {
                             >
                                 <button
                                     type="button"
-                                    className="truncate text-left"
+                                    className="min-w-0 truncate text-left"
                                     onClick={() => {
                                         activateTab(tab.id)
                                         navigate(`/tabs/${tab.id}`)
