@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import { useLegendInTheMistChallengeViewStore } from '../hooks'
 import BasicBlock from './blocks/BasicBlock'
 import LimitsBlock from './blocks/LimitsBlock'

@@ -59,7 +59,9 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
         }
 
         const parsed = importToml(content)
-        setPreviewName(parsed.previewName || `${activeTemplate?.label || 'Template'} import`)
+        setPreviewName(
+            parsed.previewName || `${activeTemplate?.label || 'Template'} import`
+        )
         setWarnings(parsed.warnings || [])
         setError(null)
         return parsed
@@ -101,9 +103,13 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
             const parsed = importToml(fileRawToml)
             replaceTabDoc(activeTab.id, parsed.doc)
             setTabMode(activeTab.id, 'editing')
-            toast.success(`Imported “${parsed.previewName || activeTemplate?.label || 'template'}”.`)
+            toast.success(
+                `Imported “${parsed.previewName || activeTemplate?.label || 'template'}”.`
+            )
             if (parsed.warnings?.length) {
-                toast.warning(`Imported with ${parsed.warnings.length} warning(s).`)
+                toast.warning(
+                    `Imported with ${parsed.warnings.length} warning(s).`
+                )
             }
             close()
         } catch (errorAny: any) {
@@ -136,9 +142,13 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
             const parsed = importToml(rawToml)
             replaceTabDoc(activeTab.id, parsed.doc)
             setTabMode(activeTab.id, 'editing')
-            toast.success(`Imported “${parsed.previewName || activeTemplate?.label || 'template'}”.`)
+            toast.success(
+                `Imported “${parsed.previewName || activeTemplate?.label || 'template'}”.`
+            )
             if (parsed.warnings?.length) {
-                toast.warning(`Imported with ${parsed.warnings.length} warning(s).`)
+                toast.warning(
+                    `Imported with ${parsed.warnings.length} warning(s).`
+                )
             }
             close()
         } catch (errorAny: any) {
@@ -178,7 +188,8 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                             <AlertTriangle className="h-4 w-4" />
                             <AlertTitle>Import from trusted sources only</AlertTitle>
                             <AlertDescription>
-                                Importing files can include malicious content. Only open TOML from creators you trust.
+                                Importing files can include malicious content. Only
+                                open TOML from creators you trust.
                             </AlertDescription>
                         </Alert>
 
@@ -206,12 +217,21 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                             </div>
                         </div>
 
-                        <PreviewPane name={previewName} warnings={warnings} error={error} />
+                        <PreviewPane
+                            name={previewName}
+                            warnings={warnings}
+                            error={error}
+                        />
 
                         <div className="flex justify-end">
                             <Button
                                 onClick={importFromFile}
-                                disabled={!fileRawToml || !!error || !importToml || !activeTab}
+                                disabled={
+                                    !fileRawToml ||
+                                    !!error ||
+                                    !importToml ||
+                                    !activeTab
+                                }
                             >
                                 Import file
                             </Button>
@@ -223,7 +243,8 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                             <AlertTriangle className="h-4 w-4" />
                             <AlertTitle>Import from trusted sources only</AlertTitle>
                             <AlertDescription>
-                                Pasted TOML can include malicious payloads. Only paste content from creators you trust.
+                                Pasted TOML can include malicious payloads. Only
+                                paste content from creators you trust.
                             </AlertDescription>
                         </Alert>
 
@@ -243,12 +264,21 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                             </div>
                         </div>
 
-                        <PreviewPane name={previewName} warnings={warnings} error={error} />
+                        <PreviewPane
+                            name={previewName}
+                            warnings={warnings}
+                            error={error}
+                        />
 
                         <div className="flex justify-end">
                             <Button
                                 onClick={importFromPaste}
-                                disabled={!rawToml.trim() || !!error || !importToml || !activeTab}
+                                disabled={
+                                    !rawToml.trim() ||
+                                    !!error ||
+                                    !importToml ||
+                                    !activeTab
+                                }
                             >
                                 Import pasted TOML
                             </Button>

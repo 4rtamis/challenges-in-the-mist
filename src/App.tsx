@@ -9,11 +9,11 @@ import { TemplateLanding } from '@/core/templates/shell/TemplateLanding'
 import { DEFAULT_TEMPLATE_PREVIEW_WIDTH } from '@/core/templates/types'
 import { useWorkspaceStore } from '@/core/workspace/store'
 import { useWorkspaceHydration } from '@/core/workspace/useWorkspaceHydration'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import AppTopBar from './ui/AppTopBar'
-import ImportDialog from './ui/ImportDialog'
+import AppTopBar from './app/AppTopBar'
+import ImportDialog from './app/ImportDialog'
 
 export default function App() {
     const hydrated = useWorkspaceHydration()

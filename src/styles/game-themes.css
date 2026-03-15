@@ -1,0 +1,20 @@
+body[data-game-theme='city'] {
+    background-image: url('/assets/images/com-bg.webp');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+body[data-game-theme='legend'] {
+    background-image: url('/assets/images/litm-bg.webp');
+    background-position: center bottom;
+    background-size: 1300px auto;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+body[data-game-theme='otherscape'],
+body:not([data-game-theme]) {
+    background-image: none;
+}

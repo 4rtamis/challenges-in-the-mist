@@ -1,5 +1,5 @@
 import { EDITOR_TOKEN_SCOPE_CLASS } from '@/core/gameThemes'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react'
 
 type SystemMarkdownScopeProps<T extends ElementType> = {

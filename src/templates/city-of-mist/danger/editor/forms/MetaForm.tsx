@@ -13,7 +13,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils/cn'
 import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { useMemo, useState } from 'react'

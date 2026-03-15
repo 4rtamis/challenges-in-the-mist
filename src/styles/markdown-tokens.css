@@ -1,0 +1,217 @@
+/* Shared inline token primitives */
+.mist-tag,
+.mist-status,
+.mist-limit,
+.mist-weakness {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    gap: 0.1rem;
+    background: linear-gradient(
+        120deg,
+        var(--mist-token-background-color, transparent) 0%,
+        var(--mist-token-background-color, transparent) 100%
+    );
+    background-position: 0 60%;
+    background-size: 100% 50%;
+    background-repeat: no-repeat;
+    color: var(--mist-token-text-color, black);
+    font-style: italic;
+    white-space: nowrap;
+}
+
+.mist-weakness {
+    padding-left: 1.8ch;
+}
+
+.mist-weakness::before {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 0.3ch;
+    transform: translateY(-40%);
+    background-image: url('/assets/images/weakness-arrows.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    aspect-ratio: 800 / 800;
+    width: 1.2ch;
+    content: '';
+    color: #946435;
+}
+
+[data-game-theme='otherscape'] .mist-tag,
+[data-game-theme='otherscape'] .mist-status,
+[data-game-theme='otherscape'] .mist-limit,
+[data-game-theme='otherscape'] .mist-weakness {
+    border-radius: 999px;
+    background: none;
+    padding: 0.08rem 0.42rem;
+    font-style: normal;
+}
+
+[data-game-theme='otherscape'] .mist-tag {
+    background-color: rgb(226 232 240 / 0.85);
+}
+
+[data-game-theme='otherscape'] .mist-status {
+    background-color: rgb(191 219 254 / 0.85);
+}
+
+[data-game-theme='otherscape'] .mist-limit {
+    background-color: rgb(254 215 170 / 0.85);
+}
+
+[data-game-theme='otherscape'] .mist-weakness {
+    background-color: rgb(254 202 202 / 0.9);
+}
+
+[data-game-theme='otherscape'] .mist-weakness::before {
+    left: 0.28rem;
+}
+
+[data-game-theme='legend'] .mist-tag,
+[data-game-theme='legend'] .mist-status,
+[data-game-theme='legend'] .mist-limit,
+[data-game-theme='legend'] .mist-weakness {
+    color: black;
+}
+
+[data-game-theme='legend'] .mist-tag {
+    --mist-token-background-color: var(--litm-pastel-yellow);
+}
+
+[data-game-theme='legend'] .mist-status {
+    --mist-token-background-color: var(--litm-pastel-green);
+}
+
+[data-game-theme='legend'] .mist-weakness {
+    --mist-token-background-color: var(--litm-ganoush-orange);
+}
+
+[data-game-theme='legend'] .mist-limit {
+    --mist-token-background-color: var(--litm-grayish-red);
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value] {
+    background-position: 0 70%;
+    background-size: calc(100% - 10px) 50%;
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value]::before {
+    position: absolute;
+    top: 50%;
+    right: 0.35rem;
+    transform: translateY(-50%);
+    z-index: 10;
+    content: attr(data-limit-value);
+    color: var(--litm-parchment-yellow);
+    font-weight: 700;
+    font-family: var(--font-ch-limits);
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value='~']::before {
+    right: 0.35rem;
+    transform: translateY(-45%);
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value='1']::before {
+    right: 0.35rem;
+    transform: translateY(-50%);
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value='2']::before {
+    right: 0.3rem;
+    transform: translateY(-50%);
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value='3']::before {
+    right: 0.37rem;
+    transform: translateY(-55%);
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value='4']::before {
+    right: 0.3rem;
+    transform: translateY(-57%);
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value='5']::before {
+    right: 0.3rem;
+    transform: translateY(-55%);
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value='6']::before {
+    right: 0.34rem;
+    transform: translateY(-38%);
+}
+
+[data-game-theme='legend'] .mist-limit[data-limit-value]::after {
+    transform: translateY(5%);
+    background: url('/assets/images/shield.svg') no-repeat center / contain;
+    width: 1.2em;
+    height: 1.2em;
+    content: '';
+}
+
+[data-game-theme='city'] .mist-tag,
+[data-game-theme='city'] .mist-status,
+[data-game-theme='city'] .mist-limit,
+[data-game-theme='city'] .mist-weakness {
+    color: #111;
+    font-style: italic;
+}
+
+[data-game-theme='city'] .mist-tag {
+    --mist-token-background-color: #fff3a7;
+}
+
+[data-game-theme='city'] .mist-status {
+    --mist-token-background-color: #e2eab1;
+}
+
+[data-game-theme='city'] .mist-limit {
+    --mist-token-background-color: #fad0c3;
+}
+
+[data-game-theme='city'] .mist-limit[data-limit-value] {
+    background-size: 100% 50%;
+}
+
+[data-game-theme='city'] .mist-limit::before {
+    display: none;
+    content: none;
+}
+
+[data-game-theme='city'] .mist-limit::after {
+    position: static;
+    transform: none;
+    margin-left: 0;
+    background: none;
+    width: auto;
+    height: auto;
+    content: ':' attr(data-limit-value);
+    color: inherit;
+}
+
+[data-game-theme='city'] .mist-limit[data-limit-immune='true']::after {
+    content: ':-';
+}
+
+[data-game-theme='city'] .mist-limit[data-limit-value='']::after {
+    content: '';
+}
+
+[data-game-theme='city'] .mist-weakness::before {
+    transform: translateY(-45%);
+}
+
+p .mist-tag,
+p .mist-status,
+p .mist-limit,
+p .mist-weakness,
+li .mist-tag,
+li .mist-status,
+li .mist-limit,
+li .mist-weakness {
+    vertical-align: baseline;
+}
