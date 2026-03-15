@@ -265,7 +265,7 @@ function SortableMoveRow({
                         as="div"
                     >
                         <span
-                            className="block"
+                            className="block font-[PT_Serif]"
                             dangerouslySetInnerHTML={{
                                 __html: renderSystemMarkdownInline(value),
                             }}

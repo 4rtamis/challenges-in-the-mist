@@ -300,7 +300,9 @@ function SortableCustomMoveRow({
                         <GripVertical className="h-4 w-4 text-slate-500" />
                     </button>
                     <SystemMarkdownScope className="min-w-0" as="div">
-                        <div className="truncate font-medium">{name}</div>
+                        <div className="truncate font-bold font-[PT_Serif]">
+                            {name}
+                        </div>
                     </SystemMarkdownScope>
                 </div>
                 <div className="flex items-center gap-1">
@@ -325,7 +327,7 @@ function SortableCustomMoveRow({
                 </div>
             </div>
             <div
-                className="text-sm leading-6 text-foreground/80"
+                className="text-sm leading-6 text-foreground/80 font-[PT_Serif]"
                 dangerouslySetInnerHTML={{
                     __html: renderSystemMarkdownInline(description),
                 }}

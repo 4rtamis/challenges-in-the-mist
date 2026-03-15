@@ -405,7 +405,7 @@ function SortableLimitItem({
                     >
                         <div className="flex items-end gap-1 flex-wrap">
                             <span
-                                className="text-md mist-limit lowercase truncate"
+                                className="text-md mist-limit lowercase truncate font-[Labrada]"
                                 title={l.name}
                                 data-limit-value={
                                     l.is_immune
@@ -433,7 +433,9 @@ function SortableLimitItem({
                         </div>
 
                         {l.is_progress && l.on_max && (
-                            <p className="text-xs text-slate-700">{l.on_max}</p>
+                            <p className="text-xs text-slate-700 font-[Labrada]">
+                                {l.on_max}
+                            </p>
                         )}
                     </SystemMarkdownScope>
                 </div>
