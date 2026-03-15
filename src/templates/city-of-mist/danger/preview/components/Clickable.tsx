@@ -29,3 +29,13 @@ export function ClickableSection({
         </div>
     )
 }
+
+export function handleClickableKeyDown(
+    event: React.KeyboardEvent,
+    onClick: () => void
+) {
+    if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        onClick()
+    }
+}

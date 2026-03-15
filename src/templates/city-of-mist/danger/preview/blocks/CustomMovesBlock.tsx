@@ -1,6 +1,9 @@
 import { renderSystemMarkdownInline } from '@/utils/markdown'
 import { useCityOfMistDangerStore } from '../../hooks'
-import { ClickableSection } from '../components/Clickable'
+import {
+    ClickableSection,
+    handleClickableKeyDown,
+} from '../components/Clickable'
 
 export default function CustomMovesBlock({
     onAddClick,
@@ -16,25 +19,30 @@ export default function CustomMovesBlock({
             {cityOfMistDanger.custom_moves.length ? (
                 <ul className="city-danger-list city-danger-list--interactive">
                     {cityOfMistDanger.custom_moves.map((customMove, index) => (
-                        <li key={`${customMove.name}-${index}`}>
-                            <button
-                                type="button"
-                                className="city-danger-preview-item"
-                                onClick={() => onItemClick(index)}
-                                aria-label={`Edit custom move ${customMove.name}`}
-                            >
-                                <span className="font-bold">
-                                    {customMove.name}
-                                </span>
-                                <span>: </span>
-                                <span
-                                    dangerouslySetInnerHTML={{
-                                        __html: renderSystemMarkdownInline(
-                                            customMove.description
-                                        ),
-                                    }}
-                                />
-                            </button>
+                        <li
+                            key={`${customMove.name}-${index}`}
+                            className="city-danger-preview-item city-danger-preview-item--list-row"
+                            onClick={() => onItemClick(index)}
+                            onKeyDown={(event) =>
+                                handleClickableKeyDown(event, () =>
+                                    onItemClick(index)
+                                )
+                            }
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Edit custom move ${customMove.name}`}
+                        >
+                            <span className="font-bold">
+                                {customMove.name}
+                            </span>
+                            <span>: </span>
+                            <span
+                                dangerouslySetInnerHTML={{
+                                    __html: renderSystemMarkdownInline(
+                                        customMove.description
+                                    ),
+                                }}
+                            />
                         </li>
                     ))}
                 </ul>

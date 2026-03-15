@@ -58,7 +58,6 @@
     height: var(--danger-column-height);
 }
 
-.city-danger-section,
 .city-danger-separator {
     break-inside: avoid;
     page-break-inside: avoid;
@@ -70,6 +69,8 @@
 
 .city-danger-section--title {
     margin-bottom: 0.3rem;
+    break-inside: avoid;
+    page-break-inside: avoid;
 }
 
 .city-danger-title-row {
@@ -108,6 +109,12 @@
     font-family: 'PT Serif', serif;
 }
 
+.city-danger-description,
+.city-danger-list li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
 .city-danger-description p {
     margin: 0 0 0.45rem;
 }
@@ -144,15 +151,18 @@
 }
 
 .city-danger-preview-item {
-    display: block;
     cursor: pointer;
     border: 0;
     background: transparent;
     padding: 0;
-    width: 100%;
     color: inherit;
     font: inherit;
     text-align: left;
+}
+
+.city-danger-preview-item--list-row {
+    display: list-item;
+    width: auto;
 }
 
 .city-danger-preview-item:hover,

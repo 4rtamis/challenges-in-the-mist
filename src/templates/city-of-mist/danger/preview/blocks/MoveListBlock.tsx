@@ -1,5 +1,8 @@
 import { renderSystemMarkdownInline } from '@/utils/markdown'
-import { ClickableSection } from '../components/Clickable'
+import {
+    ClickableSection,
+    handleClickableKeyDown,
+} from '../components/Clickable'
 
 type Props = {
     values: string[]
@@ -23,21 +26,24 @@ export default function MoveListBlock({
             {values.length ? (
                 <ul className="city-danger-list city-danger-list--interactive">
                     {values.map((value, index) => (
-                        <li key={`${value}-${index}`}>
-                            <button
-                                type="button"
-                                className="city-danger-preview-item"
-                                onClick={() => onItemClick(index)}
-                                aria-label={itemAriaLabel(index, value)}
-                            >
-                                <span
-                                    dangerouslySetInnerHTML={{
-                                        __html: renderSystemMarkdownInline(
-                                            value
-                                        ),
-                                    }}
-                                />
-                            </button>
+                        <li
+                            key={`${value}-${index}`}
+                            className="city-danger-preview-item city-danger-preview-item--list-row"
+                            onClick={() => onItemClick(index)}
+                            onKeyDown={(event) =>
+                                handleClickableKeyDown(event, () =>
+                                    onItemClick(index)
+                                )
+                            }
+                            role="button"
+                            tabIndex={0}
+                            aria-label={itemAriaLabel(index, value)}
+                        >
+                            <span
+                                dangerouslySetInnerHTML={{
+                                    __html: renderSystemMarkdownInline(value),
+                                }}
+                            />
                         </li>
                     ))}
                 </ul>
