@@ -1,5 +1,5 @@
-import MoveListForm from './MoveListForm'
 import { useCityOfMistDangerStore } from '../../hooks'
+import MoveListForm from './MoveListForm'
 
 export default function SoftMovesForm({ focusIndex }: { focusIndex?: number }) {
     const {

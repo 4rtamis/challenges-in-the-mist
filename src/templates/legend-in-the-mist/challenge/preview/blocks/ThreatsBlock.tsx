@@ -1,6 +1,9 @@
 // src/preview/blocks/ThreatsBlock.tsx
-import { useLegendInTheMistChallengeSheetStore, useLegendInTheMistChallengeStore } from '../../hooks'
 import { renderLitmMarkdown } from '@/utils/markdown'
+import {
+    useLegendInTheMistChallengeSheetStore,
+    useLegendInTheMistChallengeStore,
+} from '../../hooks'
 import { ClickableSection } from '../components/Clickable'
 import { SectionHeader } from '../components/SectionHeader'
 

@@ -1,14 +1,14 @@
-import type { WorkspaceTab } from '@/core/workspace/types'
-import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
+import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
+import type { WorkspaceTab } from '@/core/workspace/types'
 import type {
-    SectionId,
     CityOfMistDanger,
     CityOfMistDangerSheetState,
     CityOfMistDangerViewState,
     ColumnCount,
     CustomMove,
     DangerMeta,
+    SectionId,
     SheetTarget,
     Spectrum,
     TitlePlacement,
@@ -158,7 +158,12 @@ export function useCityOfMistDangerStore() {
         moveSpectrum: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.spectrums]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -207,7 +212,12 @@ export function useCityOfMistDangerStore() {
         moveCustomMove: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.custom_moves]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -218,7 +228,10 @@ export function useCityOfMistDangerStore() {
         addHardMove: (value: string) =>
             apply((current) => ({
                 ...current,
-                hard_moves: [...current.hard_moves, strOrFallback(value, 'New hard move')],
+                hard_moves: [
+                    ...current.hard_moves,
+                    strOrFallback(value, 'New hard move'),
+                ],
             })),
         updateHardMoveAt: (index: number, value: string) =>
             apply((current) => {
@@ -236,7 +249,12 @@ export function useCityOfMistDangerStore() {
         moveHardMove: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.hard_moves]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -247,7 +265,10 @@ export function useCityOfMistDangerStore() {
         addSoftMove: (value: string) =>
             apply((current) => ({
                 ...current,
-                soft_moves: [...current.soft_moves, strOrFallback(value, 'New soft move')],
+                soft_moves: [
+                    ...current.soft_moves,
+                    strOrFallback(value, 'New soft move'),
+                ],
             })),
         updateSoftMoveAt: (index: number, value: string) =>
             apply((current) => {
@@ -265,7 +286,12 @@ export function useCityOfMistDangerStore() {
         moveSoftMove: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.soft_moves]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -281,7 +307,9 @@ export function useCityOfMistDangerStore() {
                         current.meta?.publication_type || 'homebrew',
                     ...(current.meta || {}),
                     ...update,
-                    source: strOrNull(update.source ?? current.meta?.source) ?? undefined,
+                    source:
+                        strOrNull(update.source ?? current.meta?.source) ??
+                        undefined,
                 },
             })),
     }
@@ -317,7 +345,11 @@ export function useCityOfMistDangerViewStore() {
             }),
         setPreviewWidth: (previewWidth: number) =>
             patchView({
-                previewWidth: clamp(previewWidth, PREVIEW_WIDTH_MIN, PREVIEW_WIDTH_MAX),
+                previewWidth: clamp(
+                    previewWidth,
+                    PREVIEW_WIDTH_MIN,
+                    PREVIEW_WIDTH_MAX
+                ),
             }),
         setBackground: (background: CityOfMistDangerViewState['background']) =>
             patchView({ background }),

@@ -1,6 +1,9 @@
 // src/preview/blocks/TagsMightBlock.tsx
-import { useLegendInTheMistChallengeSheetStore, useLegendInTheMistChallengeStore } from '../../hooks'
 import { renderLitmInline } from '@/utils/markdown'
+import {
+    useLegendInTheMistChallengeSheetStore,
+    useLegendInTheMistChallengeStore,
+} from '../../hooks'
 import { ClickableSection } from '../components/Clickable'
 import { SectionGate } from '../components/SectionGate'
 import { SectionHeader } from '../components/SectionHeader'
@@ -22,26 +25,28 @@ export default function TagsMightBlock() {
                     <div className="tags-line text-center">
                         {legendInTheMistChallenge.tags_and_statuses.length ? (
                             <div className="flex flex-col flex-wrap justify-center">
-                                {legendInTheMistChallenge.tags_and_statuses.map((t, i) => (
-                                    <ClickableSection
-                                        key={`${t}-${i}`}
-                                        onClick={() =>
-                                            openSheet({
-                                                kind: 'tags',
-                                                index: i,
-                                                mode: 'edit',
-                                            })
-                                        }
-                                        ariaLabel="Edit tag/status"
-                                        overlayClassName=""
-                                    >
-                                        <span
-                                            dangerouslySetInnerHTML={{
-                                                __html: renderLitmInline(t),
-                                            }}
-                                        />
-                                    </ClickableSection>
-                                ))}
+                                {legendInTheMistChallenge.tags_and_statuses.map(
+                                    (t, i) => (
+                                        <ClickableSection
+                                            key={`${t}-${i}`}
+                                            onClick={() =>
+                                                openSheet({
+                                                    kind: 'tags',
+                                                    index: i,
+                                                    mode: 'edit',
+                                                })
+                                            }
+                                            ariaLabel="Edit tag/status"
+                                            overlayClassName=""
+                                        >
+                                            <span
+                                                dangerouslySetInnerHTML={{
+                                                    __html: renderLitmInline(t),
+                                                }}
+                                            />
+                                        </ClickableSection>
+                                    )
+                                )}
                             </div>
                         ) : (
                             <button

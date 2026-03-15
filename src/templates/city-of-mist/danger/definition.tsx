@@ -1,9 +1,11 @@
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
 import { snapdom, type CaptureResult } from '@zumer/snapdom'
+import { toast } from 'sonner'
 import { DangerAppearancePanel } from './editor/DangerAppearancePanel'
 import { DangerEditorPanel } from './editor/DangerEditorPanel'
 import { DangerImageExportSettings } from './editor/DangerImageExportSettings'
+import { getCityOfMistDangerPreviewWidth } from './hooks'
+import { dangerSections } from './metadata'
 import {
     blankCityOfMistDanger,
     defaultCityOfMistDangerSheetState,
@@ -11,12 +13,10 @@ import {
     type CityOfMistDanger,
     type CityOfMistDangerViewState,
 } from './model'
-import { dangerSections } from './metadata'
 import { DangerPreview } from './preview/DangerPreview'
-import { CityOfMistDangerSchema } from './schema'
 import { getSampleCityOfMistDanger } from './sample'
+import { CityOfMistDangerSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
-import { getCityOfMistDangerPreviewWidth } from './hooks'
 
 function cloneValue<T>(value: T): T {
     if (typeof structuredClone === 'function') {
@@ -44,7 +44,9 @@ function createImageExportAction() {
         }) => {
             const node = getPreviewNode()
             if (!node) {
-                toast.error('Preview not found. Make sure the preview is visible.')
+                toast.error(
+                    'Preview not found. Make sure the preview is visible.'
+                )
                 return
             }
 
@@ -125,7 +127,13 @@ const dangerTemplate: AnyTemplateDefinition = {
                 label: 'TOML',
                 buttonLabel: 'Export TOML',
                 description: 'Export the current danger data as TOML.',
-                run: ({ doc, fileStem }: { doc: CityOfMistDanger; fileStem: string }) => {
+                run: ({
+                    doc,
+                    fileStem,
+                }: {
+                    doc: CityOfMistDanger
+                    fileStem: string
+                }) => {
                     try {
                         const toml = exportToTOML(doc)
                         const blob = new Blob([toml], {
@@ -141,7 +149,9 @@ const dangerTemplate: AnyTemplateDefinition = {
                         URL.revokeObjectURL(url)
                         toast.success('Exported TOML.')
                     } catch (errorAny: any) {
-                        toast.error(errorAny?.message || 'Failed to export TOML.')
+                        toast.error(
+                            errorAny?.message || 'Failed to export TOML.'
+                        )
                     }
                 },
             },

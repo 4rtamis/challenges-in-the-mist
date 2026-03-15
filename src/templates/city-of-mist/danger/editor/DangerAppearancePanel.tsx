@@ -3,6 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { cn } from '@/utils/cn'
+import { useCityOfMistDangerViewStore } from '../hooks'
 import { dangerBackgroundOptions, dangerSections } from '../metadata'
 import {
     COLUMN_HEIGHT_MAX,
@@ -10,7 +11,6 @@ import {
     PREVIEW_WIDTH_MAX,
     PREVIEW_WIDTH_MIN,
 } from '../model'
-import { useCityOfMistDangerViewStore } from '../hooks'
 
 export function DangerAppearancePanel() {
     const {
@@ -82,7 +82,9 @@ export function DangerAppearancePanel() {
                     <Label htmlFor="danger-preview-width" className="text-xs">
                         Preview width
                     </Label>
-                    <span className="text-xs font-medium">{previewWidth}px</span>
+                    <span className="text-xs font-medium">
+                        {previewWidth}px
+                    </span>
                 </div>
                 <input
                     id="danger-preview-width"
@@ -216,7 +218,9 @@ export function DangerAppearancePanel() {
                     <Label htmlFor="danger-column-height" className="text-xs">
                         Block height
                     </Label>
-                    <span className="text-xs font-medium">{columnHeight}px</span>
+                    <span className="text-xs font-medium">
+                        {columnHeight}px
+                    </span>
                 </div>
                 <input
                     id="danger-column-height"

@@ -182,7 +182,9 @@ export function DangerPreview() {
 
                 {showMeta ? (
                     <MetaFooterBlock
-                        onClick={() => openSheet({ kind: 'meta', mode: 'edit' })}
+                        onClick={() =>
+                            openSheet({ kind: 'meta', mode: 'edit' })
+                        }
                     />
                 ) : null}
             </div>

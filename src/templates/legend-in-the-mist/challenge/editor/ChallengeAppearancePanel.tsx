@@ -3,12 +3,9 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
-import {
-    PREVIEW_WIDTH_MAX,
-    PREVIEW_WIDTH_MIN,
-} from '../model'
-import { challengeBackgroundOptions, challengeSections } from '../metadata'
 import { useLegendInTheMistChallengeViewStore } from '../hooks'
+import { challengeBackgroundOptions, challengeSections } from '../metadata'
+import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN } from '../model'
 
 export function ChallengeAppearancePanel() {
     const {
@@ -61,7 +58,9 @@ export function ChallengeAppearancePanel() {
                     <Label htmlFor="preview-width" className="text-xs">
                         Preview width
                     </Label>
-                    <span className="text-xs font-medium">{previewWidth}px</span>
+                    <span className="text-xs font-medium">
+                        {previewWidth}px
+                    </span>
                 </div>
                 <input
                     id="preview-width"

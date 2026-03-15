@@ -15,7 +15,9 @@ export function TemplateExportPanel() {
         [activeTemplate]
     )
     const activeAction =
-        actions.find((action) => action.id === activeActionId) ?? actions[0] ?? null
+        actions.find((action) => action.id === activeActionId) ??
+        actions[0] ??
+        null
 
     useEffect(() => {
         setActiveActionId(actions[0]?.id ?? null)

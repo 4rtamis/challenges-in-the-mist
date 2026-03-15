@@ -64,7 +64,8 @@ export default function BasicForm() {
                 <Label>Roles</Label>
                 <div className="flex flex-wrap gap-1.5">
                     {rolesList.map((role) => {
-                        const active = legendInTheMistChallenge.roles.includes(role)
+                        const active =
+                            legendInTheMistChallenge.roles.includes(role)
                         return (
                             <Button
                                 key={role}

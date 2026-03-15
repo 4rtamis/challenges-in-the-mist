@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { renderSystemMarkdownInline } from '@/utils/markdown'
 import {
     DndContext,
     KeyboardSensor,
@@ -21,7 +22,6 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { renderSystemMarkdownInline } from '@/utils/markdown'
 import { useCityOfMistDangerStore } from '../../hooks'
 
 const DEFAULT_CUSTOM_MOVE = {

@@ -1,265 +1,60 @@
 import { AppSidebar } from '@/components/sidebar/app-sidebar'
-import { Button } from '@/components/ui/button'
-import { Sidebar, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/sonner'
-import { getGameTheme } from '@/core/gameThemes'
-import { templateById } from '@/core/templates/registry'
-import { TemplateInspector } from '@/core/templates/shell/TemplateInspector'
-import { TemplateLanding } from '@/core/templates/shell/TemplateLanding'
-import { DEFAULT_TEMPLATE_PREVIEW_WIDTH } from '@/core/templates/types'
-import { useWorkspaceStore } from '@/core/workspace/store'
-import { useWorkspaceHydration } from '@/core/workspace/useWorkspaceHydration'
-import { cn } from '@/utils/cn'
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import AppDesktopInspector from './app/AppDesktopInspector'
+import AppMainContent from './app/AppMainContent'
 import AppTopBar from './app/AppTopBar'
 import ImportDialog from './app/ImportDialog'
+import { useAppShellState } from './app/useAppShellState'
+import { useAppShellUi } from './app/useAppShellUi'
+import { useBodyGameTheme } from './app/useBodyGameTheme'
 
 export default function App() {
-    const hydrated = useWorkspaceHydration()
-    const navigate = useNavigate()
-    const { tabId } = useParams<{ tabId?: string }>()
+    const shell = useAppShellState()
+    const ui = useAppShellUi(shell.activeTabId)
 
-    const tabs = useWorkspaceStore((s) => s.tabs)
-    const activeTabId = useWorkspaceStore((s) => s.activeTabId)
-    const activateTab = useWorkspaceStore((s) => s.activateTab)
-    const setTabMode = useWorkspaceStore((s) => s.setTabMode)
-    const replaceTabDoc = useWorkspaceStore((s) => s.replaceTabDoc)
-    const setTabSheet = useWorkspaceStore((s) => s.setTabSheet)
-
-    const [importOpen, setImportOpen] = useState(false)
-    const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false)
-    const [desktopInspectorOpen, setDesktopInspectorOpen] = useState(true)
-
-    useEffect(() => {
-        if (!hydrated) return
-
-        if (!tabId) {
-            if (activeTabId !== null) {
-                activateTab(null)
-            }
-            return
-        }
-
-        const exists = tabs.some((tab) => tab.id === tabId)
-        if (!exists) {
-            navigate('/', { replace: true })
-            return
-        }
-
-        if (activeTabId !== tabId) {
-            activateTab(tabId)
-        }
-    }, [activeTabId, activateTab, hydrated, navigate, tabId, tabs])
-
-    useEffect(() => {
-        setImportOpen(false)
-        setMobileInspectorOpen(false)
-        setDesktopInspectorOpen(true)
-    }, [activeTabId])
-
-    const activeTab =
-        activeTabId != null
-            ? (tabs.find((tab) => tab.id === activeTabId) ?? null)
-            : null
-
-    const activeTemplate = activeTab
-        ? (templateById.get(activeTab.templateId) ?? null)
-        : null
-    const activeGameTheme = activeTemplate
-        ? getGameTheme(activeTemplate.gameId)
-        : null
-
-    useEffect(() => {
-        if (typeof document === 'undefined') return
-
-        const themeId = activeGameTheme?.id
-        if (themeId) {
-            document.body.dataset.gameTheme = themeId
-        } else {
-            delete document.body.dataset.gameTheme
-        }
-
-        return () => {
-            delete document.body.dataset.gameTheme
-        }
-    }, [activeGameTheme?.id])
-
-    const templatePreview = activeTemplate?.implemented
-        ? activeTemplate.preview.render()
-        : null
-
-    const showDesktopInspector = Boolean(
-        hydrated &&
-            activeTab &&
-            activeTemplate?.implemented &&
-            activeTab.mode === 'editing'
-    )
-
-    const maxWidth = activeTemplate?.implemented
-        ? activeTemplate.appearance.getPreviewWidth(activeTab?.view as never)
-        : DEFAULT_TEMPLATE_PREVIEW_WIDTH
-
-    function startEditingWithExample() {
-        if (!activeTab || !activeTemplate) return
-
-        replaceTabDoc(activeTab.id, activeTemplate.createExample())
-        setTabSheet(activeTab.id, activeTemplate.createInitialSheet())
-        setTabMode(activeTab.id, 'editing')
-    }
-
-    function startEditingBlank() {
-        if (!activeTab || !activeTemplate) return
-
-        replaceTabDoc(activeTab.id, activeTemplate.createBlank())
-        setTabSheet(activeTab.id, activeTemplate.createInitialSheet())
-        setTabMode(activeTab.id, 'editing')
-    }
+    useBodyGameTheme(shell.activeGameTheme?.id)
 
     return (
-        <SidebarProvider data-game-theme={activeGameTheme?.id}>
+        <SidebarProvider data-game-theme={shell.activeGameTheme?.id}>
             <AppSidebar />
             <div className="w-full">
                 <AppTopBar />
 
                 <main
                     className="mist-app-main mx-auto min-h-[calc(100svh-4rem)] w-full px-4 py-6 sm:px-6"
-                    style={{ maxWidth: `${maxWidth}px` }}
+                    style={{ maxWidth: `${shell.maxWidth}px` }}
                 >
-                    {!hydrated && (
-                        <div className="flex min-h-[70vh] items-center justify-center text-sm text-muted-foreground">
-                            Loading workspace...
-                        </div>
-                    )}
-
-                    {hydrated && !activeTab && (
-                        <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-                            <h2 className="text-xl font-semibold">
-                                Welcome to Lantern
-                            </h2>
-                            <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                                Pick a template in the left sidebar to open a
-                                new tab and start editing.
-                            </p>
-                        </div>
-                    )}
-
-                    {hydrated &&
-                        activeTab &&
-                        (!activeTemplate || !activeTemplate.implemented) && (
-                            <div className="flex min-h-[70vh] flex-col items-center justify-center text-center">
-                                <h2 className="text-xl font-semibold">
-                                    Template not available yet
-                                </h2>
-                                <p className="mt-2 text-sm text-muted-foreground">
-                                    This template is listed in the sidebar but
-                                    is not implemented yet.
-                                </p>
-                            </div>
-                        )}
-
-                    {hydrated &&
-                        activeTab &&
-                        activeTemplate &&
-                        activeTemplate.implemented &&
-                        activeTab.mode === 'landing' && (
-                            <div className="space-y-5">
-                                <TemplateLanding
-                                    template={activeTemplate}
-                                    onStartExample={startEditingWithExample}
-                                    onStartBlank={startEditingBlank}
-                                    onImport={() => setImportOpen(true)}
-                                />
-
-                                <div
-                                    data-preview-root={activeTab.id}
-                                    data-game-theme={activeGameTheme?.id}
-                                >
-                                    {templatePreview}
-                                </div>
-                            </div>
-                        )}
-
-                    {hydrated &&
-                        activeTab &&
-                        activeTemplate &&
-                        activeTemplate.implemented &&
-                        activeTab.mode === 'editing' && (
-                            <div className="space-y-3">
-                                <div className="flex justify-end md:hidden">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            setMobileInspectorOpen(
-                                                (open) => !open
-                                            )
-                                        }
-                                    >
-                                        {mobileInspectorOpen
-                                            ? 'Hide editor sidebar'
-                                            : 'Show editor sidebar'}
-                                    </Button>
-                                </div>
-
-                                <div
-                                    data-preview-root={activeTab.id}
-                                    data-game-theme={activeGameTheme?.id}
-                                >
-                                    {templatePreview}
-                                </div>
-                                <div
-                                    className={cn(
-                                        'md:hidden',
-                                        mobileInspectorOpen ? 'block' : 'hidden'
-                                    )}
-                                >
-                                    <div
-                                        className={cn(
-                                            'max-h-[75vh] overflow-hidden rounded-lg border bg-background'
-                                        )}
-                                    >
-                                        <TemplateInspector />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                    <AppMainContent
+                        activeGameThemeId={shell.activeGameTheme?.id}
+                        activeTab={shell.activeTab}
+                        activeTemplate={shell.activeTemplate}
+                        hydrated={shell.hydrated}
+                        mobileInspectorOpen={ui.mobileInspectorOpen}
+                        templatePreview={shell.templatePreview}
+                        onOpenImport={() => ui.setImportOpen(true)}
+                        onStartBlank={shell.startEditingBlank}
+                        onStartExample={shell.startEditingWithExample}
+                        onToggleMobileInspector={ui.toggleMobileInspector}
+                    />
                 </main>
             </div>
 
-            {hydrated &&
-                activeTab &&
-                activeTemplate?.implemented &&
-                activeTab.mode === 'landing' && (
+            {shell.hydrated &&
+                shell.activeTab &&
+                shell.activeTemplate?.implemented &&
+                shell.activeTab.mode === 'landing' && (
                     <ImportDialog
-                        open={importOpen}
-                        onOpenChange={setImportOpen}
+                        open={ui.importOpen}
+                        onOpenChange={ui.setImportOpen}
                     />
                 )}
 
-            {showDesktopInspector && (
-                <SidebarProvider
-                    open={desktopInspectorOpen}
-                    onOpenChange={setDesktopInspectorOpen}
-                    keyboardShortcut={null}
-                    className="contents"
-                >
-                    <SidebarTrigger
-                        className="fixed top-14 right-4 z-40 hidden rounded-md border bg-background shadow-sm md:inline-flex"
-                        aria-label="Toggle editor sidebar"
-                        title="Toggle editor sidebar"
-                    />
-
-                    <Sidebar
-                        side="right"
-                        variant="floating"
-                        collapsible="offcanvas"
-                        withGap={false}
-                        className="z-30 hidden !top-16 !bottom-auto !h-auto !max-h-[calc(100svh-8rem)] md:flex [--sidebar-width:22rem]"
-                    >
-                        <TemplateInspector />
-                    </Sidebar>
-                </SidebarProvider>
+            {shell.showDesktopInspector && (
+                <AppDesktopInspector
+                    open={ui.desktopInspectorOpen}
+                    onOpenChange={ui.setDesktopInspectorOpen}
+                />
             )}
 
             <Toaster richColors closeButton position="top-center" expand />

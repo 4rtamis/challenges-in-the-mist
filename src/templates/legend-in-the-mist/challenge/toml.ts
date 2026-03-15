@@ -1,9 +1,9 @@
 import { parse as tomlParse, stringify as tomlStringify } from 'smol-toml'
-import { LegendInTheMistChallengeSchema } from './schema'
 import {
     toLegendInTheMistChallengeDocument,
     type LegendInTheMistChallenge,
 } from './model'
+import { LegendInTheMistChallengeSchema } from './schema'
 import { computeLegendInTheMistChallengeWarnings } from './warnings'
 
 /** Import and validate. Throws with a readable message on errors. */

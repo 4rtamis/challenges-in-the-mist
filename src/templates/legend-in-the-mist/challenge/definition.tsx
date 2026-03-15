@@ -1,9 +1,11 @@
 import type { AnyTemplateDefinition } from '@/core/templates/types'
-import { toast } from 'sonner'
 import { snapdom, type CaptureResult } from '@zumer/snapdom'
+import { toast } from 'sonner'
 import { ChallengeAppearancePanel } from './editor/ChallengeAppearancePanel'
 import { ChallengeEditorPanel } from './editor/ChallengeEditorPanel'
 import { ChallengeImageExportSettings } from './editor/ChallengeImageExportSettings'
+import { getLegendInTheMistChallengePreviewWidth } from './hooks'
+import { challengeSections } from './metadata'
 import {
     blankLegendInTheMistChallenge,
     defaultLegendInTheMistChallengeSheetState,
@@ -11,12 +13,10 @@ import {
     type LegendInTheMistChallenge,
     type LegendInTheMistChallengeViewState,
 } from './model'
-import { challengeSections } from './metadata'
 import { ChallengePreview } from './preview/ChallengePreview'
-import { LegendInTheMistChallengeSchema } from './schema'
 import { getSampleLegendInTheMistChallenge } from './sample'
+import { LegendInTheMistChallengeSchema } from './schema'
 import { exportToTOML, importFromTOMLWithWarnings } from './toml'
-import { getLegendInTheMistChallengePreviewWidth } from './hooks'
 
 function cloneValue<T>(value: T): T {
     if (typeof structuredClone === 'function') {
@@ -44,7 +44,9 @@ function createImageExportAction(format: 'png') {
         }) => {
             const node = getPreviewNode()
             if (!node) {
-                toast.error('Preview not found. Make sure the preview is visible.')
+                toast.error(
+                    'Preview not found. Make sure the preview is visible.'
+                )
                 return
             }
 
@@ -55,11 +57,12 @@ function createImageExportAction(format: 'png') {
                     scale: pixelRatio,
                     embedFonts: true,
                     backgroundColor: view.exportPrefs.transparent
-                        ? 'transparent'
+                        ? '#ffffff00'
                         : undefined,
                 })
 
                 await snap.download({
+                    type: format,
                     filename: `${fileStem}@${pixelRatio}x.${format}`,
                 })
 

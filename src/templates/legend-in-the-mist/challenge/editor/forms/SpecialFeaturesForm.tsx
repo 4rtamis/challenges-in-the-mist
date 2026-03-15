@@ -1,7 +1,7 @@
 import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { renderLitmMarkdown } from '@/utils/markdown'
-import { useLegendInTheMistChallengeStore } from '../../hooks'
 import { useEffect, useMemo, useState } from 'react'
+import { useLegendInTheMistChallengeStore } from '../../hooks'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -100,7 +100,8 @@ export default function SpecialFeaturesForm({
     function addPlaceholder() {
         const placeholder = {
             name: uniquePlaceholderName(),
-            description: 'Describe when this feature triggers and what it does.',
+            description:
+                'Describe when this feature triggers and what it does.',
         }
         const newIndex = legendInTheMistChallenge.special_features.length
         addSpecialFeature(placeholder)
@@ -150,68 +151,70 @@ export default function SpecialFeaturesForm({
                     strategy={verticalListSortingStrategy}
                 >
                     <ul className="space-y-3">
-                        {legendInTheMistChallenge.special_features.map((sf, i) => (
-                            <SortableFeatureItem
-                                key={itemIds[i]}
-                                id={itemIds[i]}
-                                name={sf.name}
-                                description={sf.description}
-                                dragDisabled={dragDisabled}
-                                onEdit={() => startEdit(i)}
-                                onRemove={() => removeSpecialFeatureAt(i)}
-                            >
-                                {editingIndex === i && (
-                                    <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
-                                        {error && (
-                                            <p className="text-sm text-destructive">
-                                                {error}
-                                            </p>
-                                        )}
-                                        <div className="grid gap-1">
-                                            <Label htmlFor={`sf-name-${i}`}>
-                                                Name
-                                            </Label>
-                                            <Input
-                                                id={`sf-name-${i}`}
-                                                value={eName}
-                                                onChange={(e) =>
-                                                    setEName(e.target.value)
-                                                }
-                                            />
+                        {legendInTheMistChallenge.special_features.map(
+                            (sf, i) => (
+                                <SortableFeatureItem
+                                    key={itemIds[i]}
+                                    id={itemIds[i]}
+                                    name={sf.name}
+                                    description={sf.description}
+                                    dragDisabled={dragDisabled}
+                                    onEdit={() => startEdit(i)}
+                                    onRemove={() => removeSpecialFeatureAt(i)}
+                                >
+                                    {editingIndex === i && (
+                                        <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
+                                            {error && (
+                                                <p className="text-sm text-destructive">
+                                                    {error}
+                                                </p>
+                                            )}
+                                            <div className="grid gap-1">
+                                                <Label htmlFor={`sf-name-${i}`}>
+                                                    Name
+                                                </Label>
+                                                <Input
+                                                    id={`sf-name-${i}`}
+                                                    value={eName}
+                                                    onChange={(e) =>
+                                                        setEName(e.target.value)
+                                                    }
+                                                />
+                                            </div>
+                                            <div className="grid gap-1">
+                                                <Label htmlFor={`sf-desc-${i}`}>
+                                                    Description{' '}
+                                                    <span className="text-muted-foreground">
+                                                        (Markdown)
+                                                    </span>
+                                                </Label>
+                                                <Textarea
+                                                    id={`sf-desc-${i}`}
+                                                    rows={4}
+                                                    value={eDesc}
+                                                    onChange={(e) =>
+                                                        setEDesc(e.target.value)
+                                                    }
+                                                    placeholder="When this happens... then do that."
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button onClick={saveEdit}>
+                                                    Save
+                                                </Button>
+                                                <Button
+                                                    variant="link"
+                                                    className="h-8 p-0"
+                                                    onClick={cancelEdit}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </div>
                                         </div>
-                                        <div className="grid gap-1">
-                                            <Label htmlFor={`sf-desc-${i}`}>
-                                                Description{' '}
-                                                <span className="text-muted-foreground">
-                                                    (Markdown)
-                                                </span>
-                                            </Label>
-                                            <Textarea
-                                                id={`sf-desc-${i}`}
-                                                rows={4}
-                                                value={eDesc}
-                                                onChange={(e) =>
-                                                    setEDesc(e.target.value)
-                                                }
-                                                placeholder="When this happens... then do that."
-                                            />
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Button onClick={saveEdit}>
-                                                Save
-                                            </Button>
-                                            <Button
-                                                variant="link"
-                                                className="h-8 p-0"
-                                                onClick={cancelEdit}
-                                            >
-                                                Cancel
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
-                            </SortableFeatureItem>
-                        ))}
+                                    )}
+                                </SortableFeatureItem>
+                            )
+                        )}
 
                         {/* Add button row */}
                         <li className="flex">

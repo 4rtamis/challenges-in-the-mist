@@ -145,20 +145,20 @@
 
 .city-danger-preview-item {
     display: block;
-    width: 100%;
+    cursor: pointer;
     border: 0;
     background: transparent;
     padding: 0;
+    width: 100%;
     color: inherit;
     font: inherit;
     text-align: left;
-    cursor: pointer;
 }
 
 .city-danger-preview-item:hover,
 .city-danger-preview-item:focus-visible {
-    background: rgb(0 0 0 / 0.05);
     outline: none;
+    background: rgb(0 0 0 / 0.05);
 }
 
 .city-danger-preview-item--inline {

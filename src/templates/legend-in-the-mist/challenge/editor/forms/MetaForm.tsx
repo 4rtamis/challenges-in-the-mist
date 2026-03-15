@@ -19,8 +19,8 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
-import { cn } from '@/utils/cn'
 import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
+import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
 const TYPES: { value: PublicationType; label: string }[] = [

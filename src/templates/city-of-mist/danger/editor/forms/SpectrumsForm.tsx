@@ -2,10 +2,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { formatSpectrumLabel } from '../../formatting'
-import { useCityOfMistDangerStore } from '../../hooks'
-import { useEffect, useMemo, useState } from 'react'
-import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import {
     DndContext,
     KeyboardSensor,
@@ -22,6 +18,10 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { formatSpectrumLabel } from '../../formatting'
+import { useCityOfMistDangerStore } from '../../hooks'
 
 const DEFAULT_SPECTRUM = {
     name: 'hurt',
@@ -29,11 +29,7 @@ const DEFAULT_SPECTRUM = {
     is_immune: false,
 }
 
-export default function SpectrumsForm({
-    focusIndex,
-}: {
-    focusIndex?: number
-}) {
+export default function SpectrumsForm({ focusIndex }: { focusIndex?: number }) {
     const {
         cityOfMistDanger,
         addSpectrum,
@@ -68,7 +64,8 @@ export default function SpectrumsForm({
     const itemIds = useMemo(
         () =>
             cityOfMistDanger.spectrums.map(
-                (spectrum, index) => `${index}:${spectrum.name}:${spectrum.maximum}`
+                (spectrum, index) =>
+                    `${index}:${spectrum.name}:${spectrum.maximum}`
             ),
         [cityOfMistDanger.spectrums]
     )
@@ -169,7 +166,9 @@ export default function SpectrumsForm({
                                                     className="h-8 px-2 text-sm"
                                                     value={name}
                                                     onChange={(event) =>
-                                                        setName(event.target.value)
+                                                        setName(
+                                                            event.target.value
+                                                        )
                                                     }
                                                     placeholder="hurt"
                                                 />

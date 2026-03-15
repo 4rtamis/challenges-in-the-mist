@@ -1,6 +1,6 @@
-import type { WorkspaceTab } from '@/core/workspace/types'
-import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
 import { useActiveTemplateTab } from '@/core/workspace/selectors'
+import { getActiveTab, useWorkspaceStore } from '@/core/workspace/store'
+import type { WorkspaceTab } from '@/core/workspace/types'
 import type {
     ChallengeMeta,
     LegendInTheMistChallenge,
@@ -8,16 +8,16 @@ import type {
     LegendInTheMistChallengeViewState,
     Limit,
     Might,
+    SectionId,
+    SheetTarget,
     SpecialFeature,
     Threat,
-    SheetTarget,
-    SectionId,
 } from './model'
 import {
     blankLegendInTheMistChallenge,
+    defaultHidden,
     defaultLegendInTheMistChallengeSheetState,
     defaultLegendInTheMistChallengeView,
-    defaultHidden,
 } from './model'
 
 type LegendInTheMistChallengeTab = WorkspaceTab<
@@ -45,7 +45,10 @@ function strOrFallback(v: string | undefined, fallback: string) {
     return s || fallback
 }
 
-function normalizeRequiredStrings(values: string[] | undefined, fallback: string) {
+function normalizeRequiredStrings(
+    values: string[] | undefined,
+    fallback: string
+) {
     const normalized = (values ?? [])
         .map((value) => value.trim())
         .filter(Boolean)
@@ -69,9 +72,7 @@ function useLegendInTheMistChallengeTab() {
     >(TEMPLATE_ID)
 }
 
-function getLegendInTheMistChallengeTab():
-    | LegendInTheMistChallengeTab
-    | null {
+function getLegendInTheMistChallengeTab(): LegendInTheMistChallengeTab | null {
     const workspace = useWorkspaceStore.getState()
     const active = getActiveTab(workspace)
     if (!active || active.templateId !== TEMPLATE_ID) return null
@@ -125,9 +126,7 @@ export function useLegendInTheMistChallengeStore() {
                 ...current,
                 ...update,
             })),
-        replaceLegendInTheMistChallenge: (
-            next: LegendInTheMistChallenge
-        ) => {
+        replaceLegendInTheMistChallenge: (next: LegendInTheMistChallenge) => {
             if (!tab) return
             replaceTabDoc(tab.id, cloneValue(next))
         },
@@ -155,7 +154,12 @@ export function useLegendInTheMistChallengeStore() {
         moveToken: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.tags_and_statuses]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -196,7 +200,12 @@ export function useLegendInTheMistChallengeStore() {
         moveMight: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.mights]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -245,7 +254,12 @@ export function useLegendInTheMistChallengeStore() {
         moveLimit: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.limits]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -304,7 +318,12 @@ export function useLegendInTheMistChallengeStore() {
         moveThreat: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.threats]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -328,7 +347,11 @@ export function useLegendInTheMistChallengeStore() {
 
                 return { ...current, threats }
             }),
-        updateConsequence: (threatIndex: number, cIndex: number, text: string) =>
+        updateConsequence: (
+            threatIndex: number,
+            cIndex: number,
+            text: string
+        ) =>
             apply((current) => {
                 const threats = [...current.threats]
                 const threat = threats[threatIndex]
@@ -403,7 +426,12 @@ export function useLegendInTheMistChallengeStore() {
         moveGeneralConsequence: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.general_consequences]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -425,7 +453,10 @@ export function useLegendInTheMistChallengeStore() {
                     },
                 ],
             })),
-        updateSpecialFeatureAt: (index: number, update: Partial<SpecialFeature>) =>
+        updateSpecialFeatureAt: (
+            index: number,
+            update: Partial<SpecialFeature>
+        ) =>
             apply((current) => {
                 const arr = [...current.special_features]
                 const prev = arr[index]
@@ -452,7 +483,12 @@ export function useLegendInTheMistChallengeStore() {
         moveSpecialFeature: (from: number, to: number) =>
             apply((current) => {
                 const arr = [...current.special_features]
-                if (from < 0 || from >= arr.length || to < 0 || to >= arr.length) {
+                if (
+                    from < 0 ||
+                    from >= arr.length ||
+                    to < 0 ||
+                    to >= arr.length
+                ) {
                     return current
                 }
 
@@ -495,8 +531,7 @@ export function useLegendInTheMistChallengeViewStore() {
             }),
         setBackground: (
             background: LegendInTheMistChallengeViewState['background']
-        ) =>
-            patchView({ background }),
+        ) => patchView({ background }),
         toggleHidden: (id: SectionId) =>
             patchView({
                 hidden: {
@@ -600,10 +635,7 @@ export function shouldShow(
     view: LegendInTheMistChallengeViewState
 ) {
     if (view.hidden[id]) return false
-    if (
-        view.autoHideEmpty &&
-        isEmptySection(legendInTheMistChallenge, id)
-    ) {
+    if (view.autoHideEmpty && isEmptySection(legendInTheMistChallenge, id)) {
         return false
     }
     return true

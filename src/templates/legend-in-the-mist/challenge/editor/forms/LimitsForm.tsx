@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { type Limit, useLegendInTheMistChallengeStore } from '../../hooks'
+import { useLegendInTheMistChallengeStore, type Limit } from '../../hooks'
 
 import {
     DndContext,
@@ -28,8 +28,13 @@ import { CSS } from '@dnd-kit/utilities'
 const PRESET_LIMITS = ['Harm', 'Scare', 'Convince', 'Subdue', 'Banish']
 
 export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
-    const { legendInTheMistChallenge, addLimit, updateLimitAt, removeLimitAt, moveLimit } =
-        useLegendInTheMistChallengeStore()
+    const {
+        legendInTheMistChallenge,
+        addLimit,
+        updateLimitAt,
+        removeLimitAt,
+        moveLimit,
+    } = useLegendInTheMistChallengeStore()
 
     // --- inline editor state (for a single item at a time) ---
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -44,7 +49,10 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
 
     // open editor for the focused index (from sheet deep link)
     useEffect(() => {
-        if (typeof focusIndex === 'number' && legendInTheMistChallenge.limits[focusIndex]) {
+        if (
+            typeof focusIndex === 'number' &&
+            legendInTheMistChallenge.limits[focusIndex]
+        ) {
             startEdit(focusIndex)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,7 +127,9 @@ export default function LimitsForm({ focusIndex }: { focusIndex?: number }) {
 
     function uniquePlaceholderName(): string {
         // Prefer an unused preset at random
-        const used = new Set(legendInTheMistChallenge.limits.map((l) => l.name.toLowerCase()))
+        const used = new Set(
+            legendInTheMistChallenge.limits.map((l) => l.name.toLowerCase())
+        )
         const available = PRESET_LIMITS.filter(
             (p) => !used.has(p.toLowerCase())
         )

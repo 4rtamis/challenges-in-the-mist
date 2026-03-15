@@ -1,7 +1,7 @@
 import { SystemMarkdownScope } from '@/components/markdown/SystemMarkdownScope'
 import { renderSystemMarkdownInline } from '@/utils/markdown'
-import { useLegendInTheMistChallengeStore } from '../../hooks'
 import { useEffect, useMemo, useState } from 'react'
+import { useLegendInTheMistChallengeStore } from '../../hooks'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -30,8 +30,13 @@ export default function TagsStatusesForm({
 }: {
     focusIndex?: number
 }) {
-    const { legendInTheMistChallenge, addToken, removeTokenAt, replaceTokenAt, moveToken } =
-        useLegendInTheMistChallengeStore()
+    const {
+        legendInTheMistChallenge,
+        addToken,
+        removeTokenAt,
+        replaceTokenAt,
+        moveToken,
+    } = useLegendInTheMistChallengeStore()
 
     // One inline editor at a time
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -59,7 +64,10 @@ export default function TagsStatusesForm({
 
     // IDs must be unique even if values repeat. Use "index::value" snapshot IDs.
     const itemIds = useMemo(
-        () => legendInTheMistChallenge.tags_and_statuses.map((v, i) => `${i}::${v}`),
+        () =>
+            legendInTheMistChallenge.tags_and_statuses.map(
+                (v, i) => `${i}::${v}`
+            ),
         [legendInTheMistChallenge.tags_and_statuses]
     )
 
@@ -130,55 +138,60 @@ export default function TagsStatusesForm({
                     strategy={verticalListSortingStrategy}
                 >
                     <ul className="space-y-2">
-                        {legendInTheMistChallenge.tags_and_statuses.map((value, idx) => (
-                            <SortableTokenItem
-                                key={itemIds[idx]}
-                                id={itemIds[idx]}
-                                value={value}
-                                dragDisabled={dragDisabled}
-                                onEdit={() => startEdit(idx)}
-                                onRemove={() => removeTokenAt(idx)}
-                            >
-                                {editingIndex === idx && (
-                                    <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
-                                        {error && (
-                                            <p className="text-sm text-destructive">
-                                                {error}
-                                            </p>
-                                        )}
-                                        <div className="grid gap-2">
-                                            <Label htmlFor={`tag-raw-${idx}`}>
-                                                Raw value{' '}
-                                                <span className="text-muted-foreground font-normal">
-                                                    (supports inline Markdown)
-                                                </span>
-                                            </Label>
-                                            <Input
-                                                id={`tag-raw-${idx}`}
-                                                value={raw}
-                                                onChange={(e) =>
-                                                    setRaw(e.target.value)
-                                                }
-                                                placeholder="{power tag}, {status-3}, {!weakness tag} or plain text"
-                                            />
-                                        </div>
+                        {legendInTheMistChallenge.tags_and_statuses.map(
+                            (value, idx) => (
+                                <SortableTokenItem
+                                    key={itemIds[idx]}
+                                    id={itemIds[idx]}
+                                    value={value}
+                                    dragDisabled={dragDisabled}
+                                    onEdit={() => startEdit(idx)}
+                                    onRemove={() => removeTokenAt(idx)}
+                                >
+                                    {editingIndex === idx && (
+                                        <div className="mt-2 rounded-md border p-3 bg-muted/30 space-y-3">
+                                            {error && (
+                                                <p className="text-sm text-destructive">
+                                                    {error}
+                                                </p>
+                                            )}
+                                            <div className="grid gap-2">
+                                                <Label
+                                                    htmlFor={`tag-raw-${idx}`}
+                                                >
+                                                    Raw value{' '}
+                                                    <span className="text-muted-foreground font-normal">
+                                                        (supports inline
+                                                        Markdown)
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    id={`tag-raw-${idx}`}
+                                                    value={raw}
+                                                    onChange={(e) =>
+                                                        setRaw(e.target.value)
+                                                    }
+                                                    placeholder="{power tag}, {status-3}, {!weakness tag} or plain text"
+                                                />
+                                            </div>
 
-                                        <div className="flex items-center gap-2">
-                                            <Button onClick={confirmEdit}>
-                                                Save
-                                            </Button>
-                                            <Button
-                                                variant="link"
-                                                className="h-8 p-0"
-                                                onClick={cancelEdit}
-                                            >
-                                                Cancel
-                                            </Button>
+                                            <div className="flex items-center gap-2">
+                                                <Button onClick={confirmEdit}>
+                                                    Save
+                                                </Button>
+                                                <Button
+                                                    variant="link"
+                                                    className="h-8 p-0"
+                                                    onClick={cancelEdit}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                            </SortableTokenItem>
-                        ))}
+                                    )}
+                                </SortableTokenItem>
+                            )
+                        )}
 
                         {/* Add button row */}
                         <li className="flex">

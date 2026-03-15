@@ -1,9 +1,6 @@
 import { parse as tomlParse, stringify as tomlStringify } from 'smol-toml'
+import { toCityOfMistDangerDocument, type CityOfMistDanger } from './model'
 import { CityOfMistDangerSchema } from './schema'
-import {
-    toCityOfMistDangerDocument,
-    type CityOfMistDanger,
-} from './model'
 
 export const importFromTOML = (tomlText: string) =>
     importFromTOMLWithWarnings(tomlText)
@@ -17,7 +14,9 @@ export function importFromTOMLWithWarnings(tomlText: string): {
 
     if (!parsed.success) {
         const msg = parsed.error.issues
-            .map((issue) => `${issue.path.join('.') || 'root'}: ${issue.message}`)
+            .map(
+                (issue) => `${issue.path.join('.') || 'root'}: ${issue.message}`
+            )
             .join('\n')
         throw new Error(msg)
     }
@@ -32,7 +31,9 @@ export function exportToTOML(cityOfMistDanger: CityOfMistDanger): string {
     const parsed = CityOfMistDangerSchema.safeParse(cityOfMistDanger)
     if (!parsed.success) {
         const msg = parsed.error.issues
-            .map((issue) => `${issue.path.join('.') || 'root'}: ${issue.message}`)
+            .map(
+                (issue) => `${issue.path.join('.') || 'root'}: ${issue.message}`
+            )
             .join('\n')
         throw new Error(`Cannot export: data is invalid.\n${msg}`)
     }

@@ -3,8 +3,6 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { renderSystemMarkdownInline } from '@/utils/markdown'
-import { useEffect, useMemo, useState } from 'react'
-import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import {
     DndContext,
     KeyboardSensor,
@@ -21,6 +19,8 @@ import {
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 
 type MoveListFormProps = {
     values: string[]

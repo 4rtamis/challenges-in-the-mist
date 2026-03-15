@@ -60,7 +60,8 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
 
         const parsed = importToml(content)
         setPreviewName(
-            parsed.previewName || `${activeTemplate?.label || 'Template'} import`
+            parsed.previewName ||
+                `${activeTemplate?.label || 'Template'} import`
         )
         setWarnings(parsed.warnings || [])
         setError(null)
@@ -167,7 +168,8 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                 <DialogHeader>
                     <DialogTitle>Import {templateLabel}</DialogTitle>
                     <DialogDescription>
-                        Import from a <code>.toml</code> file or by pasting TOML.
+                        Import from a <code>.toml</code> file or by pasting
+                        TOML.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -186,10 +188,12 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                     <TabsContent value="file" className="space-y-3">
                         <Alert variant="destructive">
                             <AlertTriangle className="h-4 w-4" />
-                            <AlertTitle>Import from trusted sources only</AlertTitle>
+                            <AlertTitle>
+                                Import from trusted sources only
+                            </AlertTitle>
                             <AlertDescription>
-                                Importing files can include malicious content. Only
-                                open TOML from creators you trust.
+                                Importing files can include malicious content.
+                                Only open TOML from creators you trust.
                             </AlertDescription>
                         </Alert>
 
@@ -241,7 +245,9 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                     <TabsContent value="paste" className="space-y-3">
                         <Alert variant="destructive">
                             <AlertTriangle className="h-4 w-4" />
-                            <AlertTitle>Import from trusted sources only</AlertTitle>
+                            <AlertTitle>
+                                Import from trusted sources only
+                            </AlertTitle>
                             <AlertDescription>
                                 Pasted TOML can include malicious payloads. Only
                                 paste content from creators you trust.
@@ -257,7 +263,9 @@ export default function ImportDialog({ open, onOpenChange }: Props) {
                                 spellCheck={false}
                                 placeholder='[[limits]] name = "Free" ...'
                                 value={rawToml}
-                                onChange={(event) => onTomlChange(event.target.value)}
+                                onChange={(event) =>
+                                    onTomlChange(event.target.value)
+                                }
                             />
                             <div className="text-xs text-muted-foreground">
                                 Auto-validates as you type/paste.
@@ -319,7 +327,8 @@ function PreviewPane({
         <div className="space-y-2 rounded-md border p-3">
             {name && (
                 <div className="text-sm">
-                    <span className="font-medium">Detected template:</span> {name}
+                    <span className="font-medium">Detected template:</span>{' '}
+                    {name}
                 </div>
             )}
             {warnings.length > 0 && (

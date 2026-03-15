@@ -13,8 +13,8 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
-import { cn } from '@/utils/cn'
 import { getCatalogSources, type CatalogItem } from '@/utils/catalog'
+import { cn } from '@/utils/cn'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useCityOfMistDangerStore, type PublicationType } from '../../hooks'

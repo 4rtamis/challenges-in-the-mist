@@ -4,7 +4,11 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { GripVertical, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { type Might, type MightLevel, useLegendInTheMistChallengeStore } from '../../hooks'
+import {
+    useLegendInTheMistChallengeStore,
+    type Might,
+    type MightLevel,
+} from '../../hooks'
 
 import {
     DndContext,
@@ -32,8 +36,13 @@ const ICON_BY_LEVEL: Record<MightLevel, string> = {
 }
 
 export default function MightForm({ focusIndex }: { focusIndex?: number }) {
-    const { legendInTheMistChallenge, addMight, updateMightAt, removeMightAt, moveMight } =
-        useLegendInTheMistChallengeStore()
+    const {
+        legendInTheMistChallenge,
+        addMight,
+        updateMightAt,
+        removeMightAt,
+        moveMight,
+    } = useLegendInTheMistChallengeStore()
 
     // One inline editor at a time
     const [editingIndex, setEditingIndex] = useState<number | null>(null)
@@ -45,7 +54,10 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
 
     // Deep-link open
     useEffect(() => {
-        if (typeof focusIndex === 'number' && legendInTheMistChallenge.mights[focusIndex]) {
+        if (
+            typeof focusIndex === 'number' &&
+            legendInTheMistChallenge.mights[focusIndex]
+        ) {
             startEdit(focusIndex)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,7 +73,10 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
 
     // Stable-ish IDs for current render (index::name::level)
     const itemIds = useMemo(
-        () => legendInTheMistChallenge.mights.map((m, i) => `${i}::${m.name}::${m.level}`),
+        () =>
+            legendInTheMistChallenge.mights.map(
+                (m, i) => `${i}::${m.name}::${m.level}`
+            ),
         [legendInTheMistChallenge.mights]
     )
 
@@ -89,7 +104,9 @@ export default function MightForm({ focusIndex }: { focusIndex?: number }) {
 
     function uniquePlaceholderName(): string {
         const base = 'New Might'
-        const used = new Set(legendInTheMistChallenge.mights.map((m) => m.name.toLowerCase()))
+        const used = new Set(
+            legendInTheMistChallenge.mights.map((m) => m.name.toLowerCase())
+        )
         if (!used.has(base.toLowerCase())) return base
         let n = 2
         while (used.has(`${base} ${n}`.toLowerCase())) n++

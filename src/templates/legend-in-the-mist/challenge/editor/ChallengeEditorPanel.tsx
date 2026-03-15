@@ -1,3 +1,4 @@
+import { useLegendInTheMistChallengeSheetStore } from '../hooks'
 import BasicForm from './forms/BasicForm'
 import LimitsForm from './forms/LimitsForm'
 import MetaForm from './forms/MetaForm'
@@ -5,7 +6,6 @@ import MightForm from './forms/MightForm'
 import SpecialFeaturesForm from './forms/SpecialFeaturesForm'
 import TagsStatusesForm from './forms/TagsStatusesForm'
 import ThreatsForm from './forms/ThreatsForm'
-import { useLegendInTheMistChallengeSheetStore } from '../hooks'
 
 export function ChallengeEditorPanel() {
     const { open, target } = useLegendInTheMistChallengeSheetStore()

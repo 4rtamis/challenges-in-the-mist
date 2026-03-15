@@ -1,6 +1,6 @@
 import { templateById } from '@/core/templates/registry'
-import type { WorkspaceTab } from './types'
 import { useWorkspaceStore } from './store'
+import type { WorkspaceTab } from './types'
 
 export function useActiveTab() {
     return useWorkspaceStore((state) => {
