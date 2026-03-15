@@ -69,7 +69,7 @@ export default function AppTopBar() {
                 Lantern
                 <Badge variant="outline" className="ml-2">
                     <TagIcon />
-                    <span>0.1.0</span>
+                    <span>{__APP_VERSION__}</span>
                 </Badge>
             </div>
 
