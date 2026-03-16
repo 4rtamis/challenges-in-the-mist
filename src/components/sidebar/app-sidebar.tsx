@@ -39,7 +39,7 @@ const data = {
             name: 'Mistdraw',
             logo: '/assets/images/mistdraw-logo.svg',
             description: 'Whiteboard-based VTT',
-            href: 'https://mistrdaw.ravenloft.fr',
+            href: 'https://mistdraw.ravenloft.fr',
             current: false,
         },
         {
